@@ -1,65 +1,134 @@
-import Image from "next/image";
+import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
+import { LinkButton } from "@/components/ui/button";
+import { Card, SectionHeader } from "@/components/ui/card";
+import { activities } from "@/data/activities";
+import { villages } from "@/data/villages";
+import { ActivityCard } from "@/features/activities/activity-card";
+import { VillageCard } from "@/features/villages/village-card";
+
+const benefits = [
+  {
+    title: "Planes con raíz local",
+    text: "Encuentra rutas, talleres, mercados y fiestas creadas por personas del territorio.",
+  },
+  {
+    title: "Comunidad activa",
+    text: "Publicaciones vecinales, propuestas compartidas y espacios para colaborar.",
+  },
+  {
+    title: "Pueblos visibles",
+    text: "Cada pueblo tiene su ficha, actividades relacionadas y una narrativa propia.",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <>
+      <Navbar />
+      <main>
+        <section className="rural-grid">
+          <div className="page-shell grid min-h-[calc(100vh-4rem)] items-center gap-10 py-12 md:grid-cols-[1.05fr_0.95fr]">
+            <div>
+              <p className="mb-4 inline-flex rounded-full bg-white/80 px-4 py-2 text-sm font-extrabold text-[#3A7D44] shadow-sm">
+                Vida rural, actividad local y comunidad
+              </p>
+              <h1 className="max-w-3xl text-5xl font-black leading-[1.02] text-[#1F3D2B] md:text-7xl">
+                Conecta con pueblos que siguen latiendo.
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-[#1E1E1E]/72">
+                Descubre actividades, conoce historias locales, apúntate a planes
+                comunitarios y participa en la vida de pueblos con identidad propia.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <LinkButton href="/activities">Explorar actividades</LinkButton>
+                <LinkButton href="/community" variant="secondary">
+                  Unirme a la comunidad
+                </LinkButton>
+              </div>
+            </div>
+            <Card className="overflow-hidden p-3">
+              <div className="rounded-xl bg-[#1F3D2B] p-5 text-white">
+                <p className="text-sm font-bold text-[#D9A441]">Próxima actividad</p>
+                <h2 className="mt-3 text-3xl font-black">{activities[0].title}</h2>
+                <p className="mt-3 text-white/72">{activities[0].description}</p>
+                <div className="mt-8 grid grid-cols-3 gap-3 text-center">
+                  <div className="rounded-xl bg-white/10 p-3">
+                    <p className="text-2xl font-black">5</p>
+                    <p className="text-xs text-white/64">pueblos</p>
+                  </div>
+                  <div className="rounded-xl bg-white/10 p-3">
+                    <p className="text-2xl font-black">8</p>
+                    <p className="text-xs text-white/64">categorías</p>
+                  </div>
+                  <div className="rounded-xl bg-white/10 p-3">
+                    <p className="text-2xl font-black">120+</p>
+                    <p className="text-xs text-white/64">plazas</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </section>
+
+        <section className="page-shell py-16">
+          <SectionHeader
+            eyebrow="Agenda"
+            title="Actividades destacadas"
+            description="Planes próximos para entrar en contacto con cada territorio desde la experiencia."
+          />
+          <div className="grid gap-6 md:grid-cols-3">
+            {activities.slice(0, 3).map((activity) => (
+              <ActivityCard key={activity.id} activity={activity} />
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-[#F3F4F6] py-16">
+          <div className="page-shell">
+            <SectionHeader
+              eyebrow="Mapa vivo"
+              title="Pueblos destacados"
+              description="Lugares pequeños con patrimonio, naturaleza y personas organizando cosas bonitas."
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {villages.slice(0, 3).map((village) => (
+                <VillageCard key={village.id} village={village} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="page-shell py-16">
+          <SectionHeader title="Una plataforma para participar, no solo mirar" />
+          <div className="grid gap-5 md:grid-cols-3">
+            {benefits.map((benefit) => (
+              <Card key={benefit.title} className="p-6">
+                <h3 className="text-xl font-black text-[#1F3D2B]">{benefit.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-[#1E1E1E]/70">{benefit.text}</p>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section className="page-shell">
+          <div className="rounded-3xl bg-[#3A7D44] px-6 py-12 text-center text-white md:px-12">
+            <h2 className="text-3xl font-black md:text-5xl">
+              Empieza por una actividad. Quédate por la comunidad.
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-white/76">
+              ConectaPueblos está listo para crecer con más pueblos, perfiles,
+              inscripciones reales y administración conectada a FastAPI.
+            </p>
+            <div className="mt-7">
+              <LinkButton href="/register" variant="secondary">
+                Crear cuenta mock
+              </LinkButton>
+            </div>
+          </div>
+        </section>
       </main>
-    </div>
+      <Footer />
+    </>
   );
 }
