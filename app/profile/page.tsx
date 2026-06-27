@@ -73,12 +73,35 @@ export default function ProfilePage() {
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px]">
           <section>
+            <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
+              {["Publicaciones", "Actividades", "Pueblos"].map((tab, index) => (
+                <button
+                  key={tab}
+                  className={
+                    index === 0
+                      ? "min-h-10 rounded-full bg-[#3A7D44] px-4 text-sm font-black text-white"
+                      : "min-h-10 rounded-full border border-[#1F3D2B18] bg-white/80 px-4 text-sm font-black text-[#1F3D2B]"
+                  }
+                  type="button"
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
             <SectionHeader title="Publicaciones" />
             <div className="grid gap-5">
               {userPosts.map((post) => (
                 <SocialPostCard key={post.id} post={post} />
               ))}
             </div>
+            <Card className="mt-5 p-5">
+              <h2 className="text-xl font-black text-[#1F3D2B]">Actividad reciente</h2>
+              <div className="mt-4 grid gap-3 text-sm font-bold text-[#1F3D2B]/70">
+                <p>Comentó una publicación sobre rutas familiares.</p>
+                <p>Guardó una actividad de gastronomía local.</p>
+                <p>Empezó a seguir un pueblo destacado.</p>
+              </div>
+            </Card>
           </section>
           <aside className="grid content-start gap-8">
             <section>

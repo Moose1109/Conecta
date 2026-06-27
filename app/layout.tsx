@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ConectaPueblos",
+  title: {
+    default: "ConectaPueblos",
+    template: "%s | ConectaPueblos",
+  },
   description:
-    "Descubre pueblos, actividades locales y publicaciones comunitarias.",
+    "Red social rural para descubrir pueblos, actividades locales y comunidad.",
 };
 
 export default function RootLayout({
@@ -17,7 +21,10 @@ export default function RootLayout({
       lang="es"
       className="h-full antialiased"
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col pb-20 md:pb-0">
+        {children}
+        <MobileBottomNav />
+      </body>
     </html>
   );
 }

@@ -8,7 +8,7 @@ export const villages: Village[] = [
     region: "Catalunya",
     population: 270,
     image:
-      "https://images.unsplash.com/photo-1574263867128-a3d5c1b1deae?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
     tagline: "Calles de piedra, calma y miradores sobre el Collsacabra.",
     description:
       "Rupit conserva un trazado medieval rodeado de bosques, saltos de agua y caminos perfectos para encuentros tranquilos entre vecinos y visitantes.",

@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
-import { Card, SectionHeader } from "@/components/ui/card";
 import { CategoryPill } from "@/components/social/category-pill";
+import { JoinActivityButton } from "@/components/social/join-activity-button";
+import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
+import { SearchInput } from "@/components/ui/search-input";
 import {
   getActivities,
   getActivityCategories,
@@ -18,18 +21,21 @@ export default function ActivitiesPage() {
     <>
       <Navbar />
       <main className="page-shell py-12">
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <SectionHeader
-            eyebrow="Actividades"
-            title="Descubre planes cerca de la comunidad"
-            description="Eventos destacados, categorías visuales y actividades locales listas para inscripción mock."
-          />
-          <Link
+        <PageHeader
+          eyebrow="Actividades"
+          title="Descubre planes cerca de la comunidad"
+          description="Eventos destacados, categorías visuales y actividades locales listas para inscripción mock."
+          action={
+            <Link
             href="/activities/create"
             className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#3A7D44] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2f6738]"
-          >
-            Crear actividad
-          </Link>
+            >
+              Crear actividad
+            </Link>
+          }
+        />
+        <div className="mb-5">
+          <SearchInput label="Buscar actividades" placeholder="Buscar por actividad, pueblo o categoría" />
         </div>
         <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
           <CategoryPill category="Todas" active />
@@ -54,6 +60,9 @@ export default function ActivitiesPage() {
                   <span className="rounded-full bg-white/12 px-3 py-1">
                     {activity.spots} plazas
                   </span>
+                </div>
+                <div className="mt-5">
+                  <JoinActivityButton />
                 </div>
               </div>
             </Card>

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Badge, Card, SectionHeader } from "@/components/ui/card";
+import { FollowButton } from "@/components/social/follow-button";
 import { SocialPostCard } from "@/components/social/social-post-card";
 import { StatsCard } from "@/components/social/stats-card";
 import {
@@ -55,6 +56,9 @@ export default async function VillageDetailPage({
                 <p className="mt-3 max-w-3xl text-lg leading-8 text-white/80">
                   {village.tagline}
                 </p>
+                <div className="mt-5">
+                  <FollowButton />
+                </div>
               </div>
             </div>
             <div className="grid gap-4 p-5 md:grid-cols-4">

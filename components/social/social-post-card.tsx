@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { MockActionButton } from "@/components/social/mock-action-button";
+import { SocialPostActions } from "@/components/social/social-post-actions";
 import { UserAvatar } from "@/components/social/user-avatar";
 import { getVillageById } from "@/lib/api/villages.service";
 import type { CommunityPost } from "@/lib/types";
@@ -58,12 +58,12 @@ export function SocialPostCard({ post }: { post: CommunityPost }) {
         </div>
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#1F3D2B12] px-3 py-2">
-        <MockActionButton>Me gusta {post.likes ?? 0}</MockActionButton>
-        <MockActionButton>Comentar {post.comments ?? 0}</MockActionButton>
-        <MockActionButton>Compartir {post.shares ?? 0}</MockActionButton>
-        <MockActionButton>{post.saved ? "Guardado" : "Guardar"}</MockActionButton>
-      </div>
+      <SocialPostActions
+        comments={post.comments}
+        likes={post.likes}
+        saved={post.saved}
+        shares={post.shares}
+      />
     </Card>
   );
 }

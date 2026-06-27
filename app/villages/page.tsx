@@ -1,6 +1,8 @@
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
-import { SectionHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
+import { SearchInput } from "@/components/ui/search-input";
 import { getVillages } from "@/lib/api/villages.service";
 import { VillageCard } from "@/features/villages/village-card";
 
@@ -11,11 +13,34 @@ export default function VillagesPage() {
     <>
       <Navbar />
       <main className="page-shell py-12">
-        <SectionHeader
+        <PageHeader
           eyebrow="Pueblos"
           title="Descubre lugares con vida propia"
           description="Una selección inicial de pueblos con patrimonio, paisaje y actividades comunitarias."
         />
+        <div className="mb-5">
+          <SearchInput label="Buscar pueblos" placeholder="Buscar pueblo, provincia o interés local" />
+        </div>
+        <section className="mb-10">
+          <Card className="grid gap-5 overflow-hidden p-5 md:grid-cols-[1fr_1fr]">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.16em] text-[#3A7D44]">
+                Populares
+              </p>
+              <h2 className="mt-2 text-3xl font-black text-[#1F3D2B]">
+                Pueblos que están reuniendo comunidad
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-[#1E1E1E]/68">
+                Sigue pueblos, descubre su muro y encuentra actividades relacionadas.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {villages.slice(0, 2).map((village) => (
+                <VillageCard key={village.id} village={village} compact />
+              ))}
+            </div>
+          </Card>
+        </section>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {villages.map((village) => (
             <VillageCard key={village.id} village={village} />
