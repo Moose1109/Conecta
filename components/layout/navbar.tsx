@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { LinkButton } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/villages", label: "Pueblos" },
@@ -10,6 +14,8 @@ const links = [
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
+
   return (
     <header className="sticky top-0 z-40 border-b border-[#1F3D2B12] bg-[#FAF7F0]/94 backdrop-blur">
       <div className="page-shell flex min-h-16 items-center justify-between gap-4">
@@ -21,7 +27,15 @@ export function Navbar() {
         </Link>
         <nav className="hidden items-center gap-5 text-sm font-bold text-[#1F3D2B]/78 md:flex">
           {links.map((link) => (
-            <Link key={link.href} href={link.href} className="hover:text-[#3A7D44]">
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "rounded-full px-3 py-2 transition-colors hover:bg-[#1F3D2B0d] hover:text-[#3A7D44]",
+                (pathname === link.href || pathname.startsWith(`${link.href}/`)) &&
+                  "bg-white text-[#3A7D44] shadow-sm",
+              )}
+            >
               {link.label}
             </Link>
           ))}

@@ -12,7 +12,7 @@ export default function VillagesPage() {
   return (
     <>
       <Navbar />
-      <main className="page-shell py-12">
+      <main className="page-shell py-8 md:py-12">
         <PageHeader
           eyebrow="Pueblos"
           title="Descubre lugares con vida propia"

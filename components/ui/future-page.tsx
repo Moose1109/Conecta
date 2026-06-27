@@ -1,6 +1,8 @@
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Card } from "@/components/ui/card";
+import { ErrorState } from "@/components/ui/error-state";
+import { LoadingState } from "@/components/ui/loading-state";
 import { PageHeader } from "@/components/ui/page-header";
 
 export function FuturePage({
@@ -17,7 +19,7 @@ export function FuturePage({
   return (
     <>
       <Navbar />
-      <main className="page-shell py-10">
+      <main className="page-shell py-8 md:py-10">
         <PageHeader eyebrow={eyebrow} title={title} description={description} />
         <div className="grid gap-4 md:grid-cols-3">
           {items.map((item) => (
@@ -28,6 +30,13 @@ export function FuturePage({
               </p>
             </Card>
           ))}
+        </div>
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          <LoadingState label="Estado de carga mock" />
+          <ErrorState
+            title="Estado vacío de demo"
+            description="Cuando conectemos backend, aquí aparecerán estados reales de carga, error o datos vacíos."
+          />
         </div>
       </main>
       <Footer />

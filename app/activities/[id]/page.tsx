@@ -30,9 +30,9 @@ export default async function ActivityDetailPage({
   return (
     <>
       <Navbar />
-      <main className="page-shell grid gap-8 py-12 lg:grid-cols-[1fr_360px]">
+      <main className="page-shell grid gap-8 py-8 md:py-12 lg:grid-cols-[1fr_360px]">
         <article>
-          <div className="relative min-h-[360px] overflow-hidden rounded-3xl">
+          <div className="relative min-h-[260px] overflow-hidden rounded-3xl md:min-h-[360px]">
             <Image
               src={activity.image}
               alt={activity.title}
@@ -42,12 +42,12 @@ export default async function ActivityDetailPage({
               priority
             />
           </div>
-          <div className="mt-8">
+          <div className="mt-6 md:mt-8">
             <Badge>{activity.category}</Badge>
-            <h1 className="mt-4 text-4xl font-black text-[#1F3D2B] md:text-6xl">
+            <h1 className="mt-4 text-3xl font-black text-[#1F3D2B] sm:text-4xl md:text-6xl">
               {activity.title}
             </h1>
-            <p className="mt-5 text-lg leading-8 text-[#1E1E1E]/72">
+            <p className="mt-5 text-base leading-7 text-[#1E1E1E]/72 md:text-lg md:leading-8">
               {activity.description}
             </p>
           </div>

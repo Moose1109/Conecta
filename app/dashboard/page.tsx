@@ -23,7 +23,7 @@ export default function DashboardPage() {
   return (
     <>
       <Navbar />
-      <main className="page-shell py-8">
+      <main className="page-shell py-6 md:py-8">
         <PageHeader
           eyebrow="Inicio"
           title={`Hola, ${user.name.split(" ")[0]}`}
@@ -46,7 +46,7 @@ export default function DashboardPage() {
           }
           right={<RightRail activities={activities} villages={villages} />}
         >
-          <div className="mb-5 grid grid-cols-3 gap-3">
+          <div className="mb-5 grid gap-3 sm:grid-cols-3">
             <StatsCard label="Actividades" value={user.stats.activities} />
             <StatsCard label="Posts" value={user.stats.posts} />
             <StatsCard label="Pueblos" value={user.stats.followedVillages} />

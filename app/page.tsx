@@ -10,15 +10,15 @@ import { VillageCard } from "@/features/villages/village-card";
 const benefits = [
   {
     title: "Planes con raíz local",
-    text: "Encuentra rutas, talleres, mercados y fiestas creadas por personas del territorio.",
+    text: "Encuentra rutas, talleres, mercados y fiestas creadas por personas que conocen el territorio.",
   },
   {
     title: "Comunidad activa",
-    text: "Publicaciones vecinales, propuestas compartidas y espacios para colaborar.",
+    text: "Lee avisos vecinales, propuestas compartidas y conversaciones que nacen en cada pueblo.",
   },
   {
     title: "Pueblos visibles",
-    text: "Cada pueblo tiene su ficha, actividades relacionadas y una narrativa propia.",
+    text: "Sigue pueblos, consulta su muro, descubre sus planes y entiende qué los hace únicos.",
   },
 ];
 
@@ -46,12 +46,12 @@ export default function Home() {
       <Navbar />
       <main>
         <section className="rural-grid">
-          <div className="page-shell grid min-h-[calc(100vh-4rem)] items-center gap-10 py-12 md:grid-cols-[1.05fr_0.95fr]">
+          <div className="page-shell grid min-h-[calc(100vh-4rem)] items-center gap-8 py-10 md:grid-cols-[1.05fr_0.95fr] md:gap-10 md:py-12">
             <div>
               <p className="mb-4 inline-flex rounded-full bg-white/80 px-4 py-2 text-sm font-extrabold text-[#3A7D44] shadow-sm">
                 Red social rural, actividad local y comunidad
               </p>
-              <h1 className="max-w-3xl text-5xl font-black leading-[1.02] text-[#1F3D2B] md:text-7xl">
+              <h1 className="max-w-3xl text-4xl font-black leading-[1.04] text-[#1F3D2B] sm:text-5xl md:text-7xl">
                 La red social para pueblos que siguen latiendo.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-[#1E1E1E]/72">
@@ -62,17 +62,19 @@ export default function Home() {
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <LinkButton href="/activities">Explorar actividades</LinkButton>
                 <LinkButton href="/villages" variant="secondary">
-                  Ver pueblos
+                  Descubrir pueblos
                 </LinkButton>
-                <LinkButton href="/community" variant="ghost">
-                  Entrar al feed
+                <LinkButton href="/community" variant="secondary">
+                  Entrar a la comunidad
                 </LinkButton>
               </div>
             </div>
             <Card className="overflow-hidden p-3">
               <div className="rounded-xl bg-[#1F3D2B] p-5 text-white">
                 <p className="text-sm font-bold text-[#D9A441]">Próxima actividad</p>
-                <h2 className="mt-3 text-3xl font-black">{activities[0].title}</h2>
+                <h2 className="mt-3 text-2xl font-black sm:text-3xl">
+                  {activities[0].title}
+                </h2>
                 <p className="mt-3 text-white/72">{activities[0].description}</p>
                 <div className="mt-8 grid grid-cols-3 gap-3 text-center">
                   <div className="rounded-xl bg-white/10 p-3">
@@ -93,7 +95,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="page-shell py-16">
+        <section className="page-shell py-12 md:py-16">
           <SectionHeader
             eyebrow="Cómo funciona"
             title="De mirar a participar en tres pasos"
@@ -112,7 +114,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="page-shell py-16">
+        <section className="page-shell py-12 md:py-16">
           <SectionHeader
             eyebrow="Agenda"
             title="Descubre actividades cerca de ti"
@@ -125,7 +127,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-[#F3F4F6] py-16">
+        <section className="bg-[#F3F4F6] py-12 md:py-16">
           <div className="page-shell">
             <SectionHeader
               eyebrow="Mapa vivo"
@@ -140,7 +142,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="page-shell py-16">
+        <section className="page-shell py-12 md:py-16">
           <SectionHeader
             title="Publica, participa y comparte"
             description="El feed comunitario convierte avisos, fotos, rutas y propuestas en conversación local."
@@ -158,11 +160,11 @@ export default function Home() {
         <section className="page-shell">
           <div className="rounded-3xl bg-[#3A7D44] px-6 py-12 text-center text-white md:px-12">
             <h2 className="text-3xl font-black md:text-5xl">
-              Empieza por una actividad. Quédate por la comunidad.
+              Entra por una actividad. Vuelve por la comunidad.
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-white/76">
-              ConectaPueblos está listo para crecer con más pueblos, perfiles,
-              inscripciones reales y administración conectada a FastAPI.
+              Una demo frontend lista para enseñar cómo pueblos, personas y planes
+              pueden encontrarse en un mismo lugar.
             </p>
             <div className="mt-7">
               <div className="flex flex-col justify-center gap-3 sm:flex-row">

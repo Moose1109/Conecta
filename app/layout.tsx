@@ -8,7 +8,24 @@ export const metadata: Metadata = {
     template: "%s | ConectaPueblos",
   },
   description:
-    "Red social rural para descubrir pueblos, actividades locales y comunidad.",
+    "Red social comunitaria para descubrir pueblos, actividades locales y publicaciones vecinales.",
+  keywords: [
+    "ConectaPueblos",
+    "pueblos",
+    "red social rural",
+    "actividades locales",
+    "comunidad",
+    "eventos",
+    "vida rural",
+  ],
+  openGraph: {
+    title: "ConectaPueblos",
+    description:
+      "Descubre pueblos, participa en actividades locales y comparte comunidad.",
+    type: "website",
+    locale: "es_ES",
+    siteName: "ConectaPueblos",
+  },
 };
 
 export default function RootLayout({
@@ -21,7 +38,7 @@ export default function RootLayout({
       lang="es"
       className="h-full antialiased"
     >
-      <body className="min-h-full flex flex-col pb-20 md:pb-0">
+      <body className="min-h-full flex flex-col pb-24 md:pb-0">
         {children}
         <MobileBottomNav />
       </body>

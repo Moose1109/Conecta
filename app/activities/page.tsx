@@ -20,15 +20,15 @@ export default function ActivitiesPage() {
   return (
     <>
       <Navbar />
-      <main className="page-shell py-12">
+      <main className="page-shell py-8 md:py-12">
         <PageHeader
           eyebrow="Actividades"
           title="Descubre planes cerca de la comunidad"
           description="Eventos destacados, categorías visuales y actividades locales listas para inscripción mock."
           action={
             <Link
-            href="/activities/create"
-            className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#3A7D44] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2f6738]"
+              href="/activities/create"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#3A7D44] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2f6738]"
             >
               Crear actividad
             </Link>

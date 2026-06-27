@@ -38,9 +38,9 @@ export default async function VillageDetailPage({
     <>
       <Navbar />
       <main>
-        <section className="page-shell py-8">
+        <section className="page-shell py-6 md:py-8">
           <Card className="overflow-hidden">
-            <div className="relative min-h-[260px]">
+            <div className="relative min-h-[320px] md:min-h-[360px]">
               <Image
                 src={village.image}
                 alt={village.name}
@@ -52,8 +52,10 @@ export default async function VillageDetailPage({
               <div className="absolute inset-0 bg-gradient-to-t from-[#1F3D2B]/82 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white md:p-8">
                 <Badge className="bg-white/18 text-white">{village.region}</Badge>
-                <h1 className="mt-4 text-5xl font-black md:text-7xl">{village.name}</h1>
-                <p className="mt-3 max-w-3xl text-lg leading-8 text-white/80">
+                <h1 className="mt-4 text-4xl font-black sm:text-5xl md:text-7xl">
+                  {village.name}
+                </h1>
+                <p className="mt-3 max-w-3xl text-base leading-7 text-white/80 md:text-lg md:leading-8">
                   {village.tagline}
                 </p>
                 <div className="mt-5">
@@ -61,7 +63,7 @@ export default async function VillageDetailPage({
                 </div>
               </div>
             </div>
-            <div className="grid gap-4 p-5 md:grid-cols-4">
+            <div className="grid gap-4 p-4 sm:grid-cols-2 md:grid-cols-4 md:p-5">
               <StatsCard label="Habitantes" value={formatPopulation(village.population)} />
               <StatsCard label="Actividades" value={relatedActivities.length} />
               <StatsCard label="Posts" value={villagePosts.length} />
@@ -70,7 +72,7 @@ export default async function VillageDetailPage({
           </Card>
         </section>
 
-        <section className="page-shell py-10">
+        <section className="page-shell py-8 md:py-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
             <div>
               <SectionHeader title="Muro del pueblo" description={village.description} />
@@ -93,7 +95,7 @@ export default async function VillageDetailPage({
           </div>
         </section>
 
-        <section className="page-shell py-10">
+        <section className="page-shell py-8 md:py-10">
           <SectionHeader
             title="Actividades relacionadas"
             description={

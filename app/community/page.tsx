@@ -20,7 +20,7 @@ export default function CommunityPage() {
   return (
     <>
       <Navbar />
-      <main className="page-shell py-8">
+      <main className="page-shell py-6 md:py-8">
         <SocialLayout
           left={<SidebarNav />}
           right={<RightRail activities={activities} villages={villages} />}

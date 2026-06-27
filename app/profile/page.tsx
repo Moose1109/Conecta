@@ -21,7 +21,7 @@ export default function ProfilePage() {
   return (
     <>
       <Navbar />
-      <main className="page-shell py-8">
+      <main className="page-shell py-6 md:py-8">
         <Card className="overflow-hidden">
           <div className="relative h-48 md:h-64">
             <Image
