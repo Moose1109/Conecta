@@ -33,10 +33,10 @@ export function RightRail({
         </section>
       ) : null}
       <Card className="p-4">
-        <p className="text-sm font-black text-[#1F3D2B]">Demo sin backend</p>
+        <p className="text-sm font-black text-[#1F3D2B]">Acciones de demo</p>
         <p className="mt-2 text-sm leading-6 text-[#1E1E1E]/62">
-          Las acciones cambian visualmente en local y están listas para conectarse a
-          FastAPI en la siguiente fase.
+          Puedes probar likes, guardados, inscripciones y seguimientos con estado
+          local para sentir el flujo social.
         </p>
       </Card>
     </div>

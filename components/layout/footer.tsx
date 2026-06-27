@@ -24,7 +24,7 @@ export function Footer() {
           <div className="mt-3 grid gap-2 text-sm text-white/72">
             <Link href="/dashboard">Dashboard</Link>
             <Link href="/profile">Perfil</Link>
-            <Link href="/admin">Admin mock</Link>
+            <Link href="/admin">Panel admin</Link>
           </div>
         </div>
       </div>

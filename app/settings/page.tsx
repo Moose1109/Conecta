@@ -5,7 +5,7 @@ export default function SettingsPage() {
     <FuturePage
       eyebrow="Ajustes"
       title="Preferencias de la cuenta"
-      description="Pantalla mock para futuras preferencias de perfil, privacidad, notificaciones e intereses."
+      description="Espacio preparado para preferencias de perfil, privacidad, notificaciones e intereses."
       items={["Perfil", "Privacidad", "Notificaciones"]}
     />
   );

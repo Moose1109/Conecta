@@ -24,7 +24,7 @@ export default function ActivitiesPage() {
         <PageHeader
           eyebrow="Actividades"
           title="Descubre planes cerca de la comunidad"
-          description="Eventos destacados, categorías visuales y actividades locales listas para inscripción mock."
+          description="Eventos destacados, categorías visuales y actividades locales listas para descubrir y apuntarte."
           action={
             <Link
               href="/activities/create"

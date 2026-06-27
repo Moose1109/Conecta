@@ -13,7 +13,7 @@ export function VillageCard({
   compact?: boolean;
 }) {
   return (
-    <Card className="group h-full overflow-hidden transition-transform hover:-translate-y-1">
+    <Card className="group h-full overflow-hidden transition hover:-translate-y-1 hover:shadow-[0_18px_52px_rgba(31,61,43,0.12)]">
       <Link href={`/villages/${village.id}`} className="block">
         <div className={`relative overflow-hidden ${compact ? "aspect-[16/8]" : "aspect-[4/3]"}`}>
           <Image
@@ -23,6 +23,7 @@ export function VillageCard({
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, 33vw"
           />
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#1F3D2B]/42 to-transparent" />
         </div>
       </Link>
       <div className={compact ? "p-4" : "p-5"}>
@@ -30,7 +31,13 @@ export function VillageCard({
           {village.province} · {formatPopulation(village.population)} hab.
         </p>
         <Link href={`/villages/${village.id}`}>
-          <h3 className={compact ? "mt-2 text-xl font-black text-[#1F3D2B]" : "mt-2 text-2xl font-black text-[#1F3D2B]"}>
+          <h3
+            className={
+              compact
+                ? "mt-2 text-xl font-black leading-snug text-[#1F3D2B]"
+                : "mt-2 text-2xl font-black leading-snug text-[#1F3D2B]"
+            }
+          >
             {village.name}
           </h3>
         </Link>

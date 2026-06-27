@@ -14,8 +14,8 @@ export function SocialPostCard({ post }: { post: CommunityPost }) {
   const comments = post.commentsCount ?? post.comments;
 
   return (
-    <Card className="overflow-hidden">
-      <div className="p-4">
+    <Card className="overflow-hidden transition-shadow hover:shadow-[0_18px_52px_rgba(31,61,43,0.11)]">
+      <div className="p-4 sm:p-5">
         <div className="flex items-start gap-3">
           <UserAvatar name={post.author} initials={avatar} />
           <div className="min-w-0 flex-1">
@@ -39,7 +39,7 @@ export function SocialPostCard({ post }: { post: CommunityPost }) {
             </div>
           </div>
           <button
-            className="grid size-9 place-items-center rounded-full text-[#1F3D2B]/60 hover:bg-[#1F3D2B0d]"
+            className="grid size-9 place-items-center rounded-full text-[#1F3D2B]/60 hover:bg-[#1F3D2B0d] focus:outline-none focus:ring-4 focus:ring-[#3A7D4420]"
             type="button"
             aria-label="Más opciones"
           >
@@ -47,7 +47,9 @@ export function SocialPostCard({ post }: { post: CommunityPost }) {
           </button>
         </div>
 
-        <h3 className="mt-4 text-lg font-black text-[#1F3D2B]">{post.title}</h3>
+        <h3 className="mt-4 text-lg font-black leading-snug text-[#1F3D2B]">
+          {post.title}
+        </h3>
         <p className="mt-2 text-sm leading-6 text-[#1E1E1E]/72">{post.content}</p>
       </div>
 

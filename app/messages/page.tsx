@@ -5,7 +5,7 @@ export default function MessagesPage() {
     <FuturePage
       eyebrow="Mensajes"
       title="Conversaciones locales"
-      description="Bandeja visual mock para futuros mensajes entre vecinos, organizadores y pueblos."
+      description="Bandeja visual para futuras conversaciones entre vecinos, organizadores y pueblos."
       items={["Organizadores", "Vecinos", "Grupos de actividad"]}
     />
   );

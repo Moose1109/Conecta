@@ -16,7 +16,7 @@ export default function CreateActivityPage() {
         <SectionHeader
           eyebrow="Nueva actividad"
           title="Crea una propuesta para tu pueblo"
-          description="Formulario visual preparado para conectarlo más adelante con FastAPI. No envía datos todavía."
+          description="Diseña una actividad local con la información que necesitará la comunidad para sumarse."
         />
         <Card className="p-6 md:p-8">
           <form className="grid gap-5">
@@ -89,9 +89,9 @@ export default function CreateActivityPage() {
               />
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Button type="button">Guardar borrador mock</Button>
+              <Button type="button">Guardar borrador</Button>
               <p className="text-sm text-[#1E1E1E]/58">
-                La conexión real llegará en la fase de backend.
+                En esta demo el formulario no publica todavía.
               </p>
             </div>
           </form>

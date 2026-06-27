@@ -10,7 +10,7 @@ export default function LoginPage() {
       <main className="page-shell grid min-h-[calc(100vh-4rem)] place-items-center py-12">
         <Card className="w-full max-w-md p-7">
           <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-[#3A7D44]">
-            Acceso mock
+            Acceso demo
           </p>
           <h1 className="mt-3 text-3xl font-black text-[#1F3D2B]">Entrar</h1>
           <form className="mt-6 grid gap-5">

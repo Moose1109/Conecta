@@ -20,7 +20,7 @@ export default function AdminPage() {
       <Navbar />
       <main className="page-shell py-12">
         <SectionHeader
-          eyebrow="Admin mock"
+          eyebrow="Admin demo"
           title="Panel operativo"
           description="Vista visual sin acciones reales, lista para conectar permisos, CRUD y métricas desde backend."
         />

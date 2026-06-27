@@ -5,7 +5,7 @@ export default function NotificationsPage() {
     <FuturePage
       eyebrow="Notificaciones"
       title="Lo nuevo en tu comunidad"
-      description="Avisos mock para futuras interacciones, inscripciones, comentarios y pueblos seguidos."
+      description="Avisos preparados para interacciones, inscripciones, comentarios y pueblos seguidos."
       items={["Nuevos comentarios", "Actividades guardadas", "Pueblos que sigues"]}
     />
   );

@@ -26,15 +26,15 @@ export function FuturePage({
             <Card key={item} className="p-5">
               <p className="text-lg font-black text-[#1F3D2B]">{item}</p>
               <p className="mt-2 text-sm leading-6 text-[#1E1E1E]/62">
-                Vista mock preparada para conectarse a datos reales en una fase futura.
+                Vista preparada para crecer con datos reales en una fase futura.
               </p>
             </Card>
           ))}
         </div>
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          <LoadingState label="Estado de carga mock" />
+          <LoadingState label="Estado de carga de demostración" />
           <ErrorState
-            title="Estado vacío de demo"
+            title="Estado vacío preparado"
             description="Cuando conectemos backend, aquí aparecerán estados reales de carga, error o datos vacíos."
           />
         </div>

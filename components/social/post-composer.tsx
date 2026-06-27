@@ -5,11 +5,11 @@ import type { MockUser } from "@/lib/types";
 
 export function PostComposer({ user }: { user: MockUser }) {
   return (
-    <Card className="p-4">
+    <Card className="p-4 sm:p-5">
       <div className="flex gap-3">
         <UserAvatar name={user.name} initials={user.avatar} />
         <button
-          className="min-h-12 flex-1 rounded-full bg-[#F3F4F6] px-5 text-left text-sm font-bold text-[#1E1E1E]/48"
+          className="min-h-12 flex-1 rounded-full bg-[#F3F4F6] px-5 text-left text-sm font-bold text-[#1E1E1E]/52 transition-colors hover:bg-[#ECEFEA] focus:outline-none focus:ring-4 focus:ring-[#3A7D4420]"
           type="button"
         >
           ¿Qué está pasando en tu pueblo?

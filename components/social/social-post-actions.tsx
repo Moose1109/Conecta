@@ -54,7 +54,7 @@ export function SocialPostActions({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#1F3D2B12] px-3 py-2">
+    <div className="grid grid-cols-2 gap-2 border-t border-[#1F3D2B12] px-3 py-2 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
       <MockActionButton
         aria-pressed={liked}
         className={liked ? "bg-[#D9A44124] text-[#1F3D2B]" : undefined}
