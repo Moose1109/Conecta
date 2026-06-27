@@ -2,8 +2,8 @@ import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { LinkButton } from "@/components/ui/button";
 import { Card, SectionHeader } from "@/components/ui/card";
-import { activities } from "@/data/activities";
-import { villages } from "@/data/villages";
+import { getActivities } from "@/lib/api/activities.service";
+import { getVillages } from "@/lib/api/villages.service";
 import { ActivityCard } from "@/features/activities/activity-card";
 import { VillageCard } from "@/features/villages/village-card";
 
@@ -23,6 +23,9 @@ const benefits = [
 ];
 
 export default function Home() {
+  const activities = getActivities();
+  const villages = getVillages();
+
   return (
     <>
       <Navbar />

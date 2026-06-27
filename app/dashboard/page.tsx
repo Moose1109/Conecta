@@ -1,68 +1,79 @@
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
+import { PostComposer } from "@/components/social/post-composer";
+import { SocialPostCard } from "@/components/social/social-post-card";
+import { StatsCard } from "@/components/social/stats-card";
 import { Card, SectionHeader } from "@/components/ui/card";
-import { activities } from "@/data/activities";
-import { communityPosts } from "@/data/community";
-import { villages } from "@/data/villages";
 import { ActivityCard } from "@/features/activities/activity-card";
-import { PostCard } from "@/features/community/post-card";
 import { VillageCard } from "@/features/villages/village-card";
+import { getActivities } from "@/lib/api/activities.service";
+import { getCurrentUserMock } from "@/lib/api/auth.service";
+import { getCommunityPosts } from "@/lib/api/community.service";
+import { getVillages } from "@/lib/api/villages.service";
 
 export default function DashboardPage() {
+  const user = getCurrentUserMock();
+  const activities = getActivities();
+  const communityPosts = getCommunityPosts();
+  const villages = getVillages();
+
   return (
     <>
       <Navbar />
-      <main className="page-shell py-12">
+      <main className="page-shell py-8">
         <SectionHeader
           eyebrow="Dashboard"
-          title="Hola, Ana"
-          description="Resumen mock de tu actividad en ConectaPueblos."
+          title={`Hola, ${user.name.split(" ")[0]}`}
+          description="Tu inicio social: actividad cercana, comunidad y pueblos recomendados."
         />
-        <div className="grid gap-4 md:grid-cols-4">
-          <Metric label="Actividades inscritas" value="3" />
-          <Metric label="Pueblos guardados" value="5" />
-          <Metric label="Posts leídos" value="12" />
-          <Metric label="Rol" value="Vecina" />
+        <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)_320px]">
+          <aside className="grid content-start gap-4">
+            <div className="grid grid-cols-3 gap-3 xl:grid-cols-1">
+              <StatsCard label="Actividades" value={user.stats.activities} />
+              <StatsCard label="Posts" value={user.stats.posts} />
+              <StatsCard label="Pueblos" value={user.stats.followedVillages} />
+            </div>
+            <Card className="p-5">
+              <p className="text-sm font-black text-[#1F3D2B]">Accesos rápidos</p>
+              <div className="mt-4 grid gap-2 text-sm font-bold text-[#1F3D2B]/72">
+                <span>Crear publicación</span>
+                <span>Buscar actividad</span>
+                <span>Explorar pueblos</span>
+                <span>Editar perfil</span>
+              </div>
+            </Card>
+          </aside>
+
+          <section className="min-w-0">
+            <PostComposer user={user} />
+            <div className="mt-5 grid gap-5">
+              {communityPosts.slice(0, 3).map((post) => (
+                <SocialPostCard key={post.id} post={post} />
+              ))}
+            </div>
+          </section>
+
+          <aside className="grid content-start gap-8">
+            <section>
+              <SectionHeader title="Próximas" />
+              <div className="grid gap-5">
+                {activities.slice(0, 2).map((activity) => (
+                  <ActivityCard key={activity.id} activity={activity} />
+                ))}
+              </div>
+            </section>
+            <section>
+              <SectionHeader title="Pueblos recomendados" />
+              <div className="grid gap-5">
+                {villages.slice(0, 2).map((village) => (
+                  <VillageCard key={village.id} village={village} />
+                ))}
+              </div>
+            </section>
+          </aside>
         </div>
-
-        <section className="mt-12">
-          <SectionHeader title="Próximas actividades" />
-          <div className="grid gap-6 md:grid-cols-3">
-            {activities.slice(0, 3).map((activity) => (
-              <ActivityCard key={activity.id} activity={activity} />
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-12 grid gap-10 lg:grid-cols-[1fr_0.9fr]">
-          <div>
-            <SectionHeader title="Pueblos recomendados" />
-            <div className="grid gap-6 sm:grid-cols-2">
-              {villages.slice(0, 2).map((village) => (
-                <VillageCard key={village.id} village={village} />
-              ))}
-            </div>
-          </div>
-          <div>
-            <SectionHeader title="Publicaciones recientes" />
-            <div className="grid gap-5">
-              {communityPosts.slice(0, 2).map((post) => (
-                <PostCard key={post.id} post={post} />
-              ))}
-            </div>
-          </div>
-        </section>
       </main>
       <Footer />
     </>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <Card className="p-5">
-      <p className="text-sm font-bold text-[#1E1E1E]/52">{label}</p>
-      <p className="mt-2 text-3xl font-black text-[#1F3D2B]">{value}</p>
-    </Card>
   );
 }

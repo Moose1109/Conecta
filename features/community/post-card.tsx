@@ -1,10 +1,10 @@
 import { Badge, Card } from "@/components/ui/card";
-import { villages } from "@/data/villages";
+import { getVillageById } from "@/lib/api/villages.service";
 import { formatDate } from "@/lib/utils";
 import type { CommunityPost } from "@/lib/types";
 
 export function PostCard({ post }: { post: CommunityPost }) {
-  const village = villages.find((item) => item.id === post.villageId);
+  const village = getVillageById(post.villageId);
 
   return (
     <Card className="p-5">

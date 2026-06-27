@@ -1,10 +1,12 @@
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { SectionHeader } from "@/components/ui/card";
-import { villages } from "@/data/villages";
+import { getVillages } from "@/lib/api/villages.service";
 import { VillageCard } from "@/features/villages/village-card";
 
 export default function VillagesPage() {
+  const villages = getVillages();
+
   return (
     <>
       <Navbar />

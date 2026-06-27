@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Badge, Card } from "@/components/ui/card";
-import { activities, getActivityById } from "@/data/activities";
-import { getVillageById } from "@/data/villages";
+import { getActivities, getActivityById } from "@/lib/api/activities.service";
+import { getVillageById } from "@/lib/api/villages.service";
 import { formatDate } from "@/lib/utils";
 
 export function generateStaticParams() {
-  return activities.map((activity) => ({ id: activity.id }));
+  return getActivities().map((activity) => ({ id: activity.id }));
 }
 
 export default async function ActivityDetailPage({

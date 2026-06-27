@@ -2,9 +2,11 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { villages } from "@/data/villages";
+import { getVillages } from "@/lib/api/villages.service";
 
 export default function RegisterPage() {
+  const villages = getVillages();
+
   return (
     <>
       <Navbar />

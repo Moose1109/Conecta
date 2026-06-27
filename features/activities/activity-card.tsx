@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Badge, Card } from "@/components/ui/card";
-import { villages } from "@/data/villages";
+import { getVillageById } from "@/lib/api/villages.service";
 import { formatDate } from "@/lib/utils";
 import type { Activity } from "@/lib/types";
 
 export function ActivityCard({ activity }: { activity: Activity }) {
-  const village = villages.find((item) => item.id === activity.villageId);
+  const village = getVillageById(activity.villageId);
 
   return (
     <Link href={`/activities/${activity.id}`} className="group block h-full">
@@ -31,6 +31,14 @@ export function ActivityCard({ activity }: { activity: Activity }) {
           <p className="mt-3 line-clamp-2 text-sm leading-6 text-[#1E1E1E]/68">
             {activity.description}
           </p>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-[#1F3D2B12] pt-3">
+            <span className="text-xs font-black text-[#1F3D2B]/62">
+              {activity.spots} plazas
+            </span>
+            <span className="rounded-full bg-[#3A7D4414] px-3 py-1 text-xs font-black text-[#3A7D44]">
+              Guardar
+            </span>
+          </div>
         </div>
       </Card>
     </Link>

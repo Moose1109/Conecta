@@ -1,8 +1,8 @@
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Card, SectionHeader } from "@/components/ui/card";
-import { activities } from "@/data/activities";
-import { villages } from "@/data/villages";
+import { getActivities } from "@/lib/api/activities.service";
+import { getVillages } from "@/lib/api/villages.service";
 
 const users = [
   { name: "Ana Morales", role: "Vecina", village: "Rupit" },
@@ -12,6 +12,9 @@ const users = [
 ];
 
 export default function AdminPage() {
+  const activities = getActivities();
+  const villages = getVillages();
+
   return (
     <>
       <Navbar />

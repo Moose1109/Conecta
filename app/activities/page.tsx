@@ -1,11 +1,19 @@
 import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
-import { Badge, SectionHeader } from "@/components/ui/card";
-import { activities, activityCategories } from "@/data/activities";
+import { Card, SectionHeader } from "@/components/ui/card";
+import { CategoryPill } from "@/components/social/category-pill";
+import {
+  getActivities,
+  getActivityCategories,
+} from "@/lib/api/activities.service";
 import { ActivityCard } from "@/features/activities/activity-card";
 
 export default function ActivitiesPage() {
+  const activities = getActivities();
+  const activityCategories = getActivityCategories();
+  const featured = activities.slice(0, 2);
+
   return (
     <>
       <Navbar />
@@ -13,8 +21,8 @@ export default function ActivitiesPage() {
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <SectionHeader
             eyebrow="Actividades"
-            title="Agenda local para participar"
-            description="Filtros visuales por categoría. En esta fase son mock y no alteran el listado."
+            title="Descubre planes cerca de la comunidad"
+            description="Eventos destacados, categorías visuales y actividades locales listas para inscripción mock."
           />
           <Link
             href="/activities/create"
@@ -23,11 +31,35 @@ export default function ActivitiesPage() {
             Crear actividad
           </Link>
         </div>
-        <div className="mb-8 flex flex-wrap gap-2">
+        <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
+          <CategoryPill category="Todas" active />
           {activityCategories.map((category) => (
-            <Badge key={category}>{category}</Badge>
+            <CategoryPill key={category} category={category} />
           ))}
         </div>
+
+        <section className="mb-10 grid gap-5 lg:grid-cols-2">
+          {featured.map((activity) => (
+            <Card key={activity.id} className="overflow-hidden bg-[#1F3D2B] text-white">
+              <div className="p-6">
+                <p className="text-sm font-black text-[#D9A441]">Destacada</p>
+                <h2 className="mt-2 text-3xl font-black">{activity.title}</h2>
+                <p className="mt-3 line-clamp-2 text-sm leading-6 text-white/72">
+                  {activity.description}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-2 text-xs font-black">
+                  <span className="rounded-full bg-white/12 px-3 py-1">
+                    {activity.category}
+                  </span>
+                  <span className="rounded-full bg-white/12 px-3 py-1">
+                    {activity.spots} plazas
+                  </span>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </section>
+
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {activities.map((activity) => (
             <ActivityCard key={activity.id} activity={activity} />

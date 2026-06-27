@@ -3,13 +3,19 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Badge, Card, SectionHeader } from "@/components/ui/card";
-import { activities, getActivitiesByVillage } from "@/data/activities";
-import { getVillageById, villages } from "@/data/villages";
+import { SocialPostCard } from "@/components/social/social-post-card";
+import { StatsCard } from "@/components/social/stats-card";
+import {
+  getActivities,
+  getActivitiesByVillageId,
+} from "@/lib/api/activities.service";
+import { getPostsByVillageId } from "@/lib/api/community.service";
+import { getVillageById, getVillages } from "@/lib/api/villages.service";
 import { ActivityCard } from "@/features/activities/activity-card";
 import { formatPopulation } from "@/lib/utils";
 
 export function generateStaticParams() {
-  return villages.map((village) => ({ id: village.id }));
+  return getVillages().map((village) => ({ id: village.id }));
 }
 
 export default async function VillageDetailPage({
@@ -24,59 +30,62 @@ export default async function VillageDetailPage({
     notFound();
   }
 
-  const relatedActivities = getActivitiesByVillage(village.id);
+  const relatedActivities = getActivitiesByVillageId(village.id);
+  const villagePosts = getPostsByVillageId(village.id);
 
   return (
     <>
       <Navbar />
       <main>
-        <section className="page-shell grid gap-8 py-12 lg:grid-cols-[1fr_0.8fr]">
-          <div>
-            <Badge>{village.region}</Badge>
-            <h1 className="mt-4 text-5xl font-black text-[#1F3D2B] md:text-6xl">
-              {village.name}
-            </h1>
-            <p className="mt-5 text-xl leading-8 text-[#1E1E1E]/72">{village.tagline}</p>
-            <p className="mt-5 max-w-3xl text-base leading-8 text-[#1E1E1E]/72">
-              {village.description}
-            </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <Card className="p-5">
-                <p className="text-sm font-bold text-[#1E1E1E]/52">Provincia</p>
-                <p className="mt-2 text-xl font-black text-[#1F3D2B]">{village.province}</p>
-              </Card>
-              <Card className="p-5">
-                <p className="text-sm font-bold text-[#1E1E1E]/52">Habitantes</p>
-                <p className="mt-2 text-xl font-black text-[#1F3D2B]">
-                  {formatPopulation(village.population)}
+        <section className="page-shell py-8">
+          <Card className="overflow-hidden">
+            <div className="relative min-h-[260px]">
+              <Image
+                src={village.image}
+                alt={village.name}
+                fill
+                className="object-cover"
+                sizes="100vw"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1F3D2B]/82 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white md:p-8">
+                <Badge className="bg-white/18 text-white">{village.region}</Badge>
+                <h1 className="mt-4 text-5xl font-black md:text-7xl">{village.name}</h1>
+                <p className="mt-3 max-w-3xl text-lg leading-8 text-white/80">
+                  {village.tagline}
                 </p>
-              </Card>
-              <Card className="p-5">
-                <p className="text-sm font-bold text-[#1E1E1E]/52">Actividades</p>
-                <p className="mt-2 text-xl font-black text-[#1F3D2B]">
-                  {relatedActivities.length}
-                </p>
-              </Card>
+              </div>
             </div>
-          </div>
-          <div className="relative min-h-[360px] overflow-hidden rounded-3xl">
-            <Image
-              src={village.image}
-              alt={village.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 45vw"
-              priority
-            />
-          </div>
+            <div className="grid gap-4 p-5 md:grid-cols-4">
+              <StatsCard label="Habitantes" value={formatPopulation(village.population)} />
+              <StatsCard label="Actividades" value={relatedActivities.length} />
+              <StatsCard label="Posts" value={villagePosts.length} />
+              <StatsCard label="Provincia" value={village.province} />
+            </div>
+          </Card>
         </section>
 
         <section className="page-shell py-10">
-          <SectionHeader title="Señas del pueblo" />
-          <div className="flex flex-wrap gap-3">
-            {village.highlights.map((highlight) => (
-              <Badge key={highlight}>{highlight}</Badge>
-            ))}
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+            <div>
+              <SectionHeader title="Muro del pueblo" description={village.description} />
+              <div className="grid gap-5">
+                {villagePosts.map((post) => (
+                  <SocialPostCard key={post.id} post={post} />
+                ))}
+              </div>
+            </div>
+            <aside className="grid content-start gap-5">
+              <Card className="p-5">
+                <h2 className="text-xl font-black text-[#1F3D2B]">Señas del pueblo</h2>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {village.highlights.map((highlight) => (
+                    <Badge key={highlight}>{highlight}</Badge>
+                  ))}
+                </div>
+              </Card>
+            </aside>
           </div>
         </section>
 
@@ -90,7 +99,7 @@ export default async function VillageDetailPage({
             }
           />
           <div className="grid gap-6 md:grid-cols-3">
-            {(relatedActivities.length ? relatedActivities : activities.slice(0, 3)).map(
+            {(relatedActivities.length ? relatedActivities : getActivities().slice(0, 3)).map(
               (activity) => (
                 <ActivityCard key={activity.id} activity={activity} />
               ),
