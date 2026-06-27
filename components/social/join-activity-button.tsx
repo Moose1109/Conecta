@@ -6,11 +6,30 @@ import { cn } from "@/lib/utils";
 export function JoinActivityButton({
   className,
   compact = false,
+  storageKey,
 }: {
   className?: string;
   compact?: boolean;
+  storageKey?: string;
 }) {
-  const [joined, setJoined] = useState(false);
+  const localKey = storageKey ? `cp:activity:${storageKey}:joined` : undefined;
+  const [joined, setJoined] = useState(() => {
+    if (typeof window === "undefined" || !localKey) {
+      return false;
+    }
+
+    return window.localStorage.getItem(localKey) === "true";
+  });
+
+  function toggleJoined() {
+    setJoined((value) => {
+      const next = !value;
+      if (localKey) {
+        window.localStorage.setItem(localKey, String(next));
+      }
+      return next;
+    });
+  }
 
   return (
     <button
@@ -26,7 +45,7 @@ export function JoinActivityButton({
       type="button"
       onClick={(event) => {
         event.preventDefault();
-        setJoined((value) => !value);
+        toggleJoined();
       }}
     >
       {joined ? "Apuntado" : "Apuntarme"}

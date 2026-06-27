@@ -4,9 +4,11 @@ import { cn } from "@/lib/utils";
 export function CategoryPill({
   category,
   active,
+  onClick,
 }: {
   category: ActivityCategory | "Todas";
   active?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
@@ -17,6 +19,7 @@ export function CategoryPill({
           : "border-[#1F3D2B18] bg-white/80 text-[#1F3D2B] hover:bg-white",
       )}
       type="button"
+      onClick={onClick}
     >
       {category}
     </button>

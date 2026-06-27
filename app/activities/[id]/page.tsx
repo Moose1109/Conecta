@@ -68,7 +68,7 @@ export default async function ActivityDetailPage({
               <Info label="Plazas" value={`${activity.spots} disponibles`} />
               <Info label="Organiza" value={activity.organizer} />
             </div>
-            <JoinActivityButton className="mt-7 w-full" />
+            <JoinActivityButton className="mt-7 w-full" storageKey={activity.id} />
             <p className="mt-3 text-center text-xs text-[#1E1E1E]/52">
               Acción mock, sin inscripción real todavía.
             </p>

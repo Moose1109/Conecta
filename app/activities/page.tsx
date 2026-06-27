@@ -1,20 +1,20 @@
 import Link from "next/link";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
-import { CategoryPill } from "@/components/social/category-pill";
 import { JoinActivityButton } from "@/components/social/join-activity-button";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
-import { SearchInput } from "@/components/ui/search-input";
+import { ActivityExplorer } from "@/features/activities/activity-explorer";
 import {
   getActivities,
   getActivityCategories,
 } from "@/lib/api/activities.service";
-import { ActivityCard } from "@/features/activities/activity-card";
+import { getVillages } from "@/lib/api/villages.service";
 
 export default function ActivitiesPage() {
   const activities = getActivities();
   const activityCategories = getActivityCategories();
+  const villages = getVillages();
   const featured = activities.slice(0, 2);
 
   return (
@@ -34,16 +34,6 @@ export default function ActivitiesPage() {
             </Link>
           }
         />
-        <div className="mb-5">
-          <SearchInput label="Buscar actividades" placeholder="Buscar por actividad, pueblo o categoría" />
-        </div>
-        <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
-          <CategoryPill category="Todas" active />
-          {activityCategories.map((category) => (
-            <CategoryPill key={category} category={category} />
-          ))}
-        </div>
-
         <section className="mb-10 grid gap-5 lg:grid-cols-2">
           {featured.map((activity) => (
             <Card key={activity.id} className="overflow-hidden bg-[#1F3D2B] text-white">
@@ -62,18 +52,18 @@ export default function ActivitiesPage() {
                   </span>
                 </div>
                 <div className="mt-5">
-                  <JoinActivityButton />
+                  <JoinActivityButton storageKey={activity.id} />
                 </div>
               </div>
             </Card>
           ))}
         </section>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {activities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} />
-          ))}
-        </div>
+        <ActivityExplorer
+          activities={activities}
+          categories={activityCategories}
+          villages={villages}
+        />
       </main>
       <Footer />
     </>

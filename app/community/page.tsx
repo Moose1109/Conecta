@@ -3,12 +3,9 @@ import { Navbar } from "@/components/layout/navbar";
 import { RightRail } from "@/components/layout/right-rail";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { SocialLayout } from "@/components/layout/social-layout";
-import { EmptyState } from "@/components/social/empty-state";
-import { PostComposer } from "@/components/social/post-composer";
-import { SocialPostCard } from "@/components/social/social-post-card";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
-import { SearchInput } from "@/components/ui/search-input";
+import { CommunityFeed } from "@/features/community/community-feed";
 import { getActivities } from "@/lib/api/activities.service";
 import { getCurrentUserMock } from "@/lib/api/auth.service";
 import { getCommunityPosts } from "@/lib/api/community.service";
@@ -33,22 +30,8 @@ export default function CommunityPage() {
             title="Tu plaza digital"
             description="Publicaciones, avisos y momentos compartidos por vecinos y visitantes."
           />
-          <div className="mb-5">
-            <SearchInput
-              label="Buscar publicaciones"
-              placeholder="Buscar posts, pueblos o personas"
-            />
-          </div>
-          <div className="grid gap-5">
-            <PostComposer user={user} />
-            {posts.length ? (
-              posts.map((post) => <SocialPostCard key={post.id} post={post} />)
-            ) : (
-              <EmptyState
-                title="Todavía no hay publicaciones"
-                description="Cuando la comunidad comparta avisos, fotos o propuestas, aparecerán aquí."
-              />
-            )}
+          <CommunityFeed posts={posts} user={user} villages={villages} />
+          <div className="mt-5 grid gap-5">
             <Card className="p-4">
               <p className="text-sm font-black text-[#1F3D2B]">Tendencias locales</p>
               <div className="mt-3 flex flex-wrap gap-2">

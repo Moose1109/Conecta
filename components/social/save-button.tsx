@@ -6,11 +6,30 @@ import { cn } from "@/lib/utils";
 export function SaveButton({
   initialSaved = false,
   compact = false,
+  storageKey,
 }: {
   initialSaved?: boolean;
   compact?: boolean;
+  storageKey?: string;
 }) {
-  const [saved, setSaved] = useState(initialSaved);
+  const localKey = storageKey ? `cp:item:${storageKey}:saved` : undefined;
+  const [saved, setSaved] = useState(() => {
+    if (typeof window === "undefined" || !localKey) {
+      return initialSaved;
+    }
+
+    return window.localStorage.getItem(localKey) === "true" || initialSaved;
+  });
+
+  function toggleSaved() {
+    setSaved((value) => {
+      const next = !value;
+      if (localKey) {
+        window.localStorage.setItem(localKey, String(next));
+      }
+      return next;
+    });
+  }
 
   return (
     <button
@@ -25,7 +44,7 @@ export function SaveButton({
       type="button"
       onClick={(event) => {
         event.preventDefault();
-        setSaved((value) => !value);
+        toggleSaved();
       }}
     >
       {saved ? "Guardado" : "Guardar"}

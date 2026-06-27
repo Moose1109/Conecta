@@ -22,6 +22,21 @@ const benefits = [
   },
 ];
 
+const howItWorks = [
+  {
+    title: "Descubre",
+    text: "Explora pueblos, actividades y publicaciones locales desde un feed social pensado para moverse fácil.",
+  },
+  {
+    title: "Participa",
+    text: "Apúntate a planes, guarda eventos, sigue pueblos y encuentra personas con intereses cercanos.",
+  },
+  {
+    title: "Comparte",
+    text: "Publica avisos, fotos, propuestas y necesidades comunitarias para activar la vida del pueblo.",
+  },
+];
+
 export default function Home() {
   const activities = getActivities();
   const villages = getVillages();
@@ -34,19 +49,23 @@ export default function Home() {
           <div className="page-shell grid min-h-[calc(100vh-4rem)] items-center gap-10 py-12 md:grid-cols-[1.05fr_0.95fr]">
             <div>
               <p className="mb-4 inline-flex rounded-full bg-white/80 px-4 py-2 text-sm font-extrabold text-[#3A7D44] shadow-sm">
-                Vida rural, actividad local y comunidad
+                Red social rural, actividad local y comunidad
               </p>
               <h1 className="max-w-3xl text-5xl font-black leading-[1.02] text-[#1F3D2B] md:text-7xl">
-                Conecta con pueblos que siguen latiendo.
+                La red social para pueblos que siguen latiendo.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-[#1E1E1E]/72">
-                Descubre actividades, conoce historias locales, apúntate a planes
-                comunitarios y participa en la vida de pueblos con identidad propia.
+                ConectaPueblos reúne actividades, publicaciones, perfiles y pueblos
+                en una experiencia social cálida para descubrir, participar y compartir
+                vida local.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <LinkButton href="/activities">Explorar actividades</LinkButton>
-                <LinkButton href="/community" variant="secondary">
-                  Unirme a la comunidad
+                <LinkButton href="/villages" variant="secondary">
+                  Ver pueblos
+                </LinkButton>
+                <LinkButton href="/community" variant="ghost">
+                  Entrar al feed
                 </LinkButton>
               </div>
             </div>
@@ -76,8 +95,27 @@ export default function Home() {
 
         <section className="page-shell py-16">
           <SectionHeader
+            eyebrow="Cómo funciona"
+            title="De mirar a participar en tres pasos"
+            description="Una experiencia social para pasar del descubrimiento a la acción comunitaria."
+          />
+          <div className="grid gap-5 md:grid-cols-3">
+            {howItWorks.map((item, index) => (
+              <Card key={item.title} className="p-6">
+                <span className="grid size-10 place-items-center rounded-2xl bg-[#D9A441] text-sm font-black text-[#1F3D2B]">
+                  {index + 1}
+                </span>
+                <h3 className="mt-4 text-xl font-black text-[#1F3D2B]">{item.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-[#1E1E1E]/70">{item.text}</p>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section className="page-shell py-16">
+          <SectionHeader
             eyebrow="Agenda"
-            title="Actividades destacadas"
+            title="Descubre actividades cerca de ti"
             description="Planes próximos para entrar en contacto con cada territorio desde la experiencia."
           />
           <div className="grid gap-6 md:grid-cols-3">
@@ -91,7 +129,7 @@ export default function Home() {
           <div className="page-shell">
             <SectionHeader
               eyebrow="Mapa vivo"
-              title="Pueblos destacados"
+              title="Conecta con tu pueblo"
               description="Lugares pequeños con patrimonio, naturaleza y personas organizando cosas bonitas."
             />
             <div className="grid gap-6 md:grid-cols-3">
@@ -103,7 +141,10 @@ export default function Home() {
         </section>
 
         <section className="page-shell py-16">
-          <SectionHeader title="Una plataforma para participar, no solo mirar" />
+          <SectionHeader
+            title="Publica, participa y comparte"
+            description="El feed comunitario convierte avisos, fotos, rutas y propuestas en conversación local."
+          />
           <div className="grid gap-5 md:grid-cols-3">
             {benefits.map((benefit) => (
               <Card key={benefit.title} className="p-6">
@@ -124,9 +165,17 @@ export default function Home() {
               inscripciones reales y administración conectada a FastAPI.
             </p>
             <div className="mt-7">
-              <LinkButton href="/register" variant="secondary">
-                Crear cuenta mock
-              </LinkButton>
+              <div className="flex flex-col justify-center gap-3 sm:flex-row">
+                <LinkButton href="/activities" variant="secondary">
+                  Ver actividades
+                </LinkButton>
+                <LinkButton href="/villages" variant="secondary">
+                  Explorar pueblos
+                </LinkButton>
+                <LinkButton href="/community" variant="secondary">
+                  Abrir comunidad
+                </LinkButton>
+              </div>
             </div>
           </div>
         </section>

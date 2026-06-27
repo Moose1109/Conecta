@@ -7,12 +7,31 @@ export function FollowButton({
   label = "Seguir pueblo",
   followedLabel = "Siguiendo",
   className,
+  storageKey,
 }: {
   label?: string;
   followedLabel?: string;
   className?: string;
+  storageKey?: string;
 }) {
-  const [following, setFollowing] = useState(false);
+  const localKey = storageKey ? `cp:village:${storageKey}:following` : undefined;
+  const [following, setFollowing] = useState(() => {
+    if (typeof window === "undefined" || !localKey) {
+      return false;
+    }
+
+    return window.localStorage.getItem(localKey) === "true";
+  });
+
+  function toggleFollowing() {
+    setFollowing((value) => {
+      const next = !value;
+      if (localKey) {
+        window.localStorage.setItem(localKey, String(next));
+      }
+      return next;
+    });
+  }
 
   return (
     <button
@@ -27,7 +46,7 @@ export function FollowButton({
       type="button"
       onClick={(event) => {
         event.preventDefault();
-        setFollowing((value) => !value);
+        toggleFollowing();
       }}
     >
       {following ? followedLabel : label}

@@ -38,13 +38,16 @@ export type CommunityPost = {
   title: string;
   content: string;
   villageId: string;
+  villageName?: string;
   author: string;
   authorHandle?: string;
   avatar?: string;
+  authorAvatar?: string;
   image?: string;
   date: string;
   likes?: number;
   comments?: number;
+  commentsCount?: number;
   shares?: number;
   saved?: boolean;
 };

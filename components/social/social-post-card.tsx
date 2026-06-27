@@ -9,12 +9,15 @@ import { formatDate } from "@/lib/utils";
 
 export function SocialPostCard({ post }: { post: CommunityPost }) {
   const village = getVillageById(post.villageId);
+  const villageName = post.villageName ?? village?.name;
+  const avatar = post.authorAvatar ?? post.avatar;
+  const comments = post.commentsCount ?? post.comments;
 
   return (
     <Card className="overflow-hidden">
       <div className="p-4">
         <div className="flex items-start gap-3">
-          <UserAvatar name={post.author} initials={post.avatar} />
+          <UserAvatar name={post.author} initials={avatar} />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <p className="font-black text-[#1F3D2B]">{post.author}</p>
@@ -27,8 +30,10 @@ export function SocialPostCard({ post }: { post: CommunityPost }) {
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-[#1E1E1E]/52">
               {village ? (
                 <Link href={`/villages/${village.id}`} className="text-[#3A7D44]">
-                  {village.name}
+                  {villageName}
                 </Link>
+              ) : villageName ? (
+                <span className="text-[#3A7D44]">{villageName}</span>
               ) : null}
               <span>{formatDate(post.date)}</span>
             </div>
@@ -59,10 +64,11 @@ export function SocialPostCard({ post }: { post: CommunityPost }) {
       ) : null}
 
       <SocialPostActions
-        comments={post.comments}
+        comments={comments}
         likes={post.likes}
         saved={post.saved}
         shares={post.shares}
+        storageKey={post.id}
       />
     </Card>
   );

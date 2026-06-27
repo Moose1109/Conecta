@@ -96,6 +96,62 @@ export const activities: Activity[] = [
       "Recorrido interpretado por la historia urbana de Albarracín, con cierre en un taller artesano.",
     organizer: "Guías de Albarracín",
   },
+  {
+    id: "pedalada-familiar-besalu",
+    title: "Pedalada familiar por la ribera",
+    category: "Deporte",
+    villageId: "besalu",
+    date: "2026-08-22",
+    time: "10:00",
+    spots: 35,
+    image:
+      "https://images.unsplash.com/photo-1541625602330-2277a4c46182?auto=format&fit=crop&w=1200&q=80",
+    description:
+      "Salida en bici de ritmo suave por caminos cercanos al río, con parada para almuerzo y juegos para familias.",
+    organizer: "Club Ciclista Besalú",
+  },
+  {
+    id: "fiesta-plaza-rupit",
+    title: "Fiesta local en la plaza",
+    category: "Fiestas locales",
+    villageId: "rupit",
+    date: "2026-08-29",
+    time: "19:30",
+    spots: 90,
+    image:
+      "https://images.unsplash.com/photo-1505236858219-8359eb29e329?auto=format&fit=crop&w=1200&q=80",
+    description:
+      "Tarde de baile, cena popular y música de pequeño formato para reunir a vecinos, visitantes y familias.",
+    organizer: "Comissió de Festes de Rupit",
+  },
+  {
+    id: "cata-priorat-siurana",
+    title: "Cata de productos del Priorat",
+    category: "Gastronomía",
+    villageId: "siurana",
+    date: "2026-09-05",
+    time: "18:30",
+    spots: 28,
+    image:
+      "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1200&q=80",
+    description:
+      "Encuentro con productores cercanos para probar aceite, vino, frutos secos y recetas sencillas de temporada.",
+    organizer: "Productors del Priorat",
+  },
+  {
+    id: "limpieza-rio-alquezar",
+    title: "Cuidemos el río Vero",
+    category: "Voluntariado",
+    villageId: "alquezar",
+    date: "2026-09-12",
+    time: "09:00",
+    spots: 32,
+    image:
+      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
+    description:
+      "Jornada comunitaria de limpieza suave del entorno del río, con guantes, bolsas y cierre con vermut local.",
+    organizer: "Amigos del Vero",
+  },
 ];
 
 export function getActivityById(id: string) {

@@ -1,9 +1,13 @@
 export function SearchInput({
   placeholder = "Buscar en ConectaPueblos",
   label = "Buscar",
+  value,
+  onChange,
 }: {
   placeholder?: string;
   label?: string;
+  value?: string;
+  onChange?: (value: string) => void;
 }) {
   return (
     <label className="block">
@@ -11,6 +15,8 @@ export function SearchInput({
       <input
         aria-label={label}
         className="min-h-12 w-full rounded-full border border-[#1F3D2B18] bg-white/88 px-5 text-sm font-bold text-[#1F3D2B] outline-none transition focus:border-[#3A7D44] focus:ring-4 focus:ring-[#3A7D4420]"
+        value={value}
+        onChange={(event) => onChange?.(event.target.value)}
         placeholder={placeholder}
         type="search"
       />

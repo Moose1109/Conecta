@@ -57,7 +57,7 @@ export default async function VillageDetailPage({
                   {village.tagline}
                 </p>
                 <div className="mt-5">
-                  <FollowButton />
+                  <FollowButton storageKey={village.id} />
                 </div>
               </div>
             </div>

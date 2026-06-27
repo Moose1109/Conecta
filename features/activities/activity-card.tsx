@@ -59,8 +59,10 @@ export function ActivityCard({
             {activity.spots} plazas
           </span>
           <div className="flex gap-2">
-            {!compact ? <SaveButton compact /> : null}
-            <JoinActivityButton compact />
+            {!compact ? (
+              <SaveButton compact initialSaved={false} storageKey={`activity:${activity.id}`} />
+            ) : null}
+            <JoinActivityButton compact storageKey={activity.id} />
           </div>
         </div>
       </div>
