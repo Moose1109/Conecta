@@ -5,9 +5,9 @@ import { Card, SectionHeader } from "@/components/ui/card";
 import { getActivityCategories } from "@/lib/api/activities.service";
 import { getVillages } from "@/lib/api/villages.service";
 
-export default function CreateActivityPage() {
+export default async function CreateActivityPage() {
   const activityCategories = getActivityCategories();
-  const villages = getVillages();
+  const villages = await getVillages();
 
   return (
     <>

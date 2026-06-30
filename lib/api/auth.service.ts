@@ -1,4 +1,20 @@
 import type { MockUser } from "@/lib/types";
+import { apiFetch } from "@/lib/api/client";
+
+export type RegisterPayload = {
+  name: string;
+  username?: string;
+  email: string;
+  password: string;
+  favorite_village_id?: string;
+};
+
+export type AuthResponse = {
+  access_token?: string;
+  token?: string;
+  token_type?: string;
+  user?: unknown;
+};
 
 export const currentUserMock: MockUser = {
   id: "ana-morales",
@@ -29,4 +45,11 @@ export function registerMock() {
 
 export function getCurrentUserMock() {
   return currentUserMock;
+}
+
+export async function registerUser(payload: RegisterPayload) {
+  return apiFetch<AuthResponse>("/api/v1/auth/register", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 }

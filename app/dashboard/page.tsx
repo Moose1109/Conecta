@@ -14,11 +14,13 @@ import { getCurrentUserMock } from "@/lib/api/auth.service";
 import { getCommunityPosts } from "@/lib/api/community.service";
 import { getVillages } from "@/lib/api/villages.service";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const user = getCurrentUserMock();
-  const activities = getActivities();
-  const communityPosts = getCommunityPosts();
-  const villages = getVillages();
+  const [activities, communityPosts, villages] = await Promise.all([
+    getActivities(),
+    getCommunityPosts(),
+    getVillages(),
+  ]);
 
   return (
     <>

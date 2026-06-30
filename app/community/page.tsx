@@ -11,11 +11,13 @@ import { getCurrentUserMock } from "@/lib/api/auth.service";
 import { getCommunityPosts } from "@/lib/api/community.service";
 import { getVillages } from "@/lib/api/villages.service";
 
-export default function CommunityPage() {
-  const posts = getCommunityPosts();
+export default async function CommunityPage() {
   const user = getCurrentUserMock();
-  const villages = getVillages();
-  const activities = getActivities();
+  const [posts, villages, activities] = await Promise.all([
+    getCommunityPosts(),
+    getVillages(),
+    getActivities(),
+  ]);
 
   return (
     <>

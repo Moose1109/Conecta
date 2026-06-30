@@ -15,8 +15,9 @@ import { getVillageById, getVillages } from "@/lib/api/villages.service";
 import { ActivityCard } from "@/features/activities/activity-card";
 import { formatPopulation } from "@/lib/utils";
 
-export function generateStaticParams() {
-  return getVillages().map((village) => ({ id: village.id }));
+export async function generateStaticParams() {
+  const villages = await getVillages();
+  return villages.map((village) => ({ id: village.id }));
 }
 
 export default async function VillageDetailPage({
@@ -25,14 +26,17 @@ export default async function VillageDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const village = getVillageById(id);
+  const village = await getVillageById(id);
 
   if (!village) {
     notFound();
   }
 
-  const relatedActivities = getActivitiesByVillageId(village.id);
-  const villagePosts = getPostsByVillageId(village.id);
+  const [relatedActivities, villagePosts, fallbackActivities] = await Promise.all([
+    getActivitiesByVillageId(village.id),
+    getPostsByVillageId(village.id),
+    getActivities(),
+  ]);
 
   return (
     <>
@@ -105,7 +109,7 @@ export default async function VillageDetailPage({
             }
           />
           <div className="grid gap-6 md:grid-cols-3">
-            {(relatedActivities.length ? relatedActivities : getActivities().slice(0, 3)).map(
+            {(relatedActivities.length ? relatedActivities : fallbackActivities.slice(0, 3)).map(
               (activity) => (
                 <ActivityCard key={activity.id} activity={activity} />
               ),

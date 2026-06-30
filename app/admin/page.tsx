@@ -11,9 +11,8 @@ const users = [
   { name: "Laia Pujol", role: "Vecina", village: "Siurana" },
 ];
 
-export default function AdminPage() {
-  const activities = getActivities();
-  const villages = getVillages();
+export default async function AdminPage() {
+  const [activities, villages] = await Promise.all([getActivities(), getVillages()]);
 
   return (
     <>

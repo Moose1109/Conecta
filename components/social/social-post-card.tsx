@@ -3,13 +3,11 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { SocialPostActions } from "@/components/social/social-post-actions";
 import { UserAvatar } from "@/components/social/user-avatar";
-import { getVillageById } from "@/lib/api/villages.service";
 import type { CommunityPost } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
 export function SocialPostCard({ post }: { post: CommunityPost }) {
-  const village = getVillageById(post.villageId);
-  const villageName = post.villageName ?? village?.name;
+  const villageName = post.villageName ?? post.villageId;
   const avatar = post.authorAvatar ?? post.avatar;
   const comments = post.commentsCount ?? post.comments;
 
@@ -28,8 +26,8 @@ export function SocialPostCard({ post }: { post: CommunityPost }) {
               ) : null}
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-[#1E1E1E]/52">
-              {village ? (
-                <Link href={`/villages/${village.id}`} className="text-[#3A7D44]">
+              {post.villageId ? (
+                <Link href={`/villages/${post.villageId}`} className="text-[#3A7D44]">
                   {villageName}
                 </Link>
               ) : villageName ? (

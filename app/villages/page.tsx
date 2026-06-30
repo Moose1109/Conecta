@@ -6,8 +6,8 @@ import { getVillages } from "@/lib/api/villages.service";
 import { VillageCard } from "@/features/villages/village-card";
 import { VillageExplorer } from "@/features/villages/village-explorer";
 
-export default function VillagesPage() {
-  const villages = getVillages();
+export default async function VillagesPage() {
+  const villages = await getVillages();
 
   return (
     <>

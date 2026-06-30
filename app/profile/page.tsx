@@ -12,11 +12,15 @@ import { getCurrentUserMock } from "@/lib/api/auth.service";
 import { getCommunityPosts } from "@/lib/api/community.service";
 import { getVillageById } from "@/lib/api/villages.service";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
   const user = getCurrentUserMock();
-  const favoriteVillage = getVillageById(user.favoriteVillageId);
-  const joinedActivities = getActivities().slice(0, 2);
-  const userPosts = getCommunityPosts().slice(0, 2);
+  const [favoriteVillage, activities, communityPosts] = await Promise.all([
+    getVillageById(user.favoriteVillageId),
+    getActivities(),
+    getCommunityPosts(),
+  ]);
+  const joinedActivities = activities.slice(0, 2);
+  const userPosts = communityPosts.slice(0, 2);
 
   return (
     <>

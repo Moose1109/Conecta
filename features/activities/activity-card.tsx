@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Badge, Card } from "@/components/ui/card";
 import { JoinActivityButton } from "@/components/social/join-activity-button";
 import { SaveButton } from "@/components/social/save-button";
-import { getVillageById } from "@/lib/api/villages.service";
 import { formatDate } from "@/lib/utils";
 import type { Activity } from "@/lib/types";
 
@@ -14,8 +13,6 @@ export function ActivityCard({
   activity: Activity;
   compact?: boolean;
 }) {
-  const village = getVillageById(activity.villageId);
-
   return (
     <Card className="group h-full overflow-hidden transition hover:-translate-y-1 hover:shadow-[0_18px_52px_rgba(31,61,43,0.12)]">
       <Link href={`/activities/${activity.id}`} className="block">
@@ -48,7 +45,8 @@ export function ActivityCard({
           </h3>
         </Link>
         <p className="mt-2 text-sm font-bold text-[#3A7D44]">
-          {village?.name} · {formatDate(activity.date)} · {activity.time}
+          {activity.villageName ?? activity.villageId} · {formatDate(activity.date)} ·{" "}
+          {activity.time}
         </p>
         <p
           className={`mt-3 text-sm leading-6 text-[#1E1E1E]/68 ${compact ? "line-clamp-1" : "line-clamp-2"}`}

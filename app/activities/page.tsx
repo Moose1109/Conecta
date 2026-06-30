@@ -11,10 +11,9 @@ import {
 } from "@/lib/api/activities.service";
 import { getVillages } from "@/lib/api/villages.service";
 
-export default function ActivitiesPage() {
-  const activities = getActivities();
+export default async function ActivitiesPage() {
+  const [activities, villages] = await Promise.all([getActivities(), getVillages()]);
   const activityCategories = getActivityCategories();
-  const villages = getVillages();
   const featured = activities.slice(0, 2);
 
   return (
@@ -36,7 +35,7 @@ export default function ActivitiesPage() {
         />
         <section className="mb-10 grid gap-5 lg:grid-cols-2">
           {featured.map((activity) => (
-            <Card key={activity.id} className="overflow-hidden bg-[#1F3D2B] text-white">
+            <Card key={activity.slug} className="overflow-hidden bg-[#1F3D2B] text-white">
               <div className="p-6">
                 <p className="text-sm font-black text-[#D9A441]">Destacada</p>
                 <h2 className="mt-2 text-3xl font-black">{activity.title}</h2>
@@ -52,7 +51,7 @@ export default function ActivitiesPage() {
                   </span>
                 </div>
                 <div className="mt-5">
-                  <JoinActivityButton storageKey={activity.id} />
+                  <JoinActivityButton storageKey={activity.slug} />
                 </div>
               </div>
             </Card>

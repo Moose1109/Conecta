@@ -9,8 +9,9 @@ import { getActivities, getActivityById } from "@/lib/api/activities.service";
 import { getVillageById } from "@/lib/api/villages.service";
 import { formatDate } from "@/lib/utils";
 
-export function generateStaticParams() {
-  return getActivities().map((activity) => ({ id: activity.id }));
+export async function generateStaticParams() {
+  const activities = await getActivities();
+  return activities.map((activity) => ({ id: activity.id }));
 }
 
 export default async function ActivityDetailPage({
@@ -19,13 +20,13 @@ export default async function ActivityDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const activity = getActivityById(id);
+  const activity = await getActivityById(id);
 
   if (!activity) {
     notFound();
   }
 
-  const village = getVillageById(activity.villageId);
+  const village = await getVillageById(activity.villageId);
 
   return (
     <>

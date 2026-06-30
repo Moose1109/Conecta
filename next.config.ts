@@ -9,6 +9,22 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/pueblos/:path*",
+        destination: "/villages/:path*",
+      },
+      {
+        source: "/actividades/:path*",
+        destination: "/activities/:path*",
+      },
+      {
+        source: "/comunidad/:path*",
+        destination: "/community/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

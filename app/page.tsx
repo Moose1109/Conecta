@@ -37,9 +37,8 @@ const howItWorks = [
   },
 ];
 
-export default function Home() {
-  const activities = getActivities();
-  const villages = getVillages();
+export default async function Home() {
+  const [activities, villages] = await Promise.all([getActivities(), getVillages()]);
 
   return (
     <>
