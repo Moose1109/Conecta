@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { LoginForm } from "@/features/auth/login-form";
 
 export default function LoginPage() {
   return (
@@ -13,23 +13,7 @@ export default function LoginPage() {
             Acceso demo
           </p>
           <h1 className="mt-3 text-3xl font-black text-[#1F3D2B]">Entrar</h1>
-          <form className="mt-6 grid gap-5">
-            <div>
-              <label className="label" htmlFor="email">
-                Email
-              </label>
-              <input className="field" id="email" placeholder="ana@pueblo.es" type="email" />
-            </div>
-            <div>
-              <label className="label" htmlFor="password">
-                Contraseña
-              </label>
-              <input className="field" id="password" placeholder="••••••••" type="password" />
-            </div>
-            <Button type="button" className="w-full">
-              Entrar al dashboard
-            </Button>
-          </form>
+          <LoginForm />
           <p className="mt-5 text-center text-sm text-[#1E1E1E]/62">
             ¿Aún no tienes cuenta?{" "}
             <Link href="/register" className="font-bold text-[#3A7D44]">

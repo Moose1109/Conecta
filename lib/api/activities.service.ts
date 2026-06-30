@@ -176,3 +176,43 @@ export async function getActivitiesByVillageId(villageId: string) {
 export function getActivityCategories() {
   return activityCategories;
 }
+
+export async function joinActivity(idOrSlug: string, token: string) {
+  return apiFetch<{ joined?: boolean; message?: string }>(
+    `/api/v1/activities/${encodeURIComponent(idOrSlug)}/join`,
+    {
+      method: "POST",
+      token,
+    },
+  );
+}
+
+export async function leaveActivity(idOrSlug: string, token: string) {
+  return apiFetch<{ joined?: boolean; message?: string }>(
+    `/api/v1/activities/${encodeURIComponent(idOrSlug)}/join`,
+    {
+      method: "DELETE",
+      token,
+    },
+  );
+}
+
+export async function saveActivity(idOrSlug: string, token: string) {
+  return apiFetch<{ saved?: boolean; message?: string }>(
+    `/api/v1/activities/${encodeURIComponent(idOrSlug)}/save`,
+    {
+      method: "POST",
+      token,
+    },
+  );
+}
+
+export async function unsaveActivity(idOrSlug: string, token: string) {
+  return apiFetch<{ saved?: boolean; message?: string }>(
+    `/api/v1/activities/${encodeURIComponent(idOrSlug)}/save`,
+    {
+      method: "DELETE",
+      token,
+    },
+  );
+}

@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import { Navbar } from "@/components/layout/navbar";
 import { Card } from "@/components/ui/card";
 import { RegisterForm } from "@/features/auth/register-form";
 import { getVillages } from "@/lib/api/villages.service";
 
 export default async function RegisterPage() {
+  await connection();
+
   const villages = await getVillages();
 
   return (

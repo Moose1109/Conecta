@@ -65,8 +65,9 @@ export function SocialPostCard({ post }: { post: CommunityPost }) {
 
       <SocialPostActions
         comments={comments}
+        initiallyLiked={post.isLiked}
         likes={post.likes}
-        saved={post.saved}
+        saved={post.isSaved ?? post.saved}
         shares={post.shares}
         storageKey={post.id}
       />

@@ -119,3 +119,23 @@ export async function getVillageById(id: string) {
     return getMockVillageById(id);
   }
 }
+
+export async function followVillage(idOrSlug: string, token: string) {
+  return apiFetch<{ followed?: boolean; message?: string }>(
+    `/api/v1/villages/${encodeURIComponent(idOrSlug)}/follow`,
+    {
+      method: "POST",
+      token,
+    },
+  );
+}
+
+export async function unfollowVillage(idOrSlug: string, token: string) {
+  return apiFetch<{ followed?: boolean; message?: string }>(
+    `/api/v1/villages/${encodeURIComponent(idOrSlug)}/follow`,
+    {
+      method: "DELETE",
+      token,
+    },
+  );
+}

@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,8 @@ import { getActivityCategories } from "@/lib/api/activities.service";
 import { getVillages } from "@/lib/api/villages.service";
 
 export default async function CreateActivityPage() {
+  await connection();
+
   const activityCategories = getActivityCategories();
   const villages = await getVillages();
 

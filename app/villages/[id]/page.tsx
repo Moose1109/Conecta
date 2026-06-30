@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
@@ -11,20 +12,17 @@ import {
   getActivitiesByVillageId,
 } from "@/lib/api/activities.service";
 import { getPostsByVillageId } from "@/lib/api/community.service";
-import { getVillageById, getVillages } from "@/lib/api/villages.service";
+import { getVillageById } from "@/lib/api/villages.service";
 import { ActivityCard } from "@/features/activities/activity-card";
 import { formatPopulation } from "@/lib/utils";
-
-export async function generateStaticParams() {
-  const villages = await getVillages();
-  return villages.map((village) => ({ id: village.id }));
-}
 
 export default async function VillageDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await connection();
+
   const { id } = await params;
   const village = await getVillageById(id);
 
@@ -63,7 +61,7 @@ export default async function VillageDetailPage({
                   {village.tagline}
                 </p>
                 <div className="mt-5">
-                  <FollowButton storageKey={village.id} />
+                  <FollowButton initialFollowing={village.isFollowing} storageKey={village.id} />
                 </div>
               </div>
             </div>

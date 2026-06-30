@@ -1,36 +1,68 @@
 "use client";
 
 import { useState } from "react";
+import { followVillage, unfollowVillage } from "@/lib/api/villages.service";
+import { getStoredToken } from "@/lib/api/session";
 import { cn } from "@/lib/utils";
 
 export function FollowButton({
   label = "Seguir pueblo",
   followedLabel = "Siguiendo",
   className,
+  initialFollowing = false,
   storageKey,
 }: {
   label?: string;
   followedLabel?: string;
   className?: string;
+  initialFollowing?: boolean;
   storageKey?: string;
 }) {
   const localKey = storageKey ? `cp:village:${storageKey}:following` : undefined;
   const [following, setFollowing] = useState(() => {
     if (typeof window === "undefined" || !localKey) {
-      return false;
+      return initialFollowing;
     }
 
-    return window.localStorage.getItem(localKey) === "true";
+    return window.localStorage.getItem(localKey) === "true" || initialFollowing;
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function toggleFollowing() {
-    setFollowing((value) => {
-      const next = !value;
-      if (localKey) {
-        window.localStorage.setItem(localKey, String(next));
+  async function toggleFollowing() {
+    const next = !following;
+    const token = getStoredToken();
+
+    setFollowing(next);
+
+    if (localKey) {
+      window.localStorage.setItem(localKey, String(next));
+    }
+
+    if (!storageKey || !token) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const response = next
+        ? await followVillage(storageKey, token)
+        : await unfollowVillage(storageKey, token);
+
+      if (typeof response.followed === "boolean") {
+        setFollowing(response.followed);
+        if (localKey) {
+          window.localStorage.setItem(localKey, String(response.followed));
+        }
       }
-      return next;
-    });
+    } catch (error) {
+      console.error("Error updating village follow:", error);
+      setFollowing(!next);
+      if (localKey) {
+        window.localStorage.setItem(localKey, String(!next));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -43,6 +75,7 @@ export function FollowButton({
           : "bg-white text-[#1F3D2B] hover:bg-[#F3F4F6]",
         className,
       )}
+      disabled={isSubmitting}
       type="button"
       onClick={(event) => {
         event.preventDefault();

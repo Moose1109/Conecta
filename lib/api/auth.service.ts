@@ -9,6 +9,11 @@ export type RegisterPayload = {
   favorite_village_id?: string;
 };
 
+export type LoginPayload = {
+  email: string;
+  password: string;
+};
+
 export type AuthResponse = {
   access_token?: string;
   token?: string;
@@ -51,5 +56,18 @@ export async function registerUser(payload: RegisterPayload) {
   return apiFetch<AuthResponse>("/api/v1/auth/register", {
     method: "POST",
     body: JSON.stringify(payload),
+  });
+}
+
+export async function loginUser(payload: LoginPayload) {
+  return apiFetch<AuthResponse>("/api/v1/auth/login", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getCurrentUser(token: string) {
+  return apiFetch<AuthResponse["user"]>("/api/v1/auth/me", {
+    token,
   });
 }

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { registerUser, type RegisterPayload } from "@/lib/api/auth.service";
+import { saveSession } from "@/lib/api/session";
 import type { Village } from "@/lib/types";
 
 export function RegisterForm({ villages }: { villages: Village[] }) {
@@ -48,13 +49,7 @@ export function RegisterForm({ villages }: { villages: Village[] }) {
 
       const token = response.access_token ?? response.token;
 
-      if (token) {
-        window.localStorage.setItem("conecta-pueblos-token", token);
-      }
-
-      if (response.user) {
-        window.localStorage.setItem("conecta-pueblos-user", JSON.stringify(response.user));
-      }
+      saveSession({ token, user: response.user });
 
       if (token) {
         router.push("/dashboard");

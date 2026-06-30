@@ -1,24 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
+import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import { JoinActivityButton } from "@/components/social/join-activity-button";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Badge, Card } from "@/components/ui/card";
-import { getActivities, getActivityById } from "@/lib/api/activities.service";
+import { getActivityById } from "@/lib/api/activities.service";
 import { getVillageById } from "@/lib/api/villages.service";
 import { formatDate } from "@/lib/utils";
-
-export async function generateStaticParams() {
-  const activities = await getActivities();
-  return activities.map((activity) => ({ id: activity.id }));
-}
 
 export default async function ActivityDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await connection();
+
   const { id } = await params;
   const activity = await getActivityById(id);
 
@@ -69,9 +67,13 @@ export default async function ActivityDetailPage({
               <Info label="Plazas" value={`${activity.spots} disponibles`} />
               <Info label="Organiza" value={activity.organizer} />
             </div>
-            <JoinActivityButton className="mt-7 w-full" storageKey={activity.id} />
+            <JoinActivityButton
+              className="mt-7 w-full"
+              initialJoined={activity.isJoined}
+              storageKey={activity.id}
+            />
             <p className="mt-3 text-center text-xs text-[#1E1E1E]/52">
-              Acción de demo guardada en este navegador.
+              Acción guardada en tu cuenta si has iniciado sesión.
             </p>
           </Card>
         </aside>

@@ -1,34 +1,66 @@
 "use client";
 
 import { useState } from "react";
+import { joinActivity, leaveActivity } from "@/lib/api/activities.service";
+import { getStoredToken } from "@/lib/api/session";
 import { cn } from "@/lib/utils";
 
 export function JoinActivityButton({
   className,
   compact = false,
+  initialJoined = false,
   storageKey,
 }: {
   className?: string;
   compact?: boolean;
+  initialJoined?: boolean;
   storageKey?: string;
 }) {
   const localKey = storageKey ? `cp:activity:${storageKey}:joined` : undefined;
   const [joined, setJoined] = useState(() => {
     if (typeof window === "undefined" || !localKey) {
-      return false;
+      return initialJoined;
     }
 
-    return window.localStorage.getItem(localKey) === "true";
+    return window.localStorage.getItem(localKey) === "true" || initialJoined;
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function toggleJoined() {
-    setJoined((value) => {
-      const next = !value;
-      if (localKey) {
-        window.localStorage.setItem(localKey, String(next));
+  async function toggleJoined() {
+    const next = !joined;
+    const token = getStoredToken();
+
+    setJoined(next);
+
+    if (localKey) {
+      window.localStorage.setItem(localKey, String(next));
+    }
+
+    if (!storageKey || !token) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const response = next
+        ? await joinActivity(storageKey, token)
+        : await leaveActivity(storageKey, token);
+
+      if (typeof response.joined === "boolean") {
+        setJoined(response.joined);
+        if (localKey) {
+          window.localStorage.setItem(localKey, String(response.joined));
+        }
       }
-      return next;
-    });
+    } catch (error) {
+      console.error("Error updating activity join:", error);
+      setJoined(!next);
+      if (localKey) {
+        window.localStorage.setItem(localKey, String(!next));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -42,6 +74,7 @@ export function JoinActivityButton({
         compact && "min-h-9 px-4 text-xs",
         className,
       )}
+      disabled={isSubmitting}
       type="button"
       onClick={(event) => {
         event.preventDefault();

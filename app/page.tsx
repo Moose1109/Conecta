@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { LinkButton } from "@/components/ui/button";
@@ -38,6 +39,8 @@ const howItWorks = [
 ];
 
 export default async function Home() {
+  await connection();
+
   const [activities, villages] = await Promise.all([getActivities(), getVillages()]);
 
   return (

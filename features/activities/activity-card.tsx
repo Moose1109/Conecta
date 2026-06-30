@@ -59,9 +59,13 @@ export function ActivityCard({
           </span>
           <div className="flex gap-2">
             {!compact ? (
-              <SaveButton compact initialSaved={false} storageKey={`activity:${activity.id}`} />
+              <SaveButton
+                compact
+                initialSaved={activity.isSaved}
+                storageKey={`activity:${activity.id}`}
+              />
             ) : null}
-            <JoinActivityButton compact storageKey={activity.id} />
+            <JoinActivityButton compact initialJoined={activity.isJoined} storageKey={activity.id} />
           </div>
         </div>
       </div>

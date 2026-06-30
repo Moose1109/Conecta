@@ -165,3 +165,43 @@ export async function getPostsByVillageId(villageId: string) {
   const posts = await getCommunityPosts();
   return posts.filter((post) => post.villageId === villageId);
 }
+
+export async function likePost(id: string, token: string) {
+  return apiFetch<{ liked?: boolean; message?: string }>(
+    `/api/v1/posts/${encodeURIComponent(id)}/like`,
+    {
+      method: "POST",
+      token,
+    },
+  );
+}
+
+export async function unlikePost(id: string, token: string) {
+  return apiFetch<{ liked?: boolean; message?: string }>(
+    `/api/v1/posts/${encodeURIComponent(id)}/like`,
+    {
+      method: "DELETE",
+      token,
+    },
+  );
+}
+
+export async function savePost(id: string, token: string) {
+  return apiFetch<{ saved?: boolean; message?: string }>(
+    `/api/v1/posts/${encodeURIComponent(id)}/save`,
+    {
+      method: "POST",
+      token,
+    },
+  );
+}
+
+export async function unsavePost(id: string, token: string) {
+  return apiFetch<{ saved?: boolean; message?: string }>(
+    `/api/v1/posts/${encodeURIComponent(id)}/save`,
+    {
+      method: "DELETE",
+      token,
+    },
+  );
+}

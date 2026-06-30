@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Card, SectionHeader } from "@/components/ui/card";
@@ -12,6 +13,8 @@ const users = [
 ];
 
 export default async function AdminPage() {
+  await connection();
+
   const [activities, villages] = await Promise.all([getActivities(), getVillages()]);
 
   return (

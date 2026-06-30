@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { RightRail } from "@/components/layout/right-rail";
@@ -15,6 +16,8 @@ import { getCommunityPosts } from "@/lib/api/community.service";
 import { getVillages } from "@/lib/api/villages.service";
 
 export default async function DashboardPage() {
+  await connection();
+
   const user = getCurrentUserMock();
   const [activities, communityPosts, villages] = await Promise.all([
     getActivities(),

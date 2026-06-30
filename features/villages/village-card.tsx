@@ -45,7 +45,11 @@ export function VillageCard({
           {village.tagline}
         </p>
         <div className="mt-4">
-          <FollowButton className="min-h-9 px-3 text-xs" storageKey={village.id} />
+          <FollowButton
+            className="min-h-9 px-3 text-xs"
+            initialFollowing={village.isFollowing}
+            storageKey={village.id}
+          />
         </div>
       </div>
     </Card>

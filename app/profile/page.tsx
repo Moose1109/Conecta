@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { connection } from "next/server";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { SocialPostCard } from "@/components/social/social-post-card";
@@ -13,6 +14,8 @@ import { getCommunityPosts } from "@/lib/api/community.service";
 import { getVillageById } from "@/lib/api/villages.service";
 
 export default async function ProfilePage() {
+  await connection();
+
   const user = getCurrentUserMock();
   const [favoriteVillage, activities, communityPosts] = await Promise.all([
     getVillageById(user.favoriteVillageId),

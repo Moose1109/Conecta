@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Card } from "@/components/ui/card";
@@ -7,6 +8,8 @@ import { VillageCard } from "@/features/villages/village-card";
 import { VillageExplorer } from "@/features/villages/village-explorer";
 
 export default async function VillagesPage() {
+  await connection();
+
   const villages = await getVillages();
 
   return (

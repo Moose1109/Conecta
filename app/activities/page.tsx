@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { JoinActivityButton } from "@/components/social/join-activity-button";
@@ -12,6 +13,8 @@ import {
 import { getVillages } from "@/lib/api/villages.service";
 
 export default async function ActivitiesPage() {
+  await connection();
+
   const [activities, villages] = await Promise.all([getActivities(), getVillages()]);
   const activityCategories = getActivityCategories();
   const featured = activities.slice(0, 2);
@@ -51,7 +54,10 @@ export default async function ActivitiesPage() {
                   </span>
                 </div>
                 <div className="mt-5">
-                  <JoinActivityButton storageKey={activity.slug} />
+                  <JoinActivityButton
+                    initialJoined={activity.isJoined}
+                    storageKey={activity.slug ?? activity.id}
+                  />
                 </div>
               </div>
             </Card>
