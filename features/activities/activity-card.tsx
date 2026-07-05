@@ -34,7 +34,9 @@ export function ActivityCard({
           )}
           <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#1F3D2B]/42 to-transparent" />
           <div className="absolute left-4 top-4">
-            <Badge>{activity.category}</Badge>
+            <Badge className="border border-black/10 bg-white/90 text-[#1F3D2B] shadow-[0_4px_12px_rgba(0,0,0,0.12)]">
+              {activity.category}
+            </Badge>
           </div>
         </div>
       </Link>

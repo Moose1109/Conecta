@@ -3,7 +3,7 @@ import { LinkButton } from "@/components/ui/button";
 
 export function ErrorState({
   title = "No hemos podido cargar esto",
-  description = "Prueba de nuevo o vuelve al inicio social.",
+  description = "Prueba de nuevo o vuelve al inicio.",
 }: {
   title?: string;
   description?: string;
@@ -15,7 +15,7 @@ export function ErrorState({
         {description}
       </p>
       <div className="mt-6">
-        <LinkButton href="/dashboard">Volver al inicio</LinkButton>
+        <LinkButton href="/">Volver al inicio</LinkButton>
       </div>
     </Card>
   );

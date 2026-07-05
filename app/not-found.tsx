@@ -17,10 +17,10 @@ export default function NotFound() {
           </h1>
           <p className="mx-auto mt-4 max-w-lg text-base leading-7 text-[#1E1E1E]/68">
             La página que buscas no existe o se ha movido. Puedes volver al inicio
-            social y seguir explorando actividades, publicaciones y pueblos.
+            y seguir explorando actividades, publicaciones y pueblos.
           </p>
           <div className="mt-7">
-            <LinkButton href="/dashboard">Volver al inicio</LinkButton>
+            <LinkButton href="/">Volver al inicio</LinkButton>
           </div>
         </Card>
       </main>

@@ -3,6 +3,7 @@ import { FuturePage } from "@/components/ui/future-page";
 export default function NotificationsPage() {
   return (
     <FuturePage
+      authMessage="Para ver tus notificaciones necesitas iniciar sesión."
       eyebrow="Notificaciones"
       title="Lo nuevo en tu comunidad"
       description="Avisos preparados para interacciones, inscripciones, comentarios y pueblos seguidos."

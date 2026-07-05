@@ -2,15 +2,9 @@ import { connection } from "next/server";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Card, SectionHeader } from "@/components/ui/card";
+import { AuthGate } from "@/features/auth/auth-gate";
 import { getActivities } from "@/lib/api/activities.service";
 import { getVillages } from "@/lib/api/villages.service";
-
-const users = [
-  { name: "Ana Morales", role: "Vecina", village: "Rupit" },
-  { name: "Marta Soler", role: "Organizadora", village: "Rupit" },
-  { name: "Joan Ferrer", role: "Moderador", village: "Besalú" },
-  { name: "Laia Pujol", role: "Vecina", village: "Siurana" },
-];
 
 export default async function AdminPage() {
   await connection();
@@ -21,41 +15,42 @@ export default async function AdminPage() {
     <>
       <Navbar />
       <main className="page-shell py-12">
-        <SectionHeader
-          eyebrow="Admin demo"
-          title="Panel operativo"
-          description="Vista visual sin acciones reales, lista para conectar permisos, CRUD y métricas desde backend."
-        />
-        <div className="grid gap-4 md:grid-cols-4">
-          <Metric label="Pueblos" value={String(villages.length)} />
-          <Metric label="Actividades" value={String(activities.length)} />
-          <Metric label="Usuarios" value={String(users.length)} />
-          <Metric label="Inscripciones" value="128" />
-        </div>
+        <AuthGate adminOnly message="Para acceder al panel admin necesitas iniciar sesión.">
+          <SectionHeader
+            eyebrow="Admin"
+            title="Panel operativo"
+            description="Vista de administración protegida para usuarios admin o superadmin."
+          />
+          <div className="grid gap-4 md:grid-cols-4">
+            <Metric label="Pueblos" value={String(villages.length)} />
+            <Metric label="Actividades" value={String(activities.length)} />
+            <Metric label="Usuarios" value="Pendiente" />
+            <Metric label="Inscripciones" value="Pendiente" />
+          </div>
 
-        <div className="mt-10 grid gap-6 xl:grid-cols-3">
-          <AdminList
-            title="Pueblos"
-            rows={villages.map((village) => ({
-              main: village.name,
-              meta: `${village.province} · ${village.population} hab.`,
-            }))}
-          />
-          <AdminList
-            title="Actividades"
-            rows={activities.map((activity) => ({
-              main: activity.title,
-              meta: `${activity.category} · ${activity.spots} plazas`,
-            }))}
-          />
-          <AdminList
-            title="Usuarios"
-            rows={users.map((user) => ({
-              main: user.name,
-              meta: `${user.role} · ${user.village}`,
-            }))}
-          />
-        </div>
+          <div className="mt-10 grid gap-6 xl:grid-cols-3">
+            <AdminList
+              title="Pueblos"
+              rows={villages.map((village) => ({
+                main: village.name,
+                meta: `${village.province} · ${village.population} hab.`,
+              }))}
+            />
+            <AdminList
+              title="Actividades"
+              rows={activities.map((activity) => ({
+                main: activity.title,
+                meta: `${activity.category} · ${activity.spots} plazas`,
+              }))}
+            />
+            <Card className="p-5">
+              <h2 className="text-xl font-black text-[#1F3D2B]">Usuarios</h2>
+              <p className="mt-3 text-sm leading-6 text-[#1E1E1E]/68">
+                Pendiente de endpoint backend real para listar usuarios desde el panel.
+              </p>
+            </Card>
+          </div>
+        </AuthGate>
       </main>
       <Footer />
     </>

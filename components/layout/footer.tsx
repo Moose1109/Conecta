@@ -1,6 +1,22 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { isAdminUser } from "@/features/auth/roles";
+import { useAuthSession } from "@/features/auth/use-auth-session";
+import { clearSession } from "@/lib/api/session";
 
 export function Footer() {
+  const router = useRouter();
+  const { token, user } = useAuthSession();
+  const isAuthenticated = Boolean(token);
+
+  function handleLogout() {
+    clearSession();
+    router.refresh();
+    router.push("/");
+  }
+
   return (
     <footer className="mt-20 border-t border-[#1F3D2B12] bg-[#1F3D2B] text-white">
       <div className="page-shell grid gap-8 py-10 md:grid-cols-[1.4fr_1fr_1fr]">
@@ -22,9 +38,21 @@ export function Footer() {
         <div>
           <p className="font-bold">Cuenta</p>
           <div className="mt-3 grid gap-2 text-sm text-white/72">
-            <Link href="/dashboard">Dashboard</Link>
-            <Link href="/profile">Perfil</Link>
-            <Link href="/admin">Panel admin</Link>
+            {isAuthenticated ? (
+              <>
+                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/profile">Perfil</Link>
+                {isAdminUser(user) ? <Link href="/admin">Panel admin</Link> : null}
+                <button className="text-left hover:text-white" type="button" onClick={handleLogout}>
+                  Cerrar sesión
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login">Entrar</Link>
+                <Link href="/register">Crear cuenta</Link>
+              </>
+            )}
           </div>
         </div>
       </div>

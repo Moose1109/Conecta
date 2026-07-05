@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { connection } from "next/server";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
@@ -6,6 +5,7 @@ import { JoinActivityButton } from "@/components/social/join-activity-button";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { ActivityExplorer } from "@/features/activities/activity-explorer";
+import { ProtectedLinkButton } from "@/features/auth/protected-link-button";
 import {
   getActivities,
   getActivityCategories,
@@ -28,12 +28,13 @@ export default async function ActivitiesPage() {
           title="Descubre planes cerca de la comunidad"
           description="Eventos destacados, categorías visuales y actividades locales listas para descubrir y apuntarte."
           action={
-            <Link
+            <ProtectedLinkButton
               href="/activities/create"
+              message="Para crear una actividad necesitas iniciar sesión."
               className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#3A7D44] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2f6738]"
             >
               Crear actividad
-            </Link>
+            </ProtectedLinkButton>
           }
         />
         <section className="mb-10 grid gap-5 lg:grid-cols-2">

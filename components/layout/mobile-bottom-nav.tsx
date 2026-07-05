@@ -2,9 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isAdminUser } from "@/features/auth/roles";
+import { useAuthSession } from "@/features/auth/use-auth-session";
 import { cn } from "@/lib/utils";
 
-const items = [
+const publicItems = [
+  { href: "/", label: "Inicio", icon: "In" },
+  { href: "/community", label: "Comunidad", icon: "Co" },
+  { href: "/activities", label: "Planes", icon: "Pl" },
+  { href: "/villages", label: "Pueblos", icon: "Pu" },
+  { href: "/login", label: "Entrar", icon: "En" },
+];
+
+const userItems = [
   { href: "/dashboard", label: "Inicio", icon: "In" },
   { href: "/community", label: "Comunidad", icon: "Co" },
   { href: "/activities", label: "Planes", icon: "Pl" },
@@ -14,16 +24,27 @@ const items = [
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const { token, user } = useAuthSession();
+  const isAuthenticated = Boolean(token);
+  const items = isAuthenticated
+    ? [
+        ...userItems,
+        ...(isAdminUser(user) ? [{ href: "/admin", label: "Admin", icon: "Ad" }] : []),
+      ]
+    : publicItems;
 
   return (
     <nav
       aria-label="Navegación principal mobile"
       className="fixed inset-x-0 bottom-0 z-50 border-t border-[#1F3D2B14] bg-[#FAF7F0]/96 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-12px_30px_rgba(31,61,43,0.10)] backdrop-blur md:hidden"
     >
-      <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
+      <div
+        className="mx-auto grid max-w-md gap-1"
+        style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+      >
         {items.map((item) => {
           const active =
-            pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
+            pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
 
           return (
             <Link

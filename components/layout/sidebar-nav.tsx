@@ -3,18 +3,31 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Card } from "@/components/ui/card";
+import { isAdminUser } from "@/features/auth/roles";
+import { useAuthSession } from "@/features/auth/use-auth-session";
 import { cn } from "@/lib/utils";
 
-const links = [
-  { href: "/dashboard", label: "Inicio social" },
+const publicLinks = [
   { href: "/community", label: "Comunidad" },
   { href: "/activities", label: "Actividades" },
   { href: "/villages", label: "Pueblos" },
+];
+
+const userLinks = [
+  { href: "/dashboard", label: "Inicio social" },
+  ...publicLinks,
   { href: "/profile", label: "Perfil" },
 ];
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const { token, user } = useAuthSession();
+  const links = token
+    ? [
+        ...userLinks,
+        ...(isAdminUser(user) ? [{ href: "/admin", label: "Panel admin" }] : []),
+      ]
+    : publicLinks;
 
   return (
     <Card className="sticky top-24 p-4">

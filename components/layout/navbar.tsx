@@ -5,21 +5,28 @@ import { usePathname, useRouter } from "next/navigation";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { LinkButton } from "@/components/ui/button";
 import { UserAvatar } from "@/components/social/user-avatar";
+import { isAdminUser } from "@/features/auth/roles";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { clearSession } from "@/lib/api/session";
 import { cn } from "@/lib/utils";
 
-const links = [
+const publicLinks = [
+  { href: "/", label: "Inicio" },
   { href: "/villages", label: "Pueblos" },
   { href: "/activities", label: "Actividades" },
   { href: "/community", label: "Comunidad" },
-  { href: "/dashboard", label: "Dashboard" },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useAuthSession();
+  const { token, user } = useAuthSession();
+  const isAuthenticated = Boolean(token);
+  const links = [
+    ...publicLinks,
+    ...(isAuthenticated ? [{ href: "/dashboard", label: "Dashboard" }] : []),
+    ...(isAuthenticated && isAdminUser(user) ? [{ href: "/admin", label: "Panel admin" }] : []),
+  ];
 
   function handleLogout() {
     clearSession();
@@ -43,7 +50,8 @@ export function Navbar() {
               href={link.href}
               className={cn(
                 "rounded-full px-3 py-2 transition-colors hover:bg-[#1F3D2B0d] hover:text-[#3A7D44]",
-                (pathname === link.href || pathname.startsWith(`${link.href}/`)) &&
+                (pathname === link.href ||
+                  (link.href !== "/" && pathname.startsWith(`${link.href}/`))) &&
                   "bg-white text-[#3A7D44] shadow-sm",
               )}
             >
@@ -52,19 +60,19 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <NotificationBell />
-          {user ? (
+          {isAuthenticated ? <NotificationBell /> : null}
+          {isAuthenticated ? (
             <div className="flex items-center gap-2">
               <Link
                 href="/profile"
                 className="hidden items-center gap-2 rounded-full px-2 py-1 text-sm font-bold text-[#1F3D2B] hover:bg-[#1F3D2B0d] sm:inline-flex"
               >
                 <UserAvatar
-                  name={user.name}
-                  imageUrl={user.avatarUrl}
+                  name={user?.name ?? "Usuario"}
+                  imageUrl={user?.avatarUrl}
                   className="size-9 text-xs ring-0"
                 />
-                <span className="max-w-32 truncate">{user.username ?? user.name}</span>
+                <span className="max-w-32 truncate">{user?.username ?? user?.name ?? "Perfil"}</span>
               </Link>
               <button
                 className="rounded-full px-3 py-2 text-sm font-bold text-[#1F3D2B] hover:bg-[#1F3D2B0d]"
