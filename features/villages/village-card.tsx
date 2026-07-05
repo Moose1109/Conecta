@@ -16,13 +16,19 @@ export function VillageCard({
     <Card className="group h-full overflow-hidden transition hover:-translate-y-1 hover:shadow-[0_18px_52px_rgba(31,61,43,0.12)]">
       <Link href={`/villages/${village.id}`} className="block">
         <div className={`relative overflow-hidden ${compact ? "aspect-[16/8]" : "aspect-[4/3]"}`}>
-          <Image
-            src={village.image}
-            alt={village.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, 33vw"
-          />
+          {village.image ? (
+            <Image
+              src={village.image}
+              alt={village.name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, 33vw"
+            />
+          ) : (
+            <div className="grid h-full place-items-center bg-[#1F3D2B] px-5 text-center text-white">
+              <span className="text-sm font-black text-[#D9A441]">Sin imagen</span>
+            </div>
+          )}
           <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#1F3D2B]/42 to-transparent" />
         </div>
       </Link>

@@ -1,11 +1,16 @@
-import {
-  activities,
-  activityCategories,
-  getActivitiesByVillage,
-  getActivityById as getMockActivityById,
-} from "@/data/activities";
 import { apiFetch, hasApiBaseUrl } from "@/lib/api/client";
 import type { Activity, ActivityCategory } from "@/lib/types";
+
+const activityCategories: ActivityCategory[] = [
+  "Naturaleza",
+  "Cultura",
+  "Gastronomía",
+  "Deporte",
+  "Música",
+  "Voluntariado",
+  "Mercados",
+  "Fiestas locales",
+];
 
 type ApiActivity = {
   id?: unknown;
@@ -27,9 +32,11 @@ type ApiActivity = {
   organizer_name?: unknown;
   image?: unknown;
   image_url?: unknown;
+  banner_url?: unknown;
   starts_at?: unknown;
   date?: unknown;
   time?: unknown;
+  location?: unknown;
   capacity?: unknown;
   spots?: unknown;
   spots_left?: unknown;
@@ -42,12 +49,31 @@ type ApiActivity = {
 
 type ApiCollection<T> = T[] | { items?: T[] };
 
+export type CreateActivityPayload = {
+  slug: string;
+  title: string;
+  description: string;
+  village_id: string;
+  category: string;
+  image_url?: string | null;
+  starts_at: string;
+  ends_at?: string | null;
+  capacity: number;
+  location: string;
+  status?: string;
+};
+
 function collectionItems<T>(response: ApiCollection<T>): T[] {
   return Array.isArray(response) ? response : response.items ?? [];
 }
 
 function asString(value: unknown, fallback = "") {
   return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+function asOptionalString(value: unknown) {
+  const text = asString(value);
+  return text || undefined;
 }
 
 function asNumber(value: unknown, fallback = 0) {
@@ -96,8 +122,6 @@ function adaptActivity(activity: ApiActivity): Activity | null {
     return null;
   }
 
-  const mockActivity = activities.find((item) => item.id === id || item.id === slug);
-
   return {
     id,
     slug: slug || undefined,
@@ -109,16 +133,20 @@ function adaptActivity(activity: ApiActivity): Activity | null {
     time,
     spots: asNumber(
       activity.spots_left,
-      asNumber(activity.capacity, asNumber(activity.spots, mockActivity?.spots)),
+      asNumber(activity.capacity, asNumber(activity.spots)),
     ),
     spotsLeft: asNumber(activity.spots_left) || undefined,
     participantsCount: asNumber(activity.participants_count) || undefined,
-    image: asString(activity.image_url, asString(activity.image, mockActivity?.image)),
-    description: asString(activity.description, mockActivity?.description),
+    image:
+      asOptionalString(activity.image_url) ??
+      asOptionalString(activity.image),
+    bannerImage: asOptionalString(activity.banner_url),
+    description: asString(activity.description),
     organizer: asString(
       activity.organizer?.name,
-      asString(activity.organizer_name, mockActivity?.organizer),
+      asString(activity.organizer_name, "Organizador"),
     ),
+    location: asOptionalString(activity.location),
     isJoined: asBoolean(activity.is_joined) ?? asBoolean(activity.joined_by_me),
     isSaved: asBoolean(activity.is_saved) ?? asBoolean(activity.saved_by_me),
   };
@@ -138,7 +166,7 @@ function adaptActivities(response: ApiCollection<ApiActivity>) {
 
 export async function getActivities() {
   if (!hasApiBaseUrl()) {
-    return activities;
+    return [];
   }
 
   try {
@@ -146,27 +174,27 @@ export async function getActivities() {
     return adaptActivities(response);
   } catch (error) {
     console.error("Error loading activities from API:", error);
-    return activities;
+    return [];
   }
 }
 
 export async function getActivityById(id: string) {
   if (!hasApiBaseUrl()) {
-    return getMockActivityById(id);
+    return undefined;
   }
 
   try {
     const response = await apiFetch<ApiActivity>(`/api/v1/activities/${encodeURIComponent(id)}`);
-    return adaptActivity(response) ?? getMockActivityById(id);
+    return adaptActivity(response) ?? undefined;
   } catch (error) {
     console.error("Error loading activity from API:", error);
-    return getMockActivityById(id);
+    return undefined;
   }
 }
 
 export async function getActivitiesByVillageId(villageId: string) {
   if (!hasApiBaseUrl()) {
-    return getActivitiesByVillage(villageId);
+    return [];
   }
 
   const allActivities = await getActivities();
@@ -185,6 +213,14 @@ export async function joinActivity(idOrSlug: string, token: string) {
       token,
     },
   );
+}
+
+export async function createActivity(payload: CreateActivityPayload, token: string) {
+  return apiFetch<ApiActivity>("/api/v1/activities", {
+    method: "POST",
+    token,
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function leaveActivity(idOrSlug: string, token: string) {

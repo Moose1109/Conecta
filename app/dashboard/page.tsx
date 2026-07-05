@@ -8,17 +8,15 @@ import { PostComposer } from "@/components/social/post-composer";
 import { SocialPostCard } from "@/components/social/social-post-card";
 import { StatsCard } from "@/components/social/stats-card";
 import { Card } from "@/components/ui/card";
-import { PageHeader } from "@/components/ui/page-header";
 import { ActivityCard } from "@/features/activities/activity-card";
+import { DashboardHeader } from "@/features/auth/dashboard-header";
 import { getActivities } from "@/lib/api/activities.service";
-import { getCurrentUserMock } from "@/lib/api/auth.service";
 import { getCommunityPosts } from "@/lib/api/community.service";
 import { getVillages } from "@/lib/api/villages.service";
 
 export default async function DashboardPage() {
   await connection();
 
-  const user = getCurrentUserMock();
   const [activities, communityPosts, villages] = await Promise.all([
     getActivities(),
     getCommunityPosts(),
@@ -29,11 +27,7 @@ export default async function DashboardPage() {
     <>
       <Navbar />
       <main className="page-shell py-6 md:py-8">
-        <PageHeader
-          eyebrow="Inicio"
-          title={`Hola, ${user.name.split(" ")[0]}`}
-          description="Tu home social para descubrir planes, publicaciones y pueblos que se están moviendo."
-        />
+        <DashboardHeader />
         <SocialLayout
           left={
             <div className="grid gap-4">
@@ -52,11 +46,11 @@ export default async function DashboardPage() {
           right={<RightRail activities={activities} villages={villages} />}
         >
           <div className="mb-5 grid gap-3 sm:grid-cols-3">
-            <StatsCard label="Actividades" value={user.stats.activities} />
-            <StatsCard label="Posts" value={user.stats.posts} />
-            <StatsCard label="Pueblos" value={user.stats.followedVillages} />
+            <StatsCard label="Actividades disponibles" value={activities.length} />
+            <StatsCard label="Publicaciones" value={communityPosts.length} />
+            <StatsCard label="Pueblos activos" value={villages.length} />
           </div>
-          <PostComposer user={user} />
+          <PostComposer user={{ name: "Usuario", avatar: "CP" }} villages={villages} />
           <section className="mt-5 grid gap-5">
             {communityPosts.slice(0, 3).map((post) => (
               <SocialPostCard key={post.id} post={post} />

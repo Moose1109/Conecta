@@ -5,7 +5,13 @@ import { EmptyState } from "@/components/social/empty-state";
 import { PostComposer } from "@/components/social/post-composer";
 import { SocialPostCard } from "@/components/social/social-post-card";
 import { SearchInput } from "@/components/ui/search-input";
-import type { CommunityPost, MockUser, Village } from "@/lib/types";
+import type { AuthUser, CommunityPost, Village } from "@/lib/types";
+
+type ComposerUser = {
+  name: string;
+  avatar?: string;
+  avatarUrl?: AuthUser["avatarUrl"];
+};
 
 export function CommunityFeed({
   posts,
@@ -13,7 +19,7 @@ export function CommunityFeed({
   villages,
 }: {
   posts: CommunityPost[];
-  user: MockUser;
+  user: ComposerUser;
   villages: Village[];
 }) {
   const [query, setQuery] = useState("");
@@ -25,8 +31,10 @@ export function CommunityFeed({
       return posts;
     }
 
-    return posts.filter((post) => {
-      const village = villages.find((item) => item.id === post.villageId);
+      return posts.filter((post) => {
+      const village = post.villageId
+        ? villages.find((item) => item.id === post.villageId)
+        : undefined;
       const searchable = [
         post.title,
         post.content,
@@ -55,7 +63,7 @@ export function CommunityFeed({
         />
       </div>
       <div className="grid gap-5">
-        <PostComposer user={user} />
+        <PostComposer user={user} villages={villages} />
         {filtered.length ? (
           filtered.map((post) => <SocialPostCard key={post.id} post={post} />)
         ) : (

@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export function MockActionButton({
+export function SocialActionButton({
   children,
   className,
   ...props

@@ -38,7 +38,7 @@ export default async function ActivitiesPage() {
         />
         <section className="mb-10 grid gap-5 lg:grid-cols-2">
           {featured.map((activity) => (
-            <Card key={activity.slug} className="overflow-hidden bg-[#1F3D2B] text-white">
+            <Card key={activity.id} className="overflow-hidden bg-[#1F3D2B] text-white">
               <div className="p-6">
                 <p className="text-sm font-black text-[#D9A441]">Destacada</p>
                 <h2 className="mt-2 text-3xl font-black">{activity.title}</h2>
@@ -56,7 +56,7 @@ export default async function ActivitiesPage() {
                 <div className="mt-5">
                   <JoinActivityButton
                     initialJoined={activity.isJoined}
-                    storageKey={activity.slug ?? activity.id}
+                    storageKey={activity.id}
                   />
                 </div>
               </div>

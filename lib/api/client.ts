@@ -1,4 +1,7 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.trim() ?? "";
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL?.trim() ??
+  process.env.NEXT_PUBLIC_API_URL?.trim() ??
+  "";
 
 export function hasApiBaseUrl() {
   return API_BASE_URL.length > 0;
@@ -7,6 +10,32 @@ export function hasApiBaseUrl() {
 export type ApiFetchOptions = RequestInit & {
   token?: string;
 };
+
+export class ApiError extends Error {
+  status: number;
+  statusText: string;
+  detail?: unknown;
+
+  constructor({
+    status,
+    statusText,
+    detail,
+  }: {
+    status: number;
+    statusText: string;
+    detail?: unknown;
+  }) {
+    super(`API request failed: ${status} ${statusText}`);
+    this.name = "ApiError";
+    this.status = status;
+    this.statusText = statusText;
+    this.detail = detail;
+  }
+}
+
+export function isUnauthorizedError(error: unknown) {
+  return error instanceof ApiError && error.status === 401;
+}
 
 export async function apiFetch<T>(
   path: string,
@@ -17,8 +46,6 @@ export async function apiFetch<T>(
   }
 
   const url = `${API_BASE_URL}${path}`;
-  const method = options.method?.toString().toUpperCase() ?? "GET";
-  console.log(`API ${method}:`, url);
 
   const response = await fetch(url, {
     ...options,
@@ -30,7 +57,19 @@ export async function apiFetch<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+    let detail: unknown;
+
+    try {
+      detail = await response.json();
+    } catch {
+      detail = undefined;
+    }
+
+    throw new ApiError({
+      status: response.status,
+      statusText: response.statusText,
+      detail,
+    });
   }
 
   try {

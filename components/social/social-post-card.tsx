@@ -7,15 +7,16 @@ import type { CommunityPost } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
 export function SocialPostCard({ post }: { post: CommunityPost }) {
-  const villageName = post.villageName ?? post.villageId;
-  const avatar = post.authorAvatar ?? post.avatar;
+  const villageName = post.villageName ?? "Sin pueblo asociado";
+  const initials = post.avatar;
+  const avatarImageUrl = post.authorAvatar;
   const comments = post.commentsCount ?? post.comments;
 
   return (
     <Card className="overflow-hidden transition-shadow hover:shadow-[0_18px_52px_rgba(31,61,43,0.11)]">
       <div className="p-4 sm:p-5">
         <div className="flex items-start gap-3">
-          <UserAvatar name={post.author} initials={avatar} />
+          <UserAvatar name={post.author} initials={initials} imageUrl={avatarImageUrl} />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <p className="font-black text-[#1F3D2B]">{post.author}</p>
@@ -30,9 +31,9 @@ export function SocialPostCard({ post }: { post: CommunityPost }) {
                 <Link href={`/villages/${post.villageId}`} className="text-[#3A7D44]">
                   {villageName}
                 </Link>
-              ) : villageName ? (
+              ) : (
                 <span className="text-[#3A7D44]">{villageName}</span>
-              ) : null}
+              )}
               <span>{formatDate(post.date)}</span>
             </div>
           </div>

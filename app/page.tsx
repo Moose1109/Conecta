@@ -42,6 +42,7 @@ export default async function Home() {
   await connection();
 
   const [activities, villages] = await Promise.all([getActivities(), getVillages()]);
+  const featuredActivity = activities[0];
 
   return (
     <>
@@ -75,20 +76,27 @@ export default async function Home() {
               <div className="rounded-xl bg-[#1F3D2B] p-5 text-white">
                 <p className="text-sm font-bold text-[#D9A441]">Próxima actividad</p>
                 <h2 className="mt-3 text-2xl font-black sm:text-3xl">
-                  {activities[0].title}
+                  {featuredActivity?.title ?? "Actividades en preparación"}
                 </h2>
-                <p className="mt-3 text-white/72">{activities[0].description}</p>
+                <p className="mt-3 text-white/72">
+                  {featuredActivity?.description ??
+                    "Cuando el backend publique actividades, aparecerán aquí automáticamente."}
+                </p>
                 <div className="mt-8 grid grid-cols-3 gap-3 text-center">
                   <div className="rounded-xl bg-white/10 p-3">
-                    <p className="text-2xl font-black">5</p>
+                    <p className="text-2xl font-black">{villages.length}</p>
                     <p className="text-xs text-white/64">pueblos</p>
                   </div>
                   <div className="rounded-xl bg-white/10 p-3">
-                    <p className="text-2xl font-black">8</p>
+                    <p className="text-2xl font-black">
+                      {new Set(activities.map((activity) => activity.category)).size}
+                    </p>
                     <p className="text-xs text-white/64">categorías</p>
                   </div>
                   <div className="rounded-xl bg-white/10 p-3">
-                    <p className="text-2xl font-black">120+</p>
+                    <p className="text-2xl font-black">
+                      {activities.reduce((total, activity) => total + activity.spots, 0)}
+                    </p>
                     <p className="text-xs text-white/64">plazas</p>
                   </div>
                 </div>

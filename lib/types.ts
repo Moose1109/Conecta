@@ -15,7 +15,7 @@ export type Village = {
   province: string;
   region: string;
   population: number;
-  image: string;
+  image?: string;
   bannerImage?: string;
   tagline: string;
   description: string;
@@ -38,9 +38,11 @@ export type Activity = {
   spots: number;
   spotsLeft?: number;
   participantsCount?: number;
-  image: string;
+  image?: string;
+  bannerImage?: string;
   description: string;
   organizer: string;
+  location?: string;
   isJoined?: boolean;
   isSaved?: boolean;
 };
@@ -49,7 +51,7 @@ export type CommunityPost = {
   id: string;
   title: string;
   content: string;
-  villageId: string;
+  villageId?: string;
   villageName?: string;
   author: string;
   authorHandle?: string;
@@ -67,20 +69,15 @@ export type CommunityPost = {
   isSaved?: boolean;
 };
 
-export type MockUser = {
+export type AuthUser = {
   id: string;
   name: string;
-  email: string;
-  handle: string;
-  role: string;
-  location: string;
-  avatar: string;
-  banner: string;
-  favoriteVillageId: string;
-  interests: string[];
-  stats: {
-    activities: number;
-    posts: number;
-    followedVillages: number;
-  };
+  email?: string;
+  username?: string;
+  avatarUrl?: string;
+  bannerUrl?: string;
+  bio?: string;
+  role?: string;
+  favoriteVillageId?: string | null;
+  createdAt?: string;
 };

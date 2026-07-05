@@ -32,14 +32,25 @@ export default async function ActivityDetailPage({
       <main className="page-shell grid gap-8 py-8 md:py-12 lg:grid-cols-[1fr_360px]">
         <article>
           <div className="relative min-h-[260px] overflow-hidden rounded-3xl md:min-h-[360px]">
-            <Image
-              src={activity.image}
-              alt={activity.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 760px"
-              priority
-            />
+            {activity.image ? (
+              <Image
+                src={activity.image}
+                alt={activity.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 760px"
+                priority
+              />
+            ) : (
+              <div className="grid min-h-[260px] place-items-center bg-[#1F3D2B] px-6 text-center text-white md:min-h-[360px]">
+                <div>
+                  <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-[#D9A441]">
+                    Actividad
+                  </p>
+                  <p className="mt-3 text-2xl font-black">{activity.title}</p>
+                </div>
+              </div>
+            )}
           </div>
           <div className="mt-6 md:mt-8">
             <Badge>{activity.category}</Badge>
@@ -59,6 +70,7 @@ export default async function ActivityDetailPage({
             <div className="mt-5 grid gap-4 text-sm">
               <Info label="Fecha" value={formatDate(activity.date)} />
               <Info label="Hora" value={activity.time} />
+              <Info label="Lugar" value={activity.location ?? "Lugar por confirmar"} />
               <Info
                 label="Pueblo"
                 value={village ? village.name : "Pueblo no encontrado"}

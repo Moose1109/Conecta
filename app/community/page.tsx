@@ -8,14 +8,12 @@ import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { CommunityFeed } from "@/features/community/community-feed";
 import { getActivities } from "@/lib/api/activities.service";
-import { getCurrentUserMock } from "@/lib/api/auth.service";
 import { getCommunityPosts } from "@/lib/api/community.service";
 import { getVillages } from "@/lib/api/villages.service";
 
 export default async function CommunityPage() {
   await connection();
 
-  const user = getCurrentUserMock();
   const [posts, villages, activities] = await Promise.all([
     getCommunityPosts(),
     getVillages(),
@@ -35,7 +33,7 @@ export default async function CommunityPage() {
             title="Tu plaza digital"
             description="Publicaciones, avisos y momentos compartidos por vecinos y visitantes."
           />
-          <CommunityFeed posts={posts} user={user} villages={villages} />
+          <CommunityFeed posts={posts} user={{ name: "Usuario", avatar: "CP" }} villages={villages} />
           <div className="mt-5 grid gap-5">
             <Card className="p-4">
               <p className="text-sm font-black text-[#1F3D2B]">Tendencias locales</p>

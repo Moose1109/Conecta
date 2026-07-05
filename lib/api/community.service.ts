@@ -1,4 +1,3 @@
-import { communityPosts } from "@/data/community";
 import { apiFetch, hasApiBaseUrl } from "@/lib/api/client";
 import type { CommunityPost } from "@/lib/types";
 
@@ -45,12 +44,33 @@ type ApiPost = {
 
 type ApiCollection<T> = T[] | { items?: T[] };
 
+export type CreateCommunityPostPayload = {
+  village_id?: string | null;
+  title?: string | null;
+  content: string;
+  image_url?: string | null;
+};
+
 function collectionItems<T>(response: ApiCollection<T>): T[] {
   return Array.isArray(response) ? response : response.items ?? [];
 }
 
 function asString(value: unknown, fallback = "") {
   return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+function isUrlLike(value: string) {
+  return value.startsWith("http://") || value.startsWith("https://");
+}
+
+function asDisplayString(value: unknown, fallback = "") {
+  const text = asString(value, fallback);
+  return text && !isUrlLike(text) ? text : fallback;
+}
+
+function asImageUrl(value: unknown, fallback = "") {
+  const text = asString(value, fallback);
+  return text && isUrlLike(text) ? text : "";
 }
 
 function asNumber(value: unknown, fallback = 0) {
@@ -68,21 +88,24 @@ function dateOnly(value: unknown, fallback: unknown) {
 
 function adaptPost(post: ApiPost): CommunityPost | null {
   const id = asString(post.id);
-  const title = asString(post.title);
+  const title = asString(post.title, "Publicación");
+  const content = asString(post.content);
   const villageId = asString(
     post.village?.id,
     asString(post.village_id, asString(post.villageId, asString(post.village?.slug))),
   );
-  const author = asString(post.author?.name, asString(post.author_name, "Vecino/a"));
+  const author = asDisplayString(post.author?.name, asDisplayString(post.author_name, "Usuario"));
 
-  if (!id || !title || !villageId) {
+  if (!id || !title || !content) {
     return null;
   }
 
-  const mockPost = communityPosts.find((item) => item.id === id);
-  const authorHandle = asString(
+  const authorHandle = asDisplayString(
     post.author?.username,
-    asString(post.author?.handle, asString(post.author_username, asString(post.authorHandle))),
+    asDisplayString(
+      post.author?.handle,
+      asDisplayString(post.author_username, asDisplayString(post.authorHandle)),
+    ),
   );
   const commentsCount = asNumber(
     post.comments_count,
@@ -93,25 +116,25 @@ function adaptPost(post: ApiPost): CommunityPost | null {
   return {
     id,
     title,
-    content: asString(post.content, mockPost?.content),
-    villageId,
+    content,
+    villageId: villageId || undefined,
     villageName:
-      asString(post.village?.name, asString(post.village_name, mockPost?.villageName)) ||
+      asDisplayString(post.village?.name, asDisplayString(post.village_name)) ||
       undefined,
     author,
     authorHandle: authorHandle ? `@${authorHandle.replace(/^@/, "")}` : undefined,
     handle: authorHandle,
-    avatar: asString(post.avatar, mockPost?.avatar) || undefined,
+    avatar: asDisplayString(post.avatar) || undefined,
     authorAvatar:
-      asString(post.author?.avatar_url, asString(post.authorAvatar, mockPost?.authorAvatar)) ||
+      asImageUrl(post.author?.avatar_url, asImageUrl(post.authorAvatar)) ||
       undefined,
-    image: asString(post.image_url, asString(post.image, mockPost?.image)) || undefined,
-    date: dateOnly(post.created_at, asString(post.date, mockPost?.date)),
-    likes: asNumber(post.likes_count, asNumber(post.likes, mockPost?.likes)),
+    image: asString(post.image_url, asString(post.image)) || undefined,
+    date: dateOnly(post.created_at, asString(post.date)),
+    likes: asNumber(post.likes_count, asNumber(post.likes)),
     isLiked: asBoolean(post.is_liked) ?? asBoolean(post.liked_by_me),
-    comments: commentsCount || mockPost?.comments,
-    commentsCount: commentsCount || mockPost?.commentsCount,
-    shares: asNumber(post.shares_count, asNumber(post.shares, mockPost?.shares)),
+    comments: commentsCount,
+    commentsCount,
+    shares: asNumber(post.shares_count, asNumber(post.shares)),
     saved,
     isSaved: saved,
   };
@@ -131,7 +154,7 @@ function adaptPosts(response: ApiCollection<ApiPost>) {
 
 export async function getCommunityPosts() {
   if (!hasApiBaseUrl()) {
-    return communityPosts;
+    return [];
   }
 
   try {
@@ -139,27 +162,27 @@ export async function getCommunityPosts() {
     return adaptPosts(response);
   } catch (error) {
     console.error("Error loading community posts from API:", error);
-    return communityPosts;
+    return [];
   }
 }
 
 export async function getCommunityPostById(id: string) {
   if (!hasApiBaseUrl()) {
-    return communityPosts.find((post) => post.id === id);
+    return undefined;
   }
 
   try {
     const response = await apiFetch<ApiPost>(`/api/v1/posts/${encodeURIComponent(id)}`);
-    return adaptPost(response) ?? communityPosts.find((post) => post.id === id);
+    return adaptPost(response) ?? undefined;
   } catch (error) {
     console.error("Error loading community post from API:", error);
-    return communityPosts.find((post) => post.id === id);
+    return undefined;
   }
 }
 
 export async function getPostsByVillageId(villageId: string) {
   if (!hasApiBaseUrl()) {
-    return communityPosts.filter((post) => post.villageId === villageId);
+    return [];
   }
 
   const posts = await getCommunityPosts();
@@ -174,6 +197,14 @@ export async function likePost(id: string, token: string) {
       token,
     },
   );
+}
+
+export async function createCommunityPost(payload: CreateCommunityPostPayload, token: string) {
+  return apiFetch<ApiPost>("/api/v1/posts", {
+    method: "POST",
+    token,
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function unlikePost(id: string, token: string) {

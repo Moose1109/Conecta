@@ -1,4 +1,3 @@
-import { getVillageById as getMockVillageById, villages } from "@/data/villages";
 import { apiFetch, hasApiBaseUrl } from "@/lib/api/client";
 import type { Village } from "@/lib/types";
 
@@ -29,12 +28,30 @@ type ApiVillage = {
 
 type ApiCollection<T> = T[] | { items?: T[] };
 
+export type CreateVillagePayload = {
+  name: string;
+  slug: string;
+  province: string;
+  region: string;
+  population?: number | null;
+  tagline?: string | null;
+  description?: string | null;
+  image_url?: string | null;
+  banner_url?: string | null;
+  highlights?: string[] | null;
+};
+
 function collectionItems<T>(response: ApiCollection<T>): T[] {
   return Array.isArray(response) ? response : response.items ?? [];
 }
 
 function asString(value: unknown, fallback = "") {
   return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+function asOptionalString(value: unknown) {
+  const text = asString(value);
+  return text || undefined;
 }
 
 function asNumber(value: unknown, fallback = 0) {
@@ -59,22 +76,19 @@ function adaptVillage(village: ApiVillage): Village | null {
   }
 
   const stats = village.stats;
-  const mockVillage = villages.find((item) => item.id === id || item.id === slug);
 
   return {
     id,
     slug: slug || undefined,
     name,
-    province: asString(village.province, mockVillage?.province),
-    region: asString(village.region, mockVillage?.region),
-    population: asNumber(village.population, mockVillage?.population),
-    image: asString(village.image_url, asString(village.image, mockVillage?.image)),
+    province: asString(village.province, "Sin provincia"),
+    region: asString(village.region, "Sin región"),
+    population: asNumber(village.population),
+    image: asOptionalString(village.image_url) ?? asOptionalString(village.image),
     bannerImage: asString(village.banner_url) || undefined,
-    tagline: asString(village.tagline, mockVillage?.tagline),
-    description: asString(village.description, mockVillage?.description),
-    highlights: asStringArray(village.highlights).length
-      ? asStringArray(village.highlights)
-      : (mockVillage?.highlights ?? []),
+    tagline: asString(village.tagline),
+    description: asString(village.description),
+    highlights: asStringArray(village.highlights),
     followersCount: asNumber(village.followers_count, asNumber(stats?.followers_count)),
     activitiesCount: asNumber(village.activities_count, asNumber(stats?.activities_count)),
     postsCount: asNumber(village.posts_count, asNumber(stats?.posts_count)),
@@ -94,7 +108,7 @@ function adaptVillages(response: ApiCollection<ApiVillage>) {
 
 export async function getVillages() {
   if (!hasApiBaseUrl()) {
-    return villages;
+    return [];
   }
 
   try {
@@ -102,21 +116,21 @@ export async function getVillages() {
     return adaptVillages(response);
   } catch (error) {
     console.error("Error loading villages from API:", error);
-    return villages;
+    return [];
   }
 }
 
 export async function getVillageById(id: string) {
   if (!hasApiBaseUrl()) {
-    return getMockVillageById(id);
+    return undefined;
   }
 
   try {
     const response = await apiFetch<ApiVillage>(`/api/v1/villages/${encodeURIComponent(id)}`);
-    return adaptVillage(response) ?? getMockVillageById(id);
+    return adaptVillage(response) ?? undefined;
   } catch (error) {
     console.error("Error loading village from API:", error);
-    return getMockVillageById(id);
+    return undefined;
   }
 }
 
@@ -128,6 +142,14 @@ export async function followVillage(idOrSlug: string, token: string) {
       token,
     },
   );
+}
+
+export async function createVillage(payload: CreateVillagePayload, token: string) {
+  return apiFetch<ApiVillage>("/api/v1/villages", {
+    method: "POST",
+    token,
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function unfollowVillage(idOrSlug: string, token: string) {

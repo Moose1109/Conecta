@@ -25,11 +25,10 @@ export function RegisterForm({ villages }: { villages: Village[] }) {
     const formData = new FormData(event.currentTarget);
     const name = String(formData.get("name") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim();
-    const favoriteVillageId = String(formData.get("favoriteVillageId") ?? "").trim();
     const password = String(formData.get("password") ?? "");
 
-    if (!name || !email || !favoriteVillageId || !password) {
-      setError("Completa nombre, email, pueblo favorito y contraseña.");
+    if (!name || !email || !password) {
+      setError("Completa nombre, email y contraseña.");
       return;
     }
 
@@ -38,20 +37,18 @@ export function RegisterForm({ villages }: { villages: Village[] }) {
       username: usernameFromEmail(email),
       email,
       password,
-      favorite_village_id: favoriteVillageId,
     };
 
     try {
       setIsSubmitting(true);
-      console.log("REGISTER PAYLOAD:", payload);
       const response = await registerUser(payload);
-      console.log("REGISTER RESPONSE:", response);
 
       const token = response.access_token ?? response.token;
 
       saveSession({ token, user: response.user });
 
       if (token) {
+        router.refresh();
         router.push("/dashboard");
         return;
       }
@@ -78,18 +75,19 @@ export function RegisterForm({ villages }: { villages: Village[] }) {
           <label className="label" htmlFor="name">
             Nombre
           </label>
-          <input className="field" id="name" name="name" placeholder="Ana" />
+          <input className="field" id="name" name="name" placeholder="Tu nombre" />
         </div>
         <div>
           <label className="label" htmlFor="email">
             Email
           </label>
-          <input className="field" id="email" name="email" placeholder="ana@pueblo.es" type="email" />
+          <input className="field" id="email" name="email" placeholder="tu@email.com" type="email" />
         </div>
       </div>
       <div>
         <label className="label" htmlFor="favorite">
           Pueblo favorito
+          <span className="ml-1 text-xs text-[#1E1E1E]/44">(opcional)</span>
         </label>
         <select className="field" id="favorite" name="favoriteVillageId" defaultValue="">
           <option value="" disabled>
@@ -113,7 +111,7 @@ export function RegisterForm({ villages }: { villages: Village[] }) {
         className="w-full disabled:cursor-not-allowed disabled:opacity-70"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Creando cuenta..." : "Crear cuenta demo"}
+        {isSubmitting ? "Creando cuenta..." : "Crear cuenta"}
       </Button>
       {error ? (
         <p className="text-center text-sm font-bold text-red-700" role="alert">

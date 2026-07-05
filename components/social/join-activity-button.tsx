@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useLocalStorageBoolean } from "@/components/social/use-local-storage-boolean";
 import { joinActivity, leaveActivity } from "@/lib/api/activities.service";
-import { getStoredToken } from "@/lib/api/session";
+import { isUnauthorizedError } from "@/lib/api/client";
+import { clearSession, getStoredToken } from "@/lib/api/session";
 import { cn } from "@/lib/utils";
 
 export function JoinActivityButton({
@@ -17,28 +19,22 @@ export function JoinActivityButton({
   storageKey?: string;
 }) {
   const localKey = storageKey ? `cp:activity:${storageKey}:joined` : undefined;
-  const [joined, setJoined] = useState(() => {
-    if (typeof window === "undefined" || !localKey) {
-      return initialJoined;
-    }
-
-    return window.localStorage.getItem(localKey) === "true" || initialJoined;
-  });
+  const [joined, setJoined] = useLocalStorageBoolean(localKey, initialJoined);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function toggleJoined() {
     const next = !joined;
     const token = getStoredToken();
 
-    setJoined(next);
-
-    if (localKey) {
-      window.localStorage.setItem(localKey, String(next));
-    }
+    setErrorMessage("");
 
     if (!storageKey || !token) {
+      setErrorMessage("Debes iniciar sesión para apuntarte.");
       return;
     }
+
+    setJoined(next);
 
     try {
       setIsSubmitting(true);
@@ -48,15 +44,15 @@ export function JoinActivityButton({
 
       if (typeof response.joined === "boolean") {
         setJoined(response.joined);
-        if (localKey) {
-          window.localStorage.setItem(localKey, String(response.joined));
-        }
       }
     } catch (error) {
       console.error("Error updating activity join:", error);
       setJoined(!next);
-      if (localKey) {
-        window.localStorage.setItem(localKey, String(!next));
+      if (isUnauthorizedError(error)) {
+        clearSession();
+        setErrorMessage("Debes iniciar sesión para apuntarte.");
+      } else {
+        setErrorMessage("No se pudo actualizar la inscripción.");
       }
     } finally {
       setIsSubmitting(false);
@@ -64,24 +60,31 @@ export function JoinActivityButton({
   }
 
   return (
-    <button
-      aria-pressed={joined}
-      className={cn(
-        "inline-flex min-h-11 items-center justify-center rounded-full px-5 text-sm font-black transition-colors focus:outline-none focus:ring-4 focus:ring-[#3A7D4424]",
-        joined
-          ? "bg-[#D9A441] text-[#1F3D2B] hover:bg-[#cf9935]"
-          : "bg-[#3A7D44] text-white hover:bg-[#2f6738]",
-        compact && "min-h-9 px-4 text-xs",
-        className,
-      )}
-      disabled={isSubmitting}
-      type="button"
-      onClick={(event) => {
-        event.preventDefault();
-        toggleJoined();
-      }}
-    >
-      {joined ? "Apuntado" : "Apuntarme"}
-    </button>
+    <span className="inline-flex flex-col items-start gap-2">
+      <button
+        aria-pressed={joined}
+        className={cn(
+          "inline-flex min-h-11 items-center justify-center rounded-full px-5 text-sm font-black transition-colors focus:outline-none focus:ring-4 focus:ring-[#3A7D4424]",
+          joined
+            ? "bg-[#D9A441] text-[#1F3D2B] hover:bg-[#cf9935]"
+            : "bg-[#3A7D44] text-white hover:bg-[#2f6738]",
+          compact && "min-h-9 px-4 text-xs",
+          className,
+        )}
+        disabled={isSubmitting}
+        type="button"
+        onClick={(event) => {
+          event.preventDefault();
+          toggleJoined();
+        }}
+      >
+        {joined ? "Apuntado" : "Apuntarme"}
+      </button>
+      {errorMessage ? (
+        <span className="text-xs font-bold text-red-700" role="alert">
+          {errorMessage}
+        </span>
+      ) : null}
+    </span>
   );
 }

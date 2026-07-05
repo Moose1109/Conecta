@@ -31,9 +31,7 @@ export function LoginForm() {
 
     try {
       setIsSubmitting(true);
-      console.log("LOGIN PAYLOAD:", payload);
       const response = await loginUser(payload);
-      console.log("LOGIN RESPONSE:", response);
 
       const token = response.token ?? response.access_token;
 
@@ -44,6 +42,7 @@ export function LoginForm() {
 
       saveSession({ token, user: response.user });
 
+      router.refresh();
       router.push("/dashboard");
     } catch (error) {
       console.error("Error login:", error);
@@ -64,7 +63,7 @@ export function LoginForm() {
         <label className="label" htmlFor="email">
           Email
         </label>
-        <input className="field" id="email" name="email" placeholder="ana@pueblo.es" type="email" />
+        <input className="field" id="email" name="email" placeholder="tu@email.com" type="email" />
       </div>
       <div>
         <label className="label" htmlFor="password">

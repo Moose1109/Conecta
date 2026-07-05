@@ -43,14 +43,18 @@ export default async function VillageDetailPage({
         <section className="page-shell py-6 md:py-8">
           <Card className="overflow-hidden">
             <div className="relative min-h-[320px] md:min-h-[360px]">
-              <Image
-                src={village.image}
-                alt={village.name}
-                fill
-                className="object-cover"
-                sizes="100vw"
-                priority
-              />
+              {village.image ? (
+                <Image
+                  src={village.image}
+                  alt={village.name}
+                  fill
+                  className="object-cover"
+                  sizes="100vw"
+                  priority
+                />
+              ) : (
+                <div className="absolute inset-0 bg-[#1F3D2B]" />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-[#1F3D2B]/82 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white md:p-8">
                 <Badge className="bg-white/18 text-white">{village.region}</Badge>

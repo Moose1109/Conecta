@@ -1,16 +1,23 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export function UserAvatar({
   name,
   initials,
+  imageUrl,
   className,
 }: {
   name: string;
   initials?: string;
+  imageUrl?: string;
   className?: string;
 }) {
+  const safeInitials =
+    initials && !initials.startsWith("http://") && !initials.startsWith("https://")
+      ? initials
+      : undefined;
   const fallback =
-    initials ??
+    safeInitials ??
     name
       .split(" ")
       .map((part) => part[0])
@@ -22,12 +29,22 @@ export function UserAvatar({
     <div
       aria-label={name}
       className={cn(
-        "grid size-11 shrink-0 place-items-center rounded-full bg-[#D9A441] text-sm font-black text-[#1F3D2B] ring-4 ring-white",
+        "relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-[#D9A441] text-sm font-black text-[#1F3D2B] ring-4 ring-white",
         className,
       )}
       title={name}
     >
-      {fallback}
+      {imageUrl ? (
+        <Image
+          src={imageUrl}
+          alt={name}
+          fill
+          className="object-cover"
+          sizes="44px"
+        />
+      ) : (
+        fallback
+      )}
     </div>
   );
 }

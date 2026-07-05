@@ -16,7 +16,7 @@ export default async function RegisterPage() {
       <main className="page-shell grid min-h-[calc(100vh-4rem)] place-items-center py-12">
         <Card className="w-full max-w-xl p-7">
           <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-[#3A7D44]">
-            Registro demo
+            Registro
           </p>
           <h1 className="mt-3 text-3xl font-black text-[#1F3D2B]">
             Únete a ConectaPueblos

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { MockActionButton } from "@/components/social/mock-action-button";
-import { getStoredToken } from "@/lib/api/session";
+import { SocialActionButton } from "@/components/social/social-action-button";
+import { useLocalStorageBoolean } from "@/components/social/use-local-storage-boolean";
+import { isUnauthorizedError } from "@/lib/api/client";
+import { clearSession, getStoredToken } from "@/lib/api/session";
 import { likePost, savePost, unlikePost, unsavePost } from "@/lib/api/community.service";
 
 export function SocialPostActions({
@@ -22,37 +24,25 @@ export function SocialPostActions({
 }) {
   const likeKey = storageKey ? `cp:post:${storageKey}:liked` : undefined;
   const saveKey = storageKey ? `cp:post:${storageKey}:saved` : undefined;
-  const [isLiked, setIsLiked] = useState(() => {
-    if (typeof window === "undefined" || !likeKey) {
-      return initiallyLiked;
-    }
-
-    return window.localStorage.getItem(likeKey) === "true" || initiallyLiked;
-  });
-  const [isSaved, setIsSaved] = useState(() => {
-    if (typeof window === "undefined" || !saveKey) {
-      return saved;
-    }
-
-    return window.localStorage.getItem(saveKey) === "true" || saved;
-  });
+  const [isLiked, setIsLiked] = useLocalStorageBoolean(likeKey, initiallyLiked);
+  const [isSaved, setIsSaved] = useLocalStorageBoolean(saveKey, saved);
 
   const [isSubmittingLike, setIsSubmittingLike] = useState(false);
   const [isSubmittingSave, setIsSubmittingSave] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   async function toggleLiked() {
     const next = !isLiked;
     const token = getStoredToken();
 
-    setIsLiked(next);
-
-    if (likeKey) {
-      window.localStorage.setItem(likeKey, String(next));
-    }
+    setErrorMessage("");
 
     if (!storageKey || !token) {
+      setErrorMessage("Debes iniciar sesión para dar like.");
       return;
     }
+
+    setIsLiked(next);
 
     try {
       setIsSubmittingLike(true);
@@ -62,15 +52,15 @@ export function SocialPostActions({
 
       if (typeof response.liked === "boolean") {
         setIsLiked(response.liked);
-        if (likeKey) {
-          window.localStorage.setItem(likeKey, String(response.liked));
-        }
       }
     } catch (error) {
       console.error("Error updating post like:", error);
       setIsLiked(!next);
-      if (likeKey) {
-        window.localStorage.setItem(likeKey, String(!next));
+      if (isUnauthorizedError(error)) {
+        clearSession();
+        setErrorMessage("Debes iniciar sesión para dar like.");
+      } else {
+        setErrorMessage("No se pudo actualizar el like.");
       }
     } finally {
       setIsSubmittingLike(false);
@@ -81,15 +71,14 @@ export function SocialPostActions({
     const next = !isSaved;
     const token = getStoredToken();
 
-    setIsSaved(next);
-
-    if (saveKey) {
-      window.localStorage.setItem(saveKey, String(next));
-    }
+    setErrorMessage("");
 
     if (!storageKey || !token) {
+      setErrorMessage("Debes iniciar sesión para guardar.");
       return;
     }
+
+    setIsSaved(next);
 
     try {
       setIsSubmittingSave(true);
@@ -99,41 +88,70 @@ export function SocialPostActions({
 
       if (typeof response.saved === "boolean") {
         setIsSaved(response.saved);
-        if (saveKey) {
-          window.localStorage.setItem(saveKey, String(response.saved));
-        }
       }
     } catch (error) {
       console.error("Error updating post save:", error);
       setIsSaved(!next);
-      if (saveKey) {
-        window.localStorage.setItem(saveKey, String(!next));
+      if (isUnauthorizedError(error)) {
+        clearSession();
+        setErrorMessage("Debes iniciar sesión para guardar.");
+      } else {
+        setErrorMessage("No se pudo actualizar el guardado.");
       }
     } finally {
       setIsSubmittingSave(false);
     }
   }
 
+  function showPendingAction(action: "comentar" | "compartir") {
+    setErrorMessage(
+      action === "comentar"
+        ? "Funcionalidad pendiente: falta crear el endpoint para comentar."
+        : "Funcionalidad pendiente: falta crear el endpoint para compartir.",
+    );
+  }
+
   return (
     <div className="grid grid-cols-2 gap-2 border-t border-[#1F3D2B12] px-3 py-2 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
-      <MockActionButton
+      <SocialActionButton
         aria-pressed={isLiked}
         className={isLiked ? "bg-[#D9A44124] text-[#1F3D2B]" : undefined}
         disabled={isSubmittingLike}
         onClick={toggleLiked}
       >
+        <svg
+          aria-hidden="true"
+          className="size-4 shrink-0 transition-colors"
+          fill={isLiked ? "#E53935" : "#FFFFFF"}
+          stroke={isLiked ? "#E53935" : "#1F3D2B"}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 0 1 12 6.1a5 5 0 0 1 7.5 6.5Z" />
+        </svg>
         Me gusta {isLiked ? likes + 1 : likes}
-      </MockActionButton>
-      <MockActionButton>Comentar {comments}</MockActionButton>
-      <MockActionButton>Compartir {shares}</MockActionButton>
-      <MockActionButton
+      </SocialActionButton>
+      <SocialActionButton onClick={() => showPendingAction("comentar")}>
+        Comentar {comments}
+      </SocialActionButton>
+      <SocialActionButton onClick={() => showPendingAction("compartir")}>
+        Compartir {shares}
+      </SocialActionButton>
+      <SocialActionButton
         aria-pressed={isSaved}
         className={isSaved ? "bg-[#1F3D2B] text-white hover:bg-[#1F3D2B]" : undefined}
         disabled={isSubmittingSave}
         onClick={toggleSaved}
       >
         {isSaved ? "Guardado" : "Guardar"}
-      </MockActionButton>
+      </SocialActionButton>
+      {errorMessage ? (
+        <p className="col-span-2 text-center text-xs font-bold text-red-700 sm:basis-full" role="alert">
+          {errorMessage}
+        </p>
+      ) : null}
     </div>
   );
 }
