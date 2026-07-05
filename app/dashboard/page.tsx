@@ -28,7 +28,7 @@ export default async function DashboardPage() {
     <>
       <Navbar />
       <main className="page-shell py-6 md:py-8">
-        <AuthGate message="Para acceder a tu dashboard necesitas iniciar sesión.">
+        <AuthGate message="Para acceder a tu espacio personal necesitas iniciar sesión.">
           <DashboardHeader fallbackName="" />
           <SocialLayout
             left={

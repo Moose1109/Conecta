@@ -9,7 +9,7 @@ import { useAuthSession } from "@/features/auth/use-auth-session";
 export function AuthGate({
   adminOnly = false,
   children,
-  message = "Para acceder a tu dashboard necesitas iniciar sesión.",
+  message = "Para acceder a tu espacio personal necesitas iniciar sesión.",
 }: {
   adminOnly?: boolean;
   children: ReactNode;
@@ -62,7 +62,7 @@ export function AuthGate({
             href="/dashboard"
             className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#3A7D44] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2f6738]"
           >
-            Ir al dashboard
+            Ir a mi espacio
           </Link>
         </div>
       </Card>

@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { UserMenu } from "@/components/layout/user-menu";
 import { NotificationBell } from "@/components/ui/notification-bell";
 import { LinkButton } from "@/components/ui/button";
-import { UserAvatar } from "@/components/social/user-avatar";
-import { isAdminUser } from "@/features/auth/roles";
 import { useAuthSession } from "@/features/auth/use-auth-session";
-import { clearSession } from "@/lib/api/session";
 import { cn } from "@/lib/utils";
 
 const publicLinks = [
@@ -19,20 +17,8 @@ const publicLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const { token, user } = useAuthSession();
+  const { token } = useAuthSession();
   const isAuthenticated = Boolean(token);
-  const links = [
-    ...publicLinks,
-    ...(isAuthenticated ? [{ href: "/dashboard", label: "Dashboard" }] : []),
-    ...(isAuthenticated && isAdminUser(user) ? [{ href: "/admin", label: "Panel admin" }] : []),
-  ];
-
-  function handleLogout() {
-    clearSession();
-    router.refresh();
-    router.push("/");
-  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-[#1F3D2B12] bg-[#FAF7F0]/94 backdrop-blur">
@@ -44,7 +30,7 @@ export function Navbar() {
           <span className="hidden text-lg sm:inline">ConectaPueblos</span>
         </Link>
         <nav className="hidden items-center gap-5 text-sm font-bold text-[#1F3D2B]/78 md:flex">
-          {links.map((link) => (
+          {publicLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -62,26 +48,7 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           {isAuthenticated ? <NotificationBell /> : null}
           {isAuthenticated ? (
-            <div className="flex items-center gap-2">
-              <Link
-                href="/profile"
-                className="hidden items-center gap-2 rounded-full px-2 py-1 text-sm font-bold text-[#1F3D2B] hover:bg-[#1F3D2B0d] sm:inline-flex"
-              >
-                <UserAvatar
-                  name={user?.name ?? "Usuario"}
-                  imageUrl={user?.avatarUrl}
-                  className="size-9 text-xs ring-0"
-                />
-                <span className="max-w-32 truncate">{user?.username ?? user?.name ?? "Perfil"}</span>
-              </Link>
-              <button
-                className="rounded-full px-3 py-2 text-sm font-bold text-[#1F3D2B] hover:bg-[#1F3D2B0d]"
-                type="button"
-                onClick={handleLogout}
-              >
-                Salir
-              </button>
-            </div>
+            <UserMenu />
           ) : (
             <>
               <Link
@@ -91,7 +58,7 @@ export function Navbar() {
                 Entrar
               </Link>
               <LinkButton href="/register" className="min-h-10 px-4">
-                Unirme
+                Crear cuenta
               </LinkButton>
             </>
           )}

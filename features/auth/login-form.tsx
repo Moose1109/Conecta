@@ -76,7 +76,7 @@ export function LoginForm() {
         className="w-full disabled:cursor-not-allowed disabled:opacity-70"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Entrando..." : "Entrar al dashboard"}
+        {isSubmitting ? "Entrando..." : "Entrar a mi espacio"}
       </Button>
       {error ? (
         <p className="text-center text-sm font-bold text-red-700" role="alert">

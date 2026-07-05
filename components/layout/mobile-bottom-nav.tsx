@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { isAdminUser } from "@/features/auth/roles";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { cn } from "@/lib/utils";
 
-const publicItems = [
+const visitorItems = [
   { href: "/", label: "Inicio", icon: "In" },
   { href: "/community", label: "Comunidad", icon: "Co" },
   { href: "/activities", label: "Planes", icon: "Pl" },
@@ -14,24 +13,18 @@ const publicItems = [
   { href: "/login", label: "Entrar", icon: "En" },
 ];
 
-const userItems = [
-  { href: "/dashboard", label: "Inicio", icon: "In" },
+const publicItems = [
+  { href: "/", label: "Inicio", icon: "In" },
   { href: "/community", label: "Comunidad", icon: "Co" },
   { href: "/activities", label: "Planes", icon: "Pl" },
   { href: "/villages", label: "Pueblos", icon: "Pu" },
-  { href: "/profile", label: "Perfil", icon: "Yo" },
 ];
 
 export function MobileBottomNav() {
   const pathname = usePathname();
-  const { token, user } = useAuthSession();
+  const { token } = useAuthSession();
   const isAuthenticated = Boolean(token);
-  const items = isAuthenticated
-    ? [
-        ...userItems,
-        ...(isAdminUser(user) ? [{ href: "/admin", label: "Admin", icon: "Ad" }] : []),
-      ]
-    : publicItems;
+  const items = isAuthenticated ? publicItems : visitorItems;
 
   return (
     <nav

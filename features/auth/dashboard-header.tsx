@@ -10,9 +10,9 @@ export function DashboardHeader({ fallbackName = "Usuario" }: { fallbackName?: s
 
   return (
     <PageHeader
-      eyebrow="Inicio"
+      eyebrow="Mi espacio"
       title={firstName ? `Hola, ${firstName}` : "Hola"}
-      description="Tu home social para descubrir planes, publicaciones y pueblos que se están moviendo."
+      description="Tu espacio personal para seguir publicaciones, actividades guardadas y pueblos que te interesan."
     />
   );
 }

@@ -13,18 +13,25 @@ const publicLinks = [
   { href: "/villages", label: "Pueblos" },
 ];
 
-const userLinks = [
-  { href: "/dashboard", label: "Inicio social" },
-  ...publicLinks,
-  { href: "/profile", label: "Perfil" },
+const privateLinks = [
+  { href: "/dashboard", label: "Mi espacio" },
+  { href: "/profile", label: "Mi perfil" },
+  { href: "/notifications", label: "Notificaciones" },
+  { href: "/settings", label: "Configuración" },
 ];
 
 export function SidebarNav() {
   const pathname = usePathname();
   const { token, user } = useAuthSession();
-  const links = token
+  const isPrivateArea =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/notifications") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/admin");
+  const links = token && isPrivateArea
     ? [
-        ...userLinks,
+        ...privateLinks,
         ...(isAdminUser(user) ? [{ href: "/admin", label: "Panel admin" }] : []),
       ]
     : publicLinks;
@@ -32,7 +39,7 @@ export function SidebarNav() {
   return (
     <Card className="sticky top-24 p-4">
       <p className="px-2 text-xs font-black uppercase tracking-[0.16em] text-[#3A7D44]">
-        Conecta
+        {token && isPrivateArea ? "Mi cuenta" : "Conecta"}
       </p>
       <nav aria-label="Navegación social" className="mt-3 grid gap-1">
         {links.map((link) => (
