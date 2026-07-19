@@ -3,8 +3,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import { JoinActivityButton } from "@/components/social/join-activity-button";
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
+import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { Badge, Card } from "@/components/ui/card";
 import { getActivityById } from "@/lib/api/activities.service";
 import { getVillageById } from "@/lib/api/villages.service";
@@ -27,9 +26,8 @@ export default async function ActivityDetailPage({
   const village = await getVillageById(activity.villageId);
 
   return (
-    <>
-      <Navbar />
-      <main className="page-shell grid gap-8 py-8 md:py-12 lg:grid-cols-[1fr_360px]">
+    <AuthenticatedShell>
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
         <article>
           <div className="relative min-h-[260px] overflow-hidden rounded-3xl md:min-h-[360px]">
             {activity.image ? (
@@ -89,9 +87,8 @@ export default async function ActivityDetailPage({
             </p>
           </Card>
         </aside>
-      </main>
-      <Footer />
-    </>
+      </div>
+    </AuthenticatedShell>
   );
 }
 

@@ -1,8 +1,7 @@
 import Image from "next/image";
 import { connection } from "next/server";
 import { notFound } from "next/navigation";
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
+import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { Badge, Card, SectionHeader } from "@/components/ui/card";
 import { FollowButton } from "@/components/social/follow-button";
 import { SocialPostCard } from "@/components/social/social-post-card";
@@ -37,10 +36,9 @@ export default async function VillageDetailPage({
   ]);
 
   return (
-    <>
-      <Navbar />
-      <main>
-        <section className="page-shell py-6 md:py-8">
+    <AuthenticatedShell>
+      <div className="grid gap-8">
+        <section>
           <Card className="overflow-hidden">
             <div className="relative min-h-[320px] md:min-h-[360px]">
               {village.image ? (
@@ -78,8 +76,8 @@ export default async function VillageDetailPage({
           </Card>
         </section>
 
-        <section className="page-shell py-8 md:py-10">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <section>
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
             <div>
               <SectionHeader title="Muro del pueblo" description={village.description} />
               <div className="grid gap-5">
@@ -101,7 +99,7 @@ export default async function VillageDetailPage({
           </div>
         </section>
 
-        <section className="page-shell py-8 md:py-10">
+        <section>
           <SectionHeader
             title="Actividades relacionadas"
             description={
@@ -110,7 +108,7 @@ export default async function VillageDetailPage({
                 : "Pronto habrá nuevas actividades para este pueblo."
             }
           />
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2">
             {(relatedActivities.length ? relatedActivities : fallbackActivities.slice(0, 3)).map(
               (activity) => (
                 <ActivityCard key={activity.id} activity={activity} />
@@ -118,8 +116,7 @@ export default async function VillageDetailPage({
             )}
           </div>
         </section>
-      </main>
-      <Footer />
-    </>
+      </div>
+    </AuthenticatedShell>
   );
 }

@@ -59,10 +59,10 @@ export function AuthGate({
         </p>
         <div className="mt-6">
           <Link
-            href="/dashboard"
+            href="/community"
             className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#3A7D44] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2f6738]"
           >
-            Ir a mi espacio
+            Ir a comunidad
           </Link>
         </div>
       </Card>

@@ -11,10 +11,17 @@ export function RightRail({
   villages?: Village[];
 }) {
   return (
-    <div className="sticky top-24 grid gap-6">
+    <div className="grid gap-5 xl:sticky xl:top-24">
       {activities.length ? (
         <section>
-          <h2 className="mb-3 text-lg font-black text-[#1F3D2B]">Recomendadas</h2>
+          <div className="mb-3">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#3A7D44]">
+              Recomendadas
+            </p>
+            <h2 className="mt-1 text-lg font-black text-[#1F3D2B]">
+              Actividades para descubrir
+            </h2>
+          </div>
           <div className="grid gap-4">
             {activities.slice(0, 2).map((activity) => (
               <ActivityCard key={activity.id} activity={activity} compact />
@@ -24,7 +31,14 @@ export function RightRail({
       ) : null}
       {villages.length ? (
         <section>
-          <h2 className="mb-3 text-lg font-black text-[#1F3D2B]">Pueblos populares</h2>
+          <div className="mb-3">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#3A7D44]">
+              Pueblos
+            </p>
+            <h2 className="mt-1 text-lg font-black text-[#1F3D2B]">
+              Lugares populares
+            </h2>
+          </div>
           <div className="grid gap-4">
             {villages.slice(0, 2).map((village) => (
               <VillageCard key={village.id} village={village} compact />
@@ -33,7 +47,7 @@ export function RightRail({
         </section>
       ) : null}
       <Card className="p-4">
-        <p className="text-sm font-black text-[#1F3D2B]">Acciones sociales</p>
+        <p className="text-sm font-black text-[#1F3D2B]">Tu actividad social</p>
         <p className="mt-2 text-sm leading-6 text-[#1E1E1E]/62">
           Likes, guardados, inscripciones y seguimientos se guardan en tu cuenta
           cuando has iniciado sesión.

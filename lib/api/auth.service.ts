@@ -30,6 +30,14 @@ type ApiUser = {
   bio?: unknown;
   role?: unknown;
   favorite_village_id?: unknown;
+  stats?: {
+    activities?: unknown;
+    activities_count?: unknown;
+    posts?: unknown;
+    posts_count?: unknown;
+    followed_villages?: unknown;
+    followed_villages_count?: unknown;
+  };
   created_at?: unknown;
 };
 
@@ -44,6 +52,10 @@ function asString(value: unknown, fallback = "") {
   return typeof value === "string" && value.trim() ? value : fallback;
 }
 
+function asNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
 export function adaptUser(user: unknown): AuthUser | undefined {
   if (!user || typeof user !== "object") {
     return undefined;
@@ -52,6 +64,7 @@ export function adaptUser(user: unknown): AuthUser | undefined {
   const rawUser = user as ApiUser;
   const id = asString(rawUser.id);
   const name = asString(rawUser.name, asString(rawUser.username, "Usuario"));
+  const stats = rawUser.stats;
 
   if (!id) {
     return undefined;
@@ -67,6 +80,16 @@ export function adaptUser(user: unknown): AuthUser | undefined {
     bio: asString(rawUser.bio) || undefined,
     role: asString(rawUser.role) || undefined,
     favoriteVillageId: asString(rawUser.favorite_village_id) || null,
+    stats: stats
+      ? {
+          activities:
+            asNumber(stats.activities) ?? asNumber(stats.activities_count),
+          posts: asNumber(stats.posts) ?? asNumber(stats.posts_count),
+          followedVillages:
+            asNumber(stats.followed_villages) ??
+            asNumber(stats.followed_villages_count),
+        }
+      : undefined,
     createdAt: asString(rawUser.created_at) || undefined,
   };
 }
@@ -102,9 +125,18 @@ export async function loginUser(payload: LoginPayload) {
 }
 
 export async function getCurrentUser(token: string) {
-  const response = await apiFetch<ApiUser>("/api/v1/auth/me", {
-    token,
-  });
+  let response: ApiUser;
+
+  try {
+    response = await apiFetch<ApiUser>("/api/v1/users/me", {
+      token,
+    });
+  } catch (error) {
+    console.error("Error loading user profile from /api/v1/users/me:", error);
+    response = await apiFetch<ApiUser>("/api/v1/auth/me", {
+      token,
+    });
+  }
 
   return adaptUser(response);
 }

@@ -11,11 +11,6 @@ import { cn } from "@/lib/utils";
 
 const accountLinks = [
   {
-    href: "/dashboard",
-    label: "Mi espacio",
-    meta: "Tu resumen personal",
-  },
-  {
     href: "/profile",
     label: "Mi perfil",
     meta: "Datos y actividad",

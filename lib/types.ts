@@ -51,6 +51,7 @@ export type CommunityPost = {
   id: string;
   title: string;
   content: string;
+  authorId?: string;
   villageId?: string;
   villageName?: string;
   author: string;
@@ -79,5 +80,10 @@ export type AuthUser = {
   bio?: string;
   role?: string;
   favoriteVillageId?: string | null;
+  stats?: {
+    activities?: number;
+    posts?: number;
+    followedVillages?: number;
+  };
   createdAt?: string;
 };

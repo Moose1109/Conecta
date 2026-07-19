@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { primaryNavigationItems } from "@/components/layout/navigation-items";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { cn } from "@/lib/utils";
 
@@ -13,18 +14,21 @@ const visitorItems = [
   { href: "/login", label: "Entrar", icon: "En" },
 ];
 
-const publicItems = [
-  { href: "/", label: "Inicio", icon: "In" },
-  { href: "/community", label: "Comunidad", icon: "Co" },
-  { href: "/activities", label: "Planes", icon: "Pl" },
-  { href: "/villages", label: "Pueblos", icon: "Pu" },
-];
-
 export function MobileBottomNav() {
   const pathname = usePathname();
   const { token } = useAuthSession();
   const isAuthenticated = Boolean(token);
-  const items = isAuthenticated ? publicItems : visitorItems;
+  const items = isAuthenticated
+    ? primaryNavigationItems.map((item) => ({
+        href: item.href,
+        icon: item.shortIcon,
+        label: item.mobileLabel ?? item.label,
+      }))
+    : visitorItems;
+
+  if (pathname === "/" && !isAuthenticated) {
+    return null;
+  }
 
   return (
     <nav

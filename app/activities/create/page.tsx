@@ -1,6 +1,5 @@
 import { connection } from "next/server";
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
+import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { Card, SectionHeader } from "@/components/ui/card";
 import { CreateActivityForm } from "@/features/activities/create-activity-form";
 import { AuthGate } from "@/features/auth/auth-gate";
@@ -14,9 +13,8 @@ export default async function CreateActivityPage() {
   const villages = await getVillages();
 
   return (
-    <>
-      <Navbar />
-      <main className="page-shell max-w-4xl py-12">
+    <AuthenticatedShell>
+      <div className="mx-auto max-w-4xl">
         <AuthGate message="Para crear una actividad necesitas iniciar sesión.">
           <SectionHeader
             eyebrow="Nueva actividad"
@@ -27,8 +25,7 @@ export default async function CreateActivityPage() {
             <CreateActivityForm categories={activityCategories} villages={villages} />
           </Card>
         </AuthGate>
-      </main>
-      <Footer />
-    </>
+      </div>
+    </AuthenticatedShell>
   );
 }

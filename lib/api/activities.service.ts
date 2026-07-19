@@ -153,24 +153,20 @@ function adaptActivity(activity: ApiActivity): Activity | null {
 }
 
 function adaptActivities(response: ApiCollection<ApiActivity>) {
-  const adapted = collectionItems(response)
+  return collectionItems(response)
     .map(adaptActivity)
     .filter((activity): activity is Activity => Boolean(activity));
-
-  if (!adapted.length) {
-    throw new Error("API activities response did not include valid activities");
-  }
-
-  return adapted;
 }
 
-export async function getActivities() {
+export async function getActivities(token?: string) {
   if (!hasApiBaseUrl()) {
     return [];
   }
 
   try {
-    const response = await apiFetch<ApiCollection<ApiActivity>>("/api/v1/activities");
+    const response = await apiFetch<ApiCollection<ApiActivity>>("/api/v1/activities", {
+      token,
+    });
     return adaptActivities(response);
   } catch (error) {
     console.error("Error loading activities from API:", error);

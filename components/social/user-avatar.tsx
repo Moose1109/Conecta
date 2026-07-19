@@ -24,6 +24,8 @@ export function UserAvatar({
       .join("")
       .slice(0, 2)
       .toUpperCase();
+  const safeImageUrl =
+    imageUrl && imageUrl.trim() ? imageUrl : undefined;
 
   return (
     <div
@@ -34,9 +36,9 @@ export function UserAvatar({
       )}
       title={name}
     >
-      {imageUrl ? (
+      {safeImageUrl ? (
         <Image
-          src={imageUrl}
+          src={safeImageUrl}
           alt={name}
           fill
           className="object-cover"

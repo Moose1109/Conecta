@@ -5,6 +5,7 @@ type ApiPost = {
   id?: unknown;
   title?: unknown;
   content?: unknown;
+  author_id?: unknown;
   village_id?: unknown;
   villageId?: unknown;
   village_name?: unknown;
@@ -14,6 +15,7 @@ type ApiPost = {
     name?: unknown;
   };
   author?: {
+    id?: unknown;
     name?: unknown;
     username?: unknown;
     handle?: unknown;
@@ -90,6 +92,7 @@ function adaptPost(post: ApiPost): CommunityPost | null {
   const id = asString(post.id);
   const title = asString(post.title, "Publicación");
   const content = asString(post.content);
+  const authorId = asString(post.author?.id, asString(post.author_id));
   const villageId = asString(
     post.village?.id,
     asString(post.village_id, asString(post.villageId, asString(post.village?.slug))),
@@ -117,6 +120,7 @@ function adaptPost(post: ApiPost): CommunityPost | null {
     id,
     title,
     content,
+    authorId: authorId || undefined,
     villageId: villageId || undefined,
     villageName:
       asDisplayString(post.village?.name, asDisplayString(post.village_name)) ||
@@ -141,24 +145,20 @@ function adaptPost(post: ApiPost): CommunityPost | null {
 }
 
 function adaptPosts(response: ApiCollection<ApiPost>) {
-  const adapted = collectionItems(response)
+  return collectionItems(response)
     .map(adaptPost)
     .filter((post): post is CommunityPost => Boolean(post));
-
-  if (!adapted.length) {
-    throw new Error("API posts response did not include valid posts");
-  }
-
-  return adapted;
 }
 
-export async function getCommunityPosts() {
+export async function getCommunityPosts(token?: string) {
   if (!hasApiBaseUrl()) {
     return [];
   }
 
   try {
-    const response = await apiFetch<ApiCollection<ApiPost>>("/api/v1/posts");
+    const response = await apiFetch<ApiCollection<ApiPost>>("/api/v1/posts", {
+      token,
+    });
     return adaptPosts(response);
   } catch (error) {
     console.error("Error loading community posts from API:", error);

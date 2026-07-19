@@ -40,7 +40,7 @@ export function Footer() {
           <div className="mt-3 grid gap-2 text-sm text-white/72">
             {isAuthenticated ? (
               <>
-                <Link href="/dashboard">Mi espacio</Link>
+                <Link href="/community">Comunidad</Link>
                 <Link href="/profile">Mi perfil</Link>
                 {isAdminUser(user) ? <Link href="/admin">Panel admin</Link> : null}
                 <button className="text-left hover:text-white" type="button" onClick={handleLogout}>

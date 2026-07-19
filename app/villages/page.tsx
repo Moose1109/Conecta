@@ -1,6 +1,5 @@
 import { connection } from "next/server";
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
+import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { getVillages } from "@/lib/api/villages.service";
@@ -13,14 +12,13 @@ export default async function VillagesPage() {
   const villages = await getVillages();
 
   return (
-    <>
-      <Navbar />
-      <main className="page-shell py-8 md:py-12">
-        <PageHeader
-          eyebrow="Pueblos"
-          title="Descubre lugares con vida propia"
-          description="Una selección inicial de pueblos con patrimonio, paisaje y actividades comunitarias."
-        />
+    <AuthenticatedShell>
+      <PageHeader
+        eyebrow="Pueblos"
+        title="Descubre lugares con vida propia"
+        description="Una selección inicial de pueblos con patrimonio, paisaje y actividades comunitarias."
+      />
+      {villages.length ? (
         <section className="mb-10">
           <Card className="grid gap-5 overflow-hidden p-5 md:grid-cols-[1fr_1fr]">
             <div>
@@ -41,9 +39,8 @@ export default async function VillagesPage() {
             </div>
           </Card>
         </section>
-        <VillageExplorer villages={villages} />
-      </main>
-      <Footer />
-    </>
+      ) : null}
+      <VillageExplorer villages={villages} />
+    </AuthenticatedShell>
   );
 }

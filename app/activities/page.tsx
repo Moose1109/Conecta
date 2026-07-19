@@ -1,6 +1,5 @@
 import { connection } from "next/server";
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
+import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { JoinActivityButton } from "@/components/social/join-activity-button";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
@@ -20,23 +19,22 @@ export default async function ActivitiesPage() {
   const featured = activities.slice(0, 2);
 
   return (
-    <>
-      <Navbar />
-      <main className="page-shell py-8 md:py-12">
-        <PageHeader
-          eyebrow="Actividades"
-          title="Descubre planes cerca de la comunidad"
-          description="Eventos destacados, categorías visuales y actividades locales listas para descubrir y apuntarte."
-          action={
-            <ProtectedLinkButton
-              href="/activities/create"
-              message="Para crear una actividad necesitas iniciar sesión."
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#3A7D44] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2f6738]"
-            >
-              Crear actividad
-            </ProtectedLinkButton>
-          }
-        />
+    <AuthenticatedShell>
+      <PageHeader
+        eyebrow="Actividades"
+        title="Descubre planes cerca de la comunidad"
+        description="Eventos destacados, categorías visuales y actividades locales listas para descubrir y apuntarte."
+        action={
+          <ProtectedLinkButton
+            href="/activities/create"
+            message="Para crear una actividad necesitas iniciar sesión."
+            className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#3A7D44] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2f6738]"
+          >
+            Crear actividad
+          </ProtectedLinkButton>
+        }
+      />
+      {featured.length ? (
         <section className="mb-10 grid gap-5 lg:grid-cols-2">
           {featured.map((activity) => (
             <Card key={activity.id} className="overflow-hidden bg-[#1F3D2B] text-white">
@@ -64,14 +62,13 @@ export default async function ActivitiesPage() {
             </Card>
           ))}
         </section>
+      ) : null}
 
-        <ActivityExplorer
-          activities={activities}
-          categories={activityCategories}
-          villages={villages}
-        />
-      </main>
-      <Footer />
-    </>
+      <ActivityExplorer
+        activities={activities}
+        categories={activityCategories}
+        villages={villages}
+      />
+    </AuthenticatedShell>
   );
 }

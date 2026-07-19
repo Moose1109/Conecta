@@ -97,22 +97,20 @@ function adaptVillage(village: ApiVillage): Village | null {
 }
 
 function adaptVillages(response: ApiCollection<ApiVillage>) {
-  const adapted = collectionItems(response).map(adaptVillage).filter((village): village is Village => Boolean(village));
-
-  if (!adapted.length) {
-    throw new Error("API villages response did not include valid villages");
-  }
-
-  return adapted;
+  return collectionItems(response)
+    .map(adaptVillage)
+    .filter((village): village is Village => Boolean(village));
 }
 
-export async function getVillages() {
+export async function getVillages(token?: string) {
   if (!hasApiBaseUrl()) {
     return [];
   }
 
   try {
-    const response = await apiFetch<ApiCollection<ApiVillage>>("/api/v1/villages");
+    const response = await apiFetch<ApiCollection<ApiVillage>>("/api/v1/villages", {
+      token,
+    });
     return adaptVillages(response);
   } catch (error) {
     console.error("Error loading villages from API:", error);
