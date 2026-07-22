@@ -1,7 +1,10 @@
-import { apiFetch, hasApiBaseUrl } from "@/lib/api/client";
+import { apiFetch } from "@/lib/api/client";
+import { postDataSource } from "@/lib/api/entity-capabilities";
+import { toRenderableImageUrl } from "@/lib/image-url";
 import type { CommunityPost } from "@/lib/types";
 
 type ApiPost = {
+  data_source?: unknown;
   id?: unknown;
   title?: unknown;
   content?: unknown;
@@ -51,6 +54,12 @@ export type CreateCommunityPostPayload = {
   title?: string | null;
   content: string;
   image_url?: string | null;
+};
+
+export type GetCommunityPostsOptions = {
+  authorId?: string;
+  limit?: number;
+  villageId?: string;
 };
 
 function collectionItems<T>(response: ApiCollection<T>): T[] {
@@ -117,6 +126,7 @@ function adaptPost(post: ApiPost): CommunityPost | null {
   const saved = asBoolean(post.is_saved) ?? asBoolean(post.saved_by_me) ?? asBoolean(post.saved);
 
   return {
+    dataSource: postDataSource(id, post.data_source),
     id,
     title,
     content,
@@ -132,7 +142,9 @@ function adaptPost(post: ApiPost): CommunityPost | null {
     authorAvatar:
       asImageUrl(post.author?.avatar_url, asImageUrl(post.authorAvatar)) ||
       undefined,
-    image: asString(post.image_url, asString(post.image)) || undefined,
+    image:
+      toRenderableImageUrl(post.image_url) ??
+      toRenderableImageUrl(post.image),
     date: dateOnly(post.created_at, asString(post.date)),
     likes: asNumber(post.likes_count, asNumber(post.likes)),
     isLiked: asBoolean(post.is_liked) ?? asBoolean(post.liked_by_me),
@@ -150,47 +162,65 @@ function adaptPosts(response: ApiCollection<ApiPost>) {
     .filter((post): post is CommunityPost => Boolean(post));
 }
 
-export async function getCommunityPosts(token?: string) {
-  if (!hasApiBaseUrl()) {
-    return [];
-  }
+function postsPath({
+  authorId,
+  limit = 100,
+  villageId,
+}: GetCommunityPostsOptions = {}) {
+  const params = new URLSearchParams({ limit: String(limit) });
 
-  try {
-    const response = await apiFetch<ApiCollection<ApiPost>>("/api/v1/posts", {
-      token,
-    });
-    return adaptPosts(response);
-  } catch (error) {
-    console.error("Error loading community posts from API:", error);
-    return [];
-  }
+  if (authorId) params.set("author_id", authorId);
+  if (villageId) params.set("village_id", villageId);
+
+  return `/api/v1/posts?${params.toString()}`;
+}
+
+export async function getCommunityPosts(
+  token?: string,
+  options?: GetCommunityPostsOptions,
+) {
+  return getCommunityPostsStrict(token, options);
+}
+
+/** Canonical strict fetch retained as an explicit name for existing callers. */
+export async function getCommunityPostsStrict(
+  token?: string,
+  options?: GetCommunityPostsOptions,
+) {
+  const response = await apiFetch<ApiCollection<ApiPost>>(postsPath(options), {
+    token,
+  });
+
+  return adaptPosts(response);
 }
 
 export async function getCommunityPostById(id: string) {
-  if (!hasApiBaseUrl()) {
-    return undefined;
-  }
+  return getCommunityPostByIdStrict(id);
+}
 
-  try {
-    const response = await apiFetch<ApiPost>(`/api/v1/posts/${encodeURIComponent(id)}`);
-    return adaptPost(response) ?? undefined;
-  } catch (error) {
-    console.error("Error loading community post from API:", error);
-    return undefined;
-  }
+export async function getCommunityPostByIdStrict(id: string, token?: string) {
+  const response = await apiFetch<ApiPost>(`/api/v1/posts/${encodeURIComponent(id)}`, {
+    token,
+  });
+
+  return adaptPost(response) ?? undefined;
 }
 
 export async function getPostsByVillageId(villageId: string) {
-  if (!hasApiBaseUrl()) {
-    return [];
-  }
+  return getPostsByVillageIdStrict(villageId);
+}
 
-  const posts = await getCommunityPosts();
-  return posts.filter((post) => post.villageId === villageId);
+export async function getPostsByVillageIdStrict(villageId: string, token?: string) {
+  return getCommunityPostsStrict(token, { villageId });
 }
 
 export async function likePost(id: string, token: string) {
-  return apiFetch<{ liked?: boolean; message?: string }>(
+  return apiFetch<{
+    is_liked?: boolean;
+    liked?: boolean;
+    likes_count?: number;
+    message?: string;
+  }>(
     `/api/v1/posts/${encodeURIComponent(id)}/like`,
     {
       method: "POST",
@@ -208,7 +238,12 @@ export async function createCommunityPost(payload: CreateCommunityPostPayload, t
 }
 
 export async function unlikePost(id: string, token: string) {
-  return apiFetch<{ liked?: boolean; message?: string }>(
+  return apiFetch<{
+    is_liked?: boolean;
+    liked?: boolean;
+    likes_count?: number;
+    message?: string;
+  }>(
     `/api/v1/posts/${encodeURIComponent(id)}/like`,
     {
       method: "DELETE",
@@ -218,7 +253,7 @@ export async function unlikePost(id: string, token: string) {
 }
 
 export async function savePost(id: string, token: string) {
-  return apiFetch<{ saved?: boolean; message?: string }>(
+  return apiFetch<{ is_saved?: boolean; saved?: boolean; message?: string }>(
     `/api/v1/posts/${encodeURIComponent(id)}/save`,
     {
       method: "POST",
@@ -228,7 +263,7 @@ export async function savePost(id: string, token: string) {
 }
 
 export async function unsavePost(id: string, token: string) {
-  return apiFetch<{ saved?: boolean; message?: string }>(
+  return apiFetch<{ is_saved?: boolean; saved?: boolean; message?: string }>(
     `/api/v1/posts/${encodeURIComponent(id)}/save`,
     {
       method: "DELETE",

@@ -135,7 +135,7 @@ Módulos de endpoints recomendados:
 ### Fase 2.5 — Integración con frontend
 
 - Reemplazar gradualmente las lecturas mock desde `lib/api/*`.
-- Configurar `NEXT_PUBLIC_API_URL`.
+- Configurar `NEXT_PUBLIC_API_BASE_URL`.
 - Conectar primero los endpoints GET.
 - Conectar auth después de estabilizar las pantallas de solo lectura.
 - Conectar interacciones POST/DELETE después de auth.
@@ -165,7 +165,7 @@ VERCEL_FRONTEND_URL=https://conecta-pueblos.vercel.app
 El `.env.example` del frontend ya incluye:
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 ```
 
 ## CORS

@@ -22,7 +22,7 @@ export function AuthenticatedShell({
       <Navbar />
       <main
         className={cn(
-          "mx-auto w-[min(1320px,calc(100%_-_24px))] py-4 pb-24 md:w-[min(1320px,calc(100%_-_32px))] md:py-6",
+          "page-shell py-4 pb-24 md:py-5 lg:pb-10",
           className,
         )}
       >

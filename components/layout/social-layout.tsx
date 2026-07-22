@@ -15,13 +15,17 @@ export function SocialLayout({
   return (
     <div
       className={cn(
-        "grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]",
-        variant === "three-column" && "xl:grid-cols-[240px_minmax(0,1fr)_300px]",
+        "grid gap-5 lg:grid-cols-[248px_minmax(0,1fr)] xl:gap-6",
+        variant === "three-column" && "xl:grid-cols-[248px_minmax(0,1fr)_330px]",
       )}
     >
       {left ? <aside className="hidden min-w-0 lg:order-1 lg:block">{left}</aside> : null}
       <section className="order-1 min-w-0 lg:order-2">{children}</section>
-      {right ? <aside className="order-3 min-w-0">{right}</aside> : null}
+      {right ? (
+        <aside className={cn("order-3 min-w-0", variant === "three-column" && "hidden xl:block")}>
+          {right}
+        </aside>
+      ) : null}
     </div>
   );
 }

@@ -1,13 +1,9 @@
-import { FuturePage } from "@/components/ui/future-page";
+import type { Metadata } from "next";
+import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
+import { SettingsView } from "@/features/profile/settings-view";
+
+export const metadata: Metadata = { title: "Editar perfil" };
 
 export default function SettingsPage() {
-  return (
-    <FuturePage
-      authMessage="Para acceder a tus ajustes necesitas iniciar sesión."
-      eyebrow="Ajustes"
-      title="Preferencias de la cuenta"
-      description="Espacio preparado para preferencias de perfil, privacidad, notificaciones e intereses."
-      items={["Perfil", "Privacidad", "Notificaciones"]}
-    />
-  );
+  return <AuthenticatedShell><SettingsView /></AuthenticatedShell>;
 }

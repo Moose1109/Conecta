@@ -6,9 +6,13 @@ export type ActivityCategory =
   | "Música"
   | "Voluntariado"
   | "Mercados"
-  | "Fiestas locales";
+  | "Fiestas locales"
+  | "Otra";
+
+export type EntityDataSource = "demo" | "persistent";
 
 export type Village = {
+  dataSource: EntityDataSource;
   id: string;
   slug?: string;
   name: string;
@@ -27,6 +31,7 @@ export type Village = {
 };
 
 export type Activity = {
+  dataSource: EntityDataSource;
   id: string;
   slug?: string;
   title: string;
@@ -35,7 +40,7 @@ export type Activity = {
   villageName?: string;
   date: string;
   time: string;
-  spots: number;
+  capacity: number;
   spotsLeft?: number;
   participantsCount?: number;
   image?: string;
@@ -48,6 +53,7 @@ export type Activity = {
 };
 
 export type CommunityPost = {
+  dataSource: EntityDataSource;
   id: string;
   title: string;
   content: string;

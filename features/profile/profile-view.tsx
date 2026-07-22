@@ -1,18 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { Card } from "@/components/ui/card";
+import { LoadingState } from "@/components/ui/loading-state";
 import { AuthGate } from "@/features/auth/auth-gate";
 import { ProfileHeader } from "@/features/profile/profile-header";
-import { ProfileLeftExtras } from "@/features/profile/profile-recommendations";
-import { ProfileStatCard } from "@/features/profile/profile-stat-card";
+import { ProfileRecommendationsRail } from "@/features/profile/profile-recommendations";
 import { ProfileTabs } from "@/features/profile/profile-tabs";
-import { getActivities } from "@/lib/api/activities.service";
+import { getActivitiesStrict } from "@/lib/api/activities.service";
 import { getCurrentUser } from "@/lib/api/auth.service";
-import { getCommunityPosts } from "@/lib/api/community.service";
-import { getVillages } from "@/lib/api/villages.service";
+import { isUnauthorizedError } from "@/lib/api/client";
+import { getCommunityPostsStrict } from "@/lib/api/community.service";
+import { logApiIssue } from "@/lib/api/error-message";
+import { clearSession, saveSession } from "@/lib/api/session";
+import { getVillagesStrict } from "@/lib/api/villages.service";
 import { useAuthSession } from "@/features/auth/use-auth-session";
+import {
+  COMMUNITY_DATA_REFRESH_EVENT,
+} from "@/features/community/community-events";
 import type { Activity, AuthUser, CommunityPost, Village } from "@/lib/types";
 
 type ProfileData = {
@@ -20,6 +25,12 @@ type ProfileData = {
   posts: CommunityPost[];
   user?: AuthUser;
   villages: Village[];
+};
+
+export type ProfileUnavailableSources = {
+  activities: boolean;
+  posts: boolean;
+  villages: boolean;
 };
 
 function isPostByUser(post: CommunityPost, user?: AuthUser) {
@@ -38,8 +49,14 @@ function isPostByUser(post: CommunityPost, user?: AuthUser) {
   return false;
 }
 
-function metricValue(primary: number | undefined, fallback: number) {
-  return typeof primary === "number" && Number.isFinite(primary) ? primary : fallback;
+function metricValue(
+  primary: number | undefined,
+  fallback: number,
+  unavailable: boolean,
+  mayBeTruncated: boolean,
+) {
+  if (typeof primary === "number" && Number.isFinite(primary)) return primary;
+  return unavailable || mayBeTruncated ? undefined : fallback;
 }
 
 export function ProfileView() {
@@ -99,6 +116,19 @@ export function ProfileView() {
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(Boolean(token));
+  const [refreshRequest, setRefreshRequest] = useState(0);
+  const [unavailableSources, setUnavailableSources] = useState<ProfileUnavailableSources>({
+    activities: false,
+    posts: false,
+    villages: false,
+  });
+
+  useEffect(() => {
+    const refresh = () => setRefreshRequest((current) => current + 1);
+    window.addEventListener(COMMUNITY_DATA_REFRESH_EVENT, refresh);
+
+    return () => window.removeEventListener(COMMUNITY_DATA_REFRESH_EVENT, refresh);
+  }, []);
 
   useEffect(() => {
     if (!token) {
@@ -112,41 +142,76 @@ export function ProfileView() {
       setError("");
       setIsLoading(true);
 
-      try {
-        const [currentUser, posts, activities, villages] = await Promise.all([
-          getCurrentUser(authToken).catch((error) => {
-            console.error("Error loading current profile user:", error);
-            return sessionFallbackUser;
-          }),
-          getCommunityPosts(authToken),
-          getActivities(authToken),
-          getVillages(authToken),
+      const [userResult, postsResult, activitiesResult, villagesResult] =
+        await Promise.allSettled([
+          getCurrentUser(authToken),
+          getCommunityPostsStrict(
+            authToken,
+            sessionUserId ? { authorId: sessionUserId } : undefined,
+          ),
+          getActivitiesStrict(authToken),
+          getVillagesStrict(authToken),
         ]);
 
-        if (!active) {
-          return;
-        }
+      if (!active) return;
 
-        setData({
-          activities,
-          posts,
-          user: currentUser ?? sessionFallbackUser,
-          villages,
-        });
-      } catch (error) {
-        console.error("Error loading profile data:", error);
-        if (active) {
-          setError("No se pudo cargar todo tu perfil. Mostramos solo los datos disponibles.");
-          setData((current) => ({
-            ...current,
-            user: current.user ?? sessionFallbackUser,
-          }));
-        }
-      } finally {
-        if (active) {
-          setIsLoading(false);
-        }
+      const hasUnauthorizedResponse = [
+        userResult,
+        postsResult,
+        activitiesResult,
+        villagesResult,
+      ].some(
+        (result) =>
+          result.status === "rejected" && isUnauthorizedError(result.reason),
+      );
+
+      if (hasUnauthorizedResponse) {
+        clearSession();
+        setIsLoading(false);
+        return;
       }
+
+      const currentUser = userResult.status === "fulfilled"
+        ? userResult.value ?? sessionFallbackUser
+        : sessionFallbackUser;
+      const nextUnavailable = {
+        activities: activitiesResult.status === "rejected",
+        posts: postsResult.status === "rejected",
+        villages: villagesResult.status === "rejected",
+      };
+      const missingLabels = [
+        nextUnavailable.posts ? "publicaciones" : "",
+        nextUnavailable.activities ? "actividades" : "",
+        nextUnavailable.villages ? "pueblos" : "",
+      ].filter(Boolean);
+
+      if (userResult.status === "fulfilled" && userResult.value) {
+        saveSession({ token: authToken, user: userResult.value });
+      }
+      if (userResult.status === "rejected") logApiIssue("Error loading current profile user", userResult.reason);
+      if (postsResult.status === "rejected") logApiIssue("Error loading profile posts", postsResult.reason);
+      if (activitiesResult.status === "rejected") logApiIssue("Error loading profile activities", activitiesResult.reason);
+      if (villagesResult.status === "rejected") logApiIssue("Error loading profile villages", villagesResult.reason);
+
+      setUnavailableSources(nextUnavailable);
+      setError(
+        missingLabels.length
+          ? `No hemos podido cargar ${missingLabels.join(", ")}. El resto de tu perfil sigue disponible.`
+          : userResult.status === "rejected"
+            ? "Mostramos los datos guardados en tu sesión porque no hemos podido actualizar el perfil."
+            : "",
+      );
+      setData((current) => ({
+        activities: activitiesResult.status === "fulfilled"
+          ? activitiesResult.value
+          : current.activities,
+        posts: postsResult.status === "fulfilled" ? postsResult.value : current.posts,
+        user: currentUser ?? current.user,
+        villages: villagesResult.status === "fulfilled"
+          ? villagesResult.value
+          : current.villages,
+      }));
+      setIsLoading(false);
     }
 
     loadProfile();
@@ -155,7 +220,9 @@ export function ProfileView() {
       active = false;
     };
   }, [
+    refreshRequest,
     sessionFallbackUser,
+    sessionUserId,
     token,
   ]);
 
@@ -173,68 +240,45 @@ export function ProfileView() {
     [data.villages],
   );
   const stats = {
-    posts: metricValue(profileUser?.stats?.posts, userPosts.length),
-    activities: metricValue(profileUser?.stats?.activities, joinedActivities.length),
+    posts: metricValue(
+      profileUser?.stats?.posts,
+      userPosts.length,
+      unavailableSources.posts,
+      data.posts.length >= 100,
+    ),
+    activities: metricValue(
+      profileUser?.stats?.activities,
+      joinedActivities.length,
+      unavailableSources.activities,
+      data.activities.length >= 100,
+    ),
     followedVillages: metricValue(
       profileUser?.stats?.followedVillages,
       followedVillages.length,
+      unavailableSources.villages,
+      data.villages.length >= 100,
     ),
   };
 
   return (
-    <AuthenticatedShell
-      leftExtra={token ? (
-        <ProfileLeftExtras
-          activities={data.activities}
-          user={profileUser}
-          villages={data.villages}
-        />
-      ) : null}
-    >
-      <AuthGate message="Para acceder a tu perfil necesitas iniciar sesión.">
-        <div className="grid gap-6">
-          {error ? (
-            <Card className="border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800">
-              {error}
-            </Card>
-          ) : null}
-          <ProfileHeader user={profileUser} />
-          {isLoading ? (
-            <Card className="p-4 text-sm font-bold text-[#1E1E1E]/62">
-              Cargando métricas reales de tu perfil...
-            </Card>
-          ) : null}
-          <div className="grid gap-3 sm:grid-cols-3">
-            <ProfileStatCard
-              label="Publicaciones"
-              note="Creadas por tu usuario"
-              value={stats.posts}
-            />
-            <ProfileStatCard
-              label="Actividades inscritas"
-              note="Marcadas como apuntado"
-              value={stats.activities}
-            />
-            <ProfileStatCard
-              label="Pueblos seguidos"
-              note="Devueltos como seguidos"
-              value={stats.followedVillages}
-            />
-          </div>
+    <AuthGate message="Para acceder a tu perfil necesitas iniciar sesión.">
+      <div className="grid gap-5">
+        {error ? (
+          <Card className="border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800" role="status">
+            {error}
+          </Card>
+        ) : null}
+        {isLoading && !profileUser ? <LoadingState variant="profile" label="Cargando perfil" /> : <ProfileHeader stats={stats} user={profileUser} />}
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
           <ProfileTabs
             activities={joinedActivities}
             posts={userPosts}
+            unavailableSources={unavailableSources}
             villages={followedVillages}
           />
-          <div className="grid gap-5 lg:hidden">
-            <ProfileLeftExtras
-              activities={data.activities}
-              user={profileUser}
-              villages={data.villages}
-            />
-          </div>
+          <ProfileRecommendationsRail activities={data.activities} villages={data.villages} />
         </div>
-      </AuthGate>
-    </AuthenticatedShell>
+      </div>
+    </AuthGate>
   );
 }

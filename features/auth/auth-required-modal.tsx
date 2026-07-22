@@ -1,6 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { LockKeyhole, X } from "lucide-react";
+import { useRef } from "react";
+import { createPortal } from "react-dom";
+import { useModalDialog } from "@/components/ui/use-modal-dialog";
 
 export function AuthRequiredModal({
   message = "Para realizar esta acción debes entrar con tu cuenta o crear una nueva.",
@@ -11,44 +15,43 @@ export function AuthRequiredModal({
   onClose: () => void;
   open: boolean;
 }) {
-  if (!open) {
-    return null;
-  }
+  const panelRef = useRef<HTMLDivElement>(null);
 
-  return (
+  useModalDialog({ dialogRef: panelRef, onClose, open });
+
+  if (!open || typeof document === "undefined") return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-[80] grid place-items-center bg-[#1F3D2B]/52 px-4 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="auth-required-title"
+      className="fixed inset-0 z-[100] grid touch-pan-y place-items-center overflow-y-auto overscroll-contain bg-[#0E3325]/54 px-4 py-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-sm"
+      role="presentation"
+      onPointerDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
     >
-      <div className="w-full max-w-md rounded-2xl border border-[#1F3D2B14] bg-[#FAF7F0] p-6 shadow-[0_24px_70px_rgba(31,61,43,0.26)]">
-        <h2 id="auth-required-title" className="text-2xl font-black text-[#1F3D2B]">
-          Necesitas iniciar sesión
-        </h2>
-        <p className="mt-3 text-sm leading-6 text-[#1E1E1E]/70">{message}</p>
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <Link
-            href="/login"
-            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#3A7D44] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#2f6738]"
-          >
-            Entrar
-          </Link>
-          <Link
-            href="/register"
-            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[#1F3D2B24] bg-white/88 px-5 py-2.5 text-sm font-bold text-[#1F3D2B] hover:bg-white"
-          >
-            Crear cuenta
-          </Link>
-        </div>
-        <button
-          className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 text-sm font-bold text-[#1F3D2B]/70 hover:bg-[#1F3D2B0d]"
-          type="button"
-          onClick={onClose}
-        >
-          Cancelar
+      <div
+        ref={panelRef}
+        aria-describedby="auth-required-description"
+        aria-labelledby="auth-required-title"
+        aria-modal="true"
+        className="relative w-full max-w-md rounded-[28px] border border-white/80 bg-[#FFFCF7] p-6 shadow-[0_28px_90px_rgba(14,51,37,0.28)] outline-none sm:p-7"
+        role="dialog"
+        tabIndex={-1}
+      >
+        <button aria-label="Cerrar" className="absolute right-4 top-4 grid size-11 place-items-center rounded-full bg-[#184B340a] text-[#184B34] hover:bg-[#184B3414]" data-dialog-initial-focus type="button" onClick={onClose}>
+          <X aria-hidden="true" className="size-5" />
         </button>
+        <span className="grid size-12 place-items-center rounded-2xl bg-[#D7A63C26] text-[#184B34]">
+          <LockKeyhole aria-hidden="true" className="size-5" />
+        </span>
+        <h2 id="auth-required-title" className="mt-5 pr-10 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">Necesitas iniciar sesión</h2>
+        <p id="auth-required-description" className="mt-3 text-sm leading-6 text-[#687269]">{message}</p>
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <Link href="/login" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]">Entrar</Link>
+          <Link href="/register" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[#184B3424] bg-white px-5 py-2.5 text-sm font-extrabold text-[#184B34] hover:bg-[#F7F2E8]">Crear cuenta</Link>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

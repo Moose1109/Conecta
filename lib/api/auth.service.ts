@@ -1,9 +1,9 @@
 import type { AuthUser } from "@/lib/types";
-import { apiFetch } from "@/lib/api/client";
+import { ApiError, apiFetch } from "@/lib/api/client";
 
 export type RegisterPayload = {
   name: string;
-  username?: string;
+  username: string;
   email: string;
   password: string;
 };
@@ -11,6 +11,14 @@ export type RegisterPayload = {
 export type LoginPayload = {
   email: string;
   password: string;
+};
+
+export type UpdateCurrentUserPayload = {
+  name?: string | null;
+  username?: string | null;
+  avatar_url?: string | null;
+  banner_url?: string | null;
+  bio?: string | null;
 };
 
 export type AuthResponse = {
@@ -132,11 +140,30 @@ export async function getCurrentUser(token: string) {
       token,
     });
   } catch (error) {
-    console.error("Error loading user profile from /api/v1/users/me:", error);
+    if (!(error instanceof ApiError) || ![404, 405].includes(error.status)) {
+      throw error;
+    }
+
+    if (process.env.NODE_ENV === "development") {
+      console.info("Falling back from /api/v1/users/me to /api/v1/auth/me");
+    }
     response = await apiFetch<ApiUser>("/api/v1/auth/me", {
       token,
     });
   }
+
+  return adaptUser(response);
+}
+
+export async function updateCurrentUser(
+  payload: UpdateCurrentUserPayload,
+  token: string,
+) {
+  const response = await apiFetch<ApiUser>("/api/v1/users/me", {
+    method: "PUT",
+    token,
+    body: JSON.stringify(payload),
+  });
 
   return adaptUser(response);
 }

@@ -1,135 +1,70 @@
-import { ActivityCard } from "@/features/activities/activity-card";
-import { VillageCard } from "@/features/villages/village-card";
-import { LinkButton } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import type { Activity, AuthUser, Village } from "@/lib/types";
+import type { Activity, Village } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
 
-export function RecommendedActivitiesCard({
-  activities,
-}: {
-  activities: Activity[];
-}) {
-  const recommendedActivities = activities
-    .filter((activity) => activity.isJoined !== true)
-    .slice(0, 2);
+export function ProfileRecommendationsRail({ activities, villages }: { activities: Activity[]; villages: Village[] }) {
+  const followed = villages.filter((village) => village.isFollowing === true).slice(0, 3);
+  const suggestedActivities = activities.filter((activity) => activity.isJoined !== true).slice(0, 3);
 
   return (
-    <section>
-      <div className="mb-3">
-        <h2 className="text-base font-black text-[#1F3D2B]">Actividades recomendadas</h2>
-        <p className="mt-1 text-xs font-bold text-[#1E1E1E]/54">
-          Sugerencias del catálogo, no actividades inscritas.
-        </p>
-      </div>
-      {recommendedActivities.length ? (
-        <div className="grid gap-4">
-          {recommendedActivities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} compact />
-          ))}
+    <aside className="grid content-start gap-4 xl:sticky xl:top-[92px]">
+      <Card className="p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-extrabold text-[#0E3325]">Lugares que sigues</h2>
+          <Link className="text-xs font-extrabold text-[#347A48]" href="/villages">Ver todos</Link>
         </div>
-      ) : (
-        <Card className="p-5">
-          <p className="text-sm font-black text-[#1F3D2B]">
-            No hay actividades recomendadas disponibles.
-          </p>
-          <p className="mt-2 text-sm leading-6 text-[#1E1E1E]/62">
-            Cuando el backend devuelva actividades publicadas, aparecerán aquí como sugerencias.
-          </p>
-        </Card>
-      )}
-    </section>
-  );
-}
+        {followed.length ? (
+          <div className="mt-4 grid gap-3">
+            {followed.map((village) => (
+              <Link className="group flex items-center gap-3" href={`/villages/${village.id}`} key={village.id}>
+                <span className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-[#184B34]">
+                  <Image alt={village.name} className="object-cover transition-transform duration-200 group-hover:scale-[1.02]" fill sizes="56px" src={village.image || "/images/raiz-village-hero.webp"} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-extrabold text-[#18231D]">{village.name}</span>
+                  <span className="mt-0.5 block truncate text-xs font-medium text-[#687269]">{village.province}</span>
+                </span>
+                <ArrowRight aria-hidden="true" className="size-4 text-[#78947D]" />
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-4 rounded-2xl bg-[#F7F2E8] p-4 text-center">
+            <MapPin aria-hidden="true" className="mx-auto size-5 text-[#347A48]" />
+            <p className="mt-2 text-xs font-semibold leading-5 text-[#687269]">Los pueblos que sigas aparecerán aquí.</p>
+          </div>
+        )}
+      </Card>
 
-export function RecommendedVillagesCard({ villages }: { villages: Village[] }) {
-  const suggestedVillage =
-    villages.find((village) => village.isFollowing !== true) ?? villages[0];
-
-  return (
-    <section>
-      <div className="mb-3">
-        <h2 className="text-base font-black text-[#1F3D2B]">Pueblo recomendado</h2>
-        <p className="mt-1 text-xs font-bold text-[#1E1E1E]/54">
-          Una sugerencia para descubrir, no un pueblo seguido.
-        </p>
-      </div>
-      {suggestedVillage ? (
-        <VillageCard village={suggestedVillage} compact />
-      ) : (
-        <Card className="p-5">
-          <p className="text-sm font-black text-[#1F3D2B]">No hay pueblos para recomendar.</p>
-          <p className="mt-2 text-sm leading-6 text-[#1E1E1E]/62">
-            El listado aparecerá cuando el backend devuelva pueblos reales.
-          </p>
-        </Card>
-      )}
-    </section>
-  );
-}
-
-export function FavoriteVillageCard({
-  user,
-  villages,
-}: {
-  user?: AuthUser;
-  villages: Village[];
-}) {
-  const favoriteVillage = user?.favoriteVillageId
-    ? villages.find((village) => village.id === user.favoriteVillageId)
-    : undefined;
-
-  return (
-    <Card className="p-5">
-      <h2 className="text-base font-black text-[#1F3D2B]">Pueblo favorito</h2>
-      {favoriteVillage ? (
-        <p className="mt-3 text-sm leading-6 text-[#1E1E1E]/68">
-          {favoriteVillage.name} aparece como tu pueblo favorito.
-        </p>
-      ) : (
-        <p className="mt-3 text-sm leading-6 text-[#1E1E1E]/68">
-          Tu pueblo favorito aparecerá aquí cuando el backend permita guardarlo.
-        </p>
-      )}
-    </Card>
-  );
-}
-
-export function ProfileOnboardingCard() {
-  return (
-    <Card className="p-5">
-      <h2 className="text-base font-black text-[#1F3D2B]">Empieza en ConectaPueblos</h2>
-      <div className="mt-4 grid gap-3 text-sm font-bold text-[#1F3D2B]/72">
-        <p>Sigue tu primer pueblo.</p>
-        <p>Apúntate a una actividad local.</p>
-        <p>Publica una recomendación en comunidad.</p>
-      </div>
-      <div className="mt-5 flex flex-wrap gap-2">
-        <LinkButton href="/community" variant="secondary" className="min-h-10 px-4">
-          Crear publicación
-        </LinkButton>
-        <LinkButton href="/activities" variant="ghost" className="min-h-10 px-4">
-          Ver actividades
-        </LinkButton>
-      </div>
-    </Card>
-  );
-}
-
-export function ProfileLeftExtras({
-  activities,
-  user,
-  villages,
-}: {
-  activities: Activity[];
-  user?: AuthUser;
-  villages: Village[];
-}) {
-  return (
-    <div className="grid content-start gap-5">
-      <ProfileOnboardingCard />
-      <RecommendedActivitiesCard activities={activities} />
-      <RecommendedVillagesCard villages={villages} />
-      <FavoriteVillageCard user={user} villages={villages} />
-    </div>
+      <Card className="p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-extrabold text-[#0E3325]">Para tu próxima salida</h2>
+          <Link className="text-xs font-extrabold text-[#347A48]" href="/activities">Ver todas</Link>
+        </div>
+        {suggestedActivities.length ? (
+          <div className="mt-4 grid gap-3">
+            {suggestedActivities.map((activity) => (
+              <Link className="group flex items-center gap-3" href={`/activities/${activity.id}`} key={activity.id}>
+                <span className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-[#D7A63C]">
+                  <Image alt={activity.title} className="object-cover transition-transform duration-200 group-hover:scale-[1.02]" fill sizes="56px" src={activity.image || "/images/raiz-market.webp"} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block line-clamp-1 text-sm font-extrabold text-[#18231D]">{activity.title}</span>
+                  <span className="mt-0.5 block truncate text-[11px] font-medium text-[#687269]">{formatDate(activity.date)} · {activity.time}</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-4 rounded-2xl bg-[#FFF7E5] p-4 text-center">
+            <CalendarDays aria-hidden="true" className="mx-auto size-5 text-[#B77F14]" />
+            <p className="mt-2 text-xs font-semibold leading-5 text-[#687269]">No hay actividades recomendadas disponibles.</p>
+          </div>
+        )}
+      </Card>
+    </aside>
   );
 }

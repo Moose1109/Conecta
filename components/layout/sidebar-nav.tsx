@@ -1,10 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { primaryNavigationItems } from "@/components/layout/navigation-items";
+import { PenLine } from "lucide-react";
+import {
+  primaryNavigationItems,
+  secondaryNavigationItems,
+} from "@/components/layout/navigation-items";
+import { isNavigationRoute } from "@/components/layout/social-routes";
 import { Card } from "@/components/ui/card";
-import { AuthIcon } from "@/features/auth/auth-icons";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { cn } from "@/lib/utils";
 
@@ -13,49 +18,87 @@ export function SidebarNav() {
   const { token } = useAuthSession();
 
   return (
-    <Card className="p-3 lg:sticky lg:top-24 lg:p-4">
-      <p className="px-2 text-xs font-black uppercase tracking-[0.16em] text-[#3A7D44]">
-        {token ? "Explorar" : "Conecta"}
-      </p>
-      <nav
-        aria-label="Navegación social"
-        className="mt-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-1"
-      >
-        {primaryNavigationItems.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={cn(
-              "group flex min-h-16 items-center gap-3 rounded-2xl px-3 py-3 text-sm font-black transition-all hover:-translate-y-0.5 hover:bg-[#1F3D2B0d] hover:text-[#1F3D2B] lg:min-h-[4.5rem]",
-              (pathname === link.href || pathname.startsWith(`${link.href}/`))
-                ? "bg-[#3A7D44] text-white shadow-[0_14px_32px_rgba(58,125,68,0.22)] hover:bg-[#3A7D44] hover:text-white"
-                : "text-[#1F3D2B]/72",
-            )}
-          >
-            <span
-              className={cn(
-                "grid size-10 shrink-0 place-items-center rounded-2xl bg-[#1F3D2B0d] text-[#3A7D44] transition-colors",
-                (pathname === link.href || pathname.startsWith(`${link.href}/`)) &&
-                  "bg-white/16 text-white",
-              )}
-            >
-              <AuthIcon className="size-5" name={link.icon} />
-            </span>
-            <span className="min-w-0">
-              <span className="block">{link.label}</span>
-              <span
+    <div className="grid gap-4 lg:sticky lg:top-[92px]">
+      <Card className="overflow-hidden p-3">
+        <p className="eyebrow px-2 pb-2 pt-1">Explorar</p>
+        <nav aria-label="Navegación social" className="grid gap-1.5">
+          {primaryNavigationItems.map((link) => {
+            const active = isNavigationRoute(pathname, link.href);
+            const Icon = link.icon;
+
+            return (
+              <Link
+                key={link.href}
+                aria-current={active ? "page" : undefined}
+                href={link.href}
                 className={cn(
-                  "mt-0.5 hidden text-xs font-bold leading-5 text-[#1E1E1E]/52 lg:block",
-                  (pathname === link.href || pathname.startsWith(`${link.href}/`)) &&
-                    "text-white/72",
+                  "group flex min-h-[66px] items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition-all duration-200 hover:bg-[#184B340a]",
+                  active && "bg-gradient-to-br from-[#347A48] to-[#28663C] text-white shadow-[0_12px_28px_rgba(24,75,52,0.2)] hover:bg-[#347A48]",
                 )}
               >
-                {link.meta}
-              </span>
-            </span>
+                <span className={cn("grid size-10 shrink-0 place-items-center rounded-full bg-[#184B340a] text-[#347A48]", active && "bg-white/14 text-white")}>
+                  <Icon aria-hidden="true" className="size-5" strokeWidth={1.8} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-extrabold">{link.label}</span>
+                  <span className={cn("mt-0.5 block text-[11px] font-semibold leading-4 text-[#687269]", active && "text-white/72")}>{link.meta}</span>
+                </span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {token ? (
+          <>
+            <div className="mx-2 my-3 h-px bg-[#184B3414]" />
+            <p className="eyebrow px-2 pb-2">Mi espacio</p>
+            <nav aria-label="Accesos personales" className="grid gap-1">
+              {secondaryNavigationItems.slice(0, 3).map((link) => {
+                const active = isNavigationRoute(pathname, link.href);
+                const Icon = link.icon;
+
+                return (
+                  <Link
+                    key={link.href}
+                    aria-current={active ? "page" : undefined}
+                    href={link.href}
+                    className={cn(
+                      "flex min-h-12 items-center gap-3 rounded-xl px-3 py-2 text-sm font-bold text-[#435048] transition-colors hover:bg-[#184B340a] hover:text-[#184B34]",
+                      active && "bg-[#184B340d] text-[#184B34]",
+                    )}
+                  >
+                    <Icon aria-hidden="true" className="size-[18px]" strokeWidth={1.8} />
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </>
+        ) : null}
+      </Card>
+
+      <Card className="relative overflow-hidden border-0 bg-[#0E3325] p-5 text-white shadow-[0_18px_48px_rgba(14,51,37,0.2)]">
+        <Image
+          alt=""
+          aria-hidden="true"
+          className="object-cover opacity-25"
+          fill
+          sizes="248px"
+          src="/images/raiz-village-hero.webp"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0E3325]/70 via-[#0E3325]/88 to-[#0E3325]" />
+        <div className="relative">
+          <p className="font-editorial text-2xl font-semibold leading-7">Aporta vida<br />a tu pueblo</p>
+          <p className="mt-3 text-xs font-medium leading-5 text-white/72">Publica, organiza o recomienda algo que sume a tu comunidad.</p>
+          <Link
+            className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-extrabold text-[#184B34] transition-transform hover:-translate-y-0.5"
+            href="/community#publicar"
+          >
+            <PenLine aria-hidden="true" className="size-4" />
+            Crear publicación
           </Link>
-        ))}
-      </nav>
-    </Card>
+        </div>
+      </Card>
+    </div>
   );
 }

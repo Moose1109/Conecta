@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
+        pathname: "/photo-*",
+      },
+      {
+        protocol: "https",
+        hostname: "api-conextapueblos.onrender.com",
+        pathname: "/**",
       },
       {
         protocol: "http",

@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Menu, X } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   primaryNavigationItems,
-  profileNavigationItem,
+  secondaryNavigationItems,
 } from "@/components/layout/navigation-items";
-import { AuthIcon } from "@/features/auth/auth-icons";
+import { isNavigationRoute } from "@/components/layout/social-routes";
+import { useModalDialog } from "@/components/ui/use-modal-dialog";
 import { cn } from "@/lib/utils";
 
 const drawerId = "responsive-sidebar-drawer";
@@ -17,163 +20,102 @@ export function ResponsiveSidebarDrawer() {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
-  const items = [...primaryNavigationItems, profileNavigationItem];
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
+  const closeDrawer = useCallback(() => setOpen(false), []);
 
-    function handlePointerDown(event: PointerEvent) {
-      const target = event.target as Node;
+  useModalDialog({
+    dialogRef: drawerRef,
+    onClose: closeDrawer,
+    open,
+    triggerRef: buttonRef,
+  });
 
-      if (buttonRef.current?.contains(target) || drawerRef.current?.contains(target)) {
-        return;
-      }
+  function NavLink({
+    item,
+    primary = false,
+  }: {
+    item: (typeof primaryNavigationItems)[number] | (typeof secondaryNavigationItems)[number];
+    primary?: boolean;
+  }) {
+    const Icon = item.icon;
+    const selected = isNavigationRoute(pathname, item.href);
 
-      setOpen(false);
-    }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpen(false);
-        buttonRef.current?.focus();
-      }
-    }
-
-    document.addEventListener("pointerdown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (open) {
-      drawerRef.current?.focus();
-    }
-  }, [open]);
-
-  function isActive(href: string) {
-    return pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
-  }
-
-  function closeDrawer() {
-    setOpen(false);
+    return (
+      <Link
+        href={item.href}
+        aria-current={selected ? "page" : undefined}
+        className={cn(
+          "min-h-14 items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-extrabold transition-colors",
+          primary || item.href === "/profile" ? "hidden md:flex" : "flex",
+          selected ? "bg-[#184B34] text-white" : "bg-white/58 text-[#435048] hover:bg-white hover:text-[#184B34]",
+        )}
+        onClick={closeDrawer}
+      >
+        <span className={cn("grid size-10 place-items-center rounded-full bg-[#184B340a] text-[#347A48]", selected && "bg-white/14 text-white")}>
+          <Icon aria-hidden="true" className="size-5" strokeWidth={1.8} />
+        </span>
+        <span>
+          <span className="block">{item.label}</span>
+          <span className={cn("mt-0.5 block text-[11px] font-semibold text-[#687269]", selected && "text-white/70")}>{item.meta}</span>
+        </span>
+      </Link>
+    );
   }
 
   return (
-    <div className="relative hidden md:block lg:hidden">
+    <div className="relative block lg:hidden">
       <button
         ref={buttonRef}
         aria-controls={drawerId}
         aria-expanded={open}
         aria-label={open ? "Cerrar navegación" : "Abrir navegación"}
-        className="grid size-10 place-items-center rounded-full bg-white/80 text-[#1F3D2B] transition-colors hover:bg-white focus:outline-none focus:ring-4 focus:ring-[#3A7D4424]"
+        className="grid size-11 place-items-center rounded-full border border-[#184B3414] bg-white/80 text-[#184B34] transition-colors hover:bg-white"
         type="button"
         onClick={() => setOpen((current) => !current)}
       >
-        <span className="grid gap-1" aria-hidden="true">
-          <span className="block h-0.5 w-5 rounded-full bg-current" />
-          <span className="block h-0.5 w-5 rounded-full bg-current" />
-          <span className="block h-0.5 w-5 rounded-full bg-current" />
-        </span>
+        {open ? <X aria-hidden="true" className="size-5" /> : <Menu aria-hidden="true" className="size-5" />}
       </button>
 
-      {open ? (
-        <>
-          <button
-            aria-label="Cerrar navegación"
-            className="fixed inset-0 z-40 bg-[#1F3D2B]/22 md:hidden"
-            type="button"
-            onClick={closeDrawer}
+      {open && typeof document !== "undefined" ? createPortal(
+        <div className="fixed inset-0 z-[100] isolate">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[#0E3325]/34 backdrop-blur-[2px] sm:bg-[#0E3325]/20"
+            onPointerDown={closeDrawer}
           />
           <div
             ref={drawerRef}
-            aria-label="Menú de navegación"
-            className="fixed inset-x-0 bottom-0 z-50 max-h-[78vh] overflow-hidden rounded-t-[28px] border border-[#1F3D2B14] bg-[#FAF7F0] p-4 text-[#1F3D2B] shadow-[0_-24px_80px_rgba(31,61,43,0.22)] outline-none md:absolute md:inset-x-auto md:bottom-auto md:left-0 md:top-[calc(100%+0.75rem)] md:max-h-[min(72vh,520px)] md:w-[360px] md:rounded-3xl md:bg-[#FFFDF8] md:shadow-[0_28px_90px_rgba(31,61,43,0.22)]"
+            aria-labelledby="responsive-sidebar-title"
+            aria-modal="true"
+            className="absolute inset-x-0 bottom-0 z-10 max-h-[calc(82dvh-env(safe-area-inset-bottom))] touch-pan-y overflow-y-auto overscroll-contain rounded-t-[30px] border border-[#184B3417] bg-[#F7F2E8] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 shadow-[0_-24px_80px_rgba(14,51,37,0.22)] outline-none sm:bottom-auto sm:left-5 sm:right-auto sm:top-[84px] sm:max-h-[min(76dvh,620px)] sm:w-[370px] sm:rounded-[26px] sm:bg-[#FFFCF7] sm:pb-4 sm:shadow-[0_28px_90px_rgba(14,51,37,0.2)] xl:left-[max(2.25rem,calc((100vw-1500px)/2))]"
             id={drawerId}
             role="dialog"
             tabIndex={-1}
           >
-            <div className="flex items-center justify-between gap-3 border-b border-[#1F3D2B12] pb-4">
+            <div className="flex items-center justify-between border-b border-[#184B3414] px-1 pb-4">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-[#3A7D44]">
-                  Atajos
-                </p>
-                <p className="mt-1 text-xl font-black">Menú rápido</p>
+                <p className="eyebrow">Navegación</p>
+                <h2 className="mt-1 text-xl font-extrabold text-[#18231D]" id="responsive-sidebar-title">ConectaPueblos</h2>
               </div>
               <button
                 aria-label="Cerrar navegación"
-                className="grid size-10 place-items-center rounded-full bg-white/78 text-[#1F3D2B]/70 transition-colors hover:bg-white hover:text-[#1F3D2B]"
+                data-dialog-initial-focus
+                className="grid size-11 place-items-center rounded-full bg-[#184B340a] text-[#184B34]"
                 type="button"
                 onClick={closeDrawer}
               >
-                <CloseIcon className="size-5" />
+                <X aria-hidden="true" className="size-5" />
               </button>
             </div>
-
-            <nav
-              aria-label="Atajos de la app"
-              className="mt-4 grid max-h-[calc(78vh-7rem)] gap-2 overflow-y-auto md:max-h-[400px]"
-            >
-              {items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex min-h-16 items-center gap-3 rounded-2xl px-3 py-3 text-sm font-black transition-colors focus:outline-none focus:ring-4 focus:ring-[#3A7D4420]",
-                    isActive(item.href)
-                      ? "bg-[#3A7D44] text-white shadow-[0_14px_32px_rgba(58,125,68,0.22)]"
-                      : "bg-white/54 text-[#1F3D2B]/72 hover:bg-white hover:text-[#1F3D2B]",
-                  )}
-                  onClick={closeDrawer}
-                >
-                  <span
-                    className={cn(
-                      "grid size-11 shrink-0 place-items-center rounded-2xl bg-[#1F3D2B0d] text-[#3A7D44]",
-                      isActive(item.href) && "bg-white/16 text-white",
-                    )}
-                  >
-                    <AuthIcon className="size-5" name={item.icon} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block">{item.label}</span>
-                    <span
-                      className={cn(
-                        "mt-0.5 block text-xs font-bold leading-5 text-[#1E1E1E]/52",
-                        isActive(item.href) && "text-white/72",
-                      )}
-                    >
-                      {item.meta}
-                    </span>
-                  </span>
-                </Link>
-              ))}
+            <nav className="mt-4 grid gap-2" aria-label="Secciones de la app">
+              {primaryNavigationItems.map((item) => <NavLink item={item} key={item.href} primary />)}
+              <div className="hidden h-px bg-[#184B3414] sm:block" />
+              {secondaryNavigationItems.map((item) => <NavLink item={item} key={item.href} />)}
             </nav>
           </div>
-        </>
+        </div>,
+        document.body,
       ) : null}
     </div>
-  );
-}
-
-function CloseIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
   );
 }

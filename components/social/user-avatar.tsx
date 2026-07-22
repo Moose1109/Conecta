@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export function UserAvatar({
@@ -36,17 +35,14 @@ export function UserAvatar({
       )}
       title={name}
     >
+      <span aria-hidden="true">{fallback}</span>
       {safeImageUrl ? (
-        <Image
-          src={safeImageUrl}
-          alt={name}
-          fill
-          className="object-cover"
-          sizes="44px"
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${JSON.stringify(safeImageUrl)})` }}
         />
-      ) : (
-        fallback
-      )}
+      ) : null}
     </div>
   );
 }

@@ -12,7 +12,7 @@ Todavía no hay backend conectado. La aplicación actual es solo frontend y usa 
 - Iconos: lucide-react
 - Fuente de datos actual: archivos mock locales en `data/`
 - Capa de servicios actual: funciones mock en `lib/api/`
-- URL base futura de la API: `NEXT_PUBLIC_API_URL`
+- URL base de la API: `NEXT_PUBLIC_API_BASE_URL`
 - URL API por defecto actual en `lib/api/client.ts`: `http://localhost:8000`
 
 ## Fuentes de datos mock

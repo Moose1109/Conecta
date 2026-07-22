@@ -9,7 +9,7 @@ export function SocialActionButton({
   return (
     <button
       className={cn(
-        "inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-3 text-sm font-bold text-[#1F3D2B]/72 transition-colors hover:bg-[#1F3D2B0d] hover:text-[#1F3D2B] focus:outline-none focus:ring-4 focus:ring-[#3A7D4420]",
+        "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-3 text-xs font-extrabold text-[#687269] transition-colors duration-200 hover:bg-[#184B3409] hover:text-[#184B34] focus:outline-none focus:ring-4 focus:ring-[#347A4818] disabled:opacity-55 sm:text-[13px]",
         className,
       )}
       type="button"

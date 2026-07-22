@@ -1,7 +1,10 @@
-import { apiFetch, hasApiBaseUrl } from "@/lib/api/client";
+import { apiFetch } from "@/lib/api/client";
+import { villageDataSource } from "@/lib/api/entity-capabilities";
+import { toRenderableImageUrl } from "@/lib/image-url";
 import type { Village } from "@/lib/types";
 
 type ApiVillage = {
+  data_source?: unknown;
   id?: unknown;
   slug?: unknown;
   name?: unknown;
@@ -49,11 +52,6 @@ function asString(value: unknown, fallback = "") {
   return typeof value === "string" && value.trim() ? value : fallback;
 }
 
-function asOptionalString(value: unknown) {
-  const text = asString(value);
-  return text || undefined;
-}
-
 function asNumber(value: unknown, fallback = 0) {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
@@ -78,14 +76,17 @@ function adaptVillage(village: ApiVillage): Village | null {
   const stats = village.stats;
 
   return {
+    dataSource: villageDataSource(id, slug || undefined, village.data_source),
     id,
     slug: slug || undefined,
     name,
     province: asString(village.province, "Sin provincia"),
     region: asString(village.region, "Sin región"),
     population: asNumber(village.population),
-    image: asOptionalString(village.image_url) ?? asOptionalString(village.image),
-    bannerImage: asString(village.banner_url) || undefined,
+    image:
+      toRenderableImageUrl(village.image_url) ??
+      toRenderableImageUrl(village.image),
+    bannerImage: toRenderableImageUrl(village.banner_url),
     tagline: asString(village.tagline),
     description: asString(village.description),
     highlights: asStringArray(village.highlights),
@@ -103,37 +104,33 @@ function adaptVillages(response: ApiCollection<ApiVillage>) {
 }
 
 export async function getVillages(token?: string) {
-  if (!hasApiBaseUrl()) {
-    return [];
-  }
+  return getVillagesStrict(token);
+}
 
-  try {
-    const response = await apiFetch<ApiCollection<ApiVillage>>("/api/v1/villages", {
-      token,
-    });
-    return adaptVillages(response);
-  } catch (error) {
-    console.error("Error loading villages from API:", error);
-    return [];
-  }
+/** Canonical strict fetch retained as an explicit name for existing callers. */
+export async function getVillagesStrict(token?: string) {
+  const response = await apiFetch<ApiCollection<ApiVillage>>("/api/v1/villages?limit=100", {
+    token,
+  });
+
+  return adaptVillages(response);
 }
 
 export async function getVillageById(id: string) {
-  if (!hasApiBaseUrl()) {
-    return undefined;
-  }
+  return getVillageByIdStrict(id);
+}
 
-  try {
-    const response = await apiFetch<ApiVillage>(`/api/v1/villages/${encodeURIComponent(id)}`);
-    return adaptVillage(response) ?? undefined;
-  } catch (error) {
-    console.error("Error loading village from API:", error);
-    return undefined;
-  }
+export async function getVillageByIdStrict(id: string, token?: string) {
+  const response = await apiFetch<ApiVillage>(
+    `/api/v1/villages/${encodeURIComponent(id)}`,
+    { token },
+  );
+
+  return adaptVillage(response) ?? undefined;
 }
 
 export async function followVillage(idOrSlug: string, token: string) {
-  return apiFetch<{ followed?: boolean; message?: string }>(
+  return apiFetch<{ followed?: boolean; is_following?: boolean; message?: string }>(
     `/api/v1/villages/${encodeURIComponent(idOrSlug)}/follow`,
     {
       method: "POST",
@@ -151,7 +148,7 @@ export async function createVillage(payload: CreateVillagePayload, token: string
 }
 
 export async function unfollowVillage(idOrSlug: string, token: string) {
-  return apiFetch<{ followed?: boolean; message?: string }>(
+  return apiFetch<{ followed?: boolean; is_following?: boolean; message?: string }>(
     `/api/v1/villages/${encodeURIComponent(idOrSlug)}/follow`,
     {
       method: "DELETE",

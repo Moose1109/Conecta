@@ -2,17 +2,19 @@ import Link from "next/link";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "primary" | "secondary" | "ghost" | "terracotta" | "mustard";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-[#3A7D44] text-white shadow-sm hover:bg-[#2f6738]",
+  primary: "bg-[#184B34] text-white shadow-[0_10px_24px_rgba(24,75,52,0.18)] hover:bg-[#0E3325]",
   secondary:
-    "border border-[#1F3D2B24] bg-white/88 text-[#1F3D2B] hover:bg-white",
-  ghost: "text-[#1F3D2B] hover:bg-[#1F3D2B0d]",
+    "border border-[#184B3424] bg-white/88 text-[#184B34] hover:border-[#184B3438] hover:bg-white",
+  ghost: "text-[#184B34] hover:bg-[#184B340d]",
+  terracotta: "bg-[#C96D4A] text-white shadow-sm hover:bg-[#A95539]",
+  mustard: "bg-[#D7A63C] text-[#18231D] shadow-sm hover:bg-[#C8952D]",
 };
 
 const base =
-  "inline-flex min-h-11 items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-colors focus:outline-none focus:ring-4 focus:ring-[#3A7D4424]";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-extrabold transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-[#347A4824] disabled:translate-y-0 disabled:opacity-60";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;

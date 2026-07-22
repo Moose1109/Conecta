@@ -1,4 +1,6 @@
-import { apiFetch, hasApiBaseUrl } from "@/lib/api/client";
+import { apiFetch } from "@/lib/api/client";
+import { activityDataSource } from "@/lib/api/entity-capabilities";
+import { toRenderableImageUrl } from "@/lib/image-url";
 import type { Activity, ActivityCategory } from "@/lib/types";
 
 const activityCategories: ActivityCategory[] = [
@@ -10,9 +12,11 @@ const activityCategories: ActivityCategory[] = [
   "Voluntariado",
   "Mercados",
   "Fiestas locales",
+  "Otra",
 ];
 
 type ApiActivity = {
+  data_source?: unknown;
   id?: unknown;
   slug?: unknown;
   title?: unknown;
@@ -63,6 +67,11 @@ export type CreateActivityPayload = {
   status?: string;
 };
 
+export type GetActivitiesOptions = {
+  limit?: number;
+  villageId?: string;
+};
+
 function collectionItems<T>(response: ApiCollection<T>): T[] {
   return Array.isArray(response) ? response : response.items ?? [];
 }
@@ -87,7 +96,7 @@ function asBoolean(value: unknown) {
 function asCategory(value: unknown): ActivityCategory {
   return activityCategories.includes(value as ActivityCategory)
     ? (value as ActivityCategory)
-    : "Cultura";
+    : "Otra";
 }
 
 function splitDateTime(value: unknown, fallbackDate: unknown, fallbackTime: unknown) {
@@ -117,12 +126,17 @@ function adaptActivity(activity: ApiActivity): Activity | null {
     asString(activity.village_id, asString(activity.villageId, asString(activity.village?.slug))),
   );
   const { date, time } = splitDateTime(activity.starts_at, activity.date, activity.time);
+  const spotsLeft =
+    typeof activity.spots_left === "number" && Number.isFinite(activity.spots_left)
+      ? activity.spots_left
+      : undefined;
 
   if (!id || !title || !villageId || !date) {
     return null;
   }
 
   return {
+    dataSource: activityDataSource(id, slug || undefined, activity.data_source),
     id,
     slug: slug || undefined,
     title,
@@ -131,16 +145,13 @@ function adaptActivity(activity: ApiActivity): Activity | null {
     villageName: asString(activity.village?.name, asString(activity.village_name)) || undefined,
     date,
     time,
-    spots: asNumber(
-      activity.spots_left,
-      asNumber(activity.capacity, asNumber(activity.spots)),
-    ),
-    spotsLeft: asNumber(activity.spots_left) || undefined,
+    capacity: asNumber(activity.capacity, asNumber(activity.spots)),
+    spotsLeft,
     participantsCount: asNumber(activity.participants_count) || undefined,
     image:
-      asOptionalString(activity.image_url) ??
-      asOptionalString(activity.image),
-    bannerImage: asOptionalString(activity.banner_url),
+      toRenderableImageUrl(activity.image_url) ??
+      toRenderableImageUrl(activity.image),
+    bannerImage: toRenderableImageUrl(activity.banner_url),
     description: asString(activity.description),
     organizer: asString(
       activity.organizer?.name,
@@ -158,43 +169,56 @@ function adaptActivities(response: ApiCollection<ApiActivity>) {
     .filter((activity): activity is Activity => Boolean(activity));
 }
 
-export async function getActivities(token?: string) {
-  if (!hasApiBaseUrl()) {
-    return [];
-  }
+function activitiesPath({
+  limit = 100,
+  villageId,
+}: GetActivitiesOptions = {}) {
+  const params = new URLSearchParams({ limit: String(limit) });
 
-  try {
-    const response = await apiFetch<ApiCollection<ApiActivity>>("/api/v1/activities", {
-      token,
-    });
-    return adaptActivities(response);
-  } catch (error) {
-    console.error("Error loading activities from API:", error);
-    return [];
-  }
+  if (villageId) params.set("village_id", villageId);
+
+  return `/api/v1/activities?${params.toString()}`;
+}
+
+export async function getActivities(token?: string, options?: GetActivitiesOptions) {
+  return getActivitiesStrict(token, options);
+}
+
+/** Canonical strict fetch retained as an explicit name for existing callers. */
+export async function getActivitiesStrict(
+  token?: string,
+  options?: GetActivitiesOptions,
+) {
+  const response = await apiFetch<ApiCollection<ApiActivity>>(
+    activitiesPath(options),
+    { token },
+  );
+
+  return adaptActivities(response);
 }
 
 export async function getActivityById(id: string) {
-  if (!hasApiBaseUrl()) {
-    return undefined;
-  }
+  return getActivityByIdStrict(id);
+}
 
-  try {
-    const response = await apiFetch<ApiActivity>(`/api/v1/activities/${encodeURIComponent(id)}`);
-    return adaptActivity(response) ?? undefined;
-  } catch (error) {
-    console.error("Error loading activity from API:", error);
-    return undefined;
-  }
+export async function getActivityByIdStrict(id: string, token?: string) {
+  const response = await apiFetch<ApiActivity>(
+    `/api/v1/activities/${encodeURIComponent(id)}`,
+    { token },
+  );
+
+  return adaptActivity(response) ?? undefined;
 }
 
 export async function getActivitiesByVillageId(villageId: string) {
-  if (!hasApiBaseUrl()) {
-    return [];
-  }
+  return getActivitiesByVillageIdStrict(villageId);
+}
 
-  const allActivities = await getActivities();
-  return allActivities.filter((activity) => activity.villageId === villageId);
+export async function getActivitiesByVillageIdStrict(
+  villageId: string,
+  token?: string,
+) {
+  return getActivitiesStrict(token, { villageId });
 }
 
 export function getActivityCategories() {
@@ -202,7 +226,7 @@ export function getActivityCategories() {
 }
 
 export async function joinActivity(idOrSlug: string, token: string) {
-  return apiFetch<{ joined?: boolean; message?: string }>(
+  return apiFetch<{ is_joined?: boolean; joined?: boolean; message?: string }>(
     `/api/v1/activities/${encodeURIComponent(idOrSlug)}/join`,
     {
       method: "POST",
@@ -220,7 +244,7 @@ export async function createActivity(payload: CreateActivityPayload, token: stri
 }
 
 export async function leaveActivity(idOrSlug: string, token: string) {
-  return apiFetch<{ joined?: boolean; message?: string }>(
+  return apiFetch<{ is_joined?: boolean; joined?: boolean; message?: string }>(
     `/api/v1/activities/${encodeURIComponent(idOrSlug)}/join`,
     {
       method: "DELETE",
@@ -230,7 +254,7 @@ export async function leaveActivity(idOrSlug: string, token: string) {
 }
 
 export async function saveActivity(idOrSlug: string, token: string) {
-  return apiFetch<{ saved?: boolean; message?: string }>(
+  return apiFetch<{ is_saved?: boolean; saved?: boolean; message?: string }>(
     `/api/v1/activities/${encodeURIComponent(idOrSlug)}/save`,
     {
       method: "POST",
@@ -240,7 +264,7 @@ export async function saveActivity(idOrSlug: string, token: string) {
 }
 
 export async function unsaveActivity(idOrSlug: string, token: string) {
-  return apiFetch<{ saved?: boolean; message?: string }>(
+  return apiFetch<{ is_saved?: boolean; saved?: boolean; message?: string }>(
     `/api/v1/activities/${encodeURIComponent(idOrSlug)}/save`,
     {
       method: "DELETE",

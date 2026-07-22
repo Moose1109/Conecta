@@ -2,9 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AuthIcon } from "@/features/auth/auth-icons";
 import { loginUser, type LoginPayload } from "@/lib/api/auth.service";
+import { isUnauthorizedError } from "@/lib/api/client";
+import { getApiErrorMessage } from "@/lib/api/error-message";
 import { saveSession } from "@/lib/api/session";
 
 export function LoginForm() {
@@ -47,12 +49,13 @@ export function LoginForm() {
       router.refresh();
       router.push("/community");
     } catch (error) {
-      console.error("Error login:", error);
-      const message = error instanceof Error ? error.message : "";
       setError(
-        message.includes("404")
-          ? "Login todavía no disponible en backend"
-          : "No se pudo iniciar sesión. Revisa email y contraseña.",
+        isUnauthorizedError(error)
+          ? "El email o la contraseña no son correctos."
+          : getApiErrorMessage(
+              error,
+              "No se pudo iniciar sesión. Revisa email y contraseña.",
+            ),
       );
     } finally {
       setIsSubmitting(false);
@@ -60,48 +63,58 @@ export function LoginForm() {
   }
 
   return (
-    <form className="mt-6 grid gap-5" onSubmit={handleSubmit}>
+    <form aria-busy={isSubmitting} className="mt-4 grid gap-3 sm:mt-6 sm:gap-4" onSubmit={handleSubmit}>
       <div>
-        <label className="label" htmlFor="email">
+        <label className="label" htmlFor="login-email">
           Email
         </label>
         <div className="relative">
-          <AuthIcon
+          <Mail
+            aria-hidden="true"
             className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[#5E6F63]"
-            name="mail"
           />
           <input
             className="field field-with-icon"
-            id="email"
+            id="login-email"
             name="email"
             placeholder="tu@email.com"
             type="email"
+            autoComplete="email"
+            aria-describedby={error ? "login-form-error" : undefined}
+            aria-invalid={error ? true : undefined}
+            required
           />
         </div>
       </div>
       <div>
-        <label className="label" htmlFor="password">
+        <label className="label" htmlFor="login-password">
           Contraseña
         </label>
         <div className="relative">
-          <AuthIcon
+          <LockKeyhole
+            aria-hidden="true"
             className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[#5E6F63]"
-            name="lock"
           />
           <input
             className="field field-with-action field-with-icon"
-            id="password"
+            id="login-password"
+            maxLength={128}
             name="password"
             placeholder="••••••••"
             type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            aria-describedby={error ? "login-form-error" : undefined}
+            aria-invalid={error ? true : undefined}
+            required
           />
           <button
             aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-            className="absolute right-3 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full text-[#5E6F63] transition-colors hover:bg-[#1F3D2B0d] hover:text-[#173F2A] focus:outline-none focus:ring-4 focus:ring-[#3A7D4420]"
+            aria-pressed={showPassword}
+            className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full text-[#5E6F63] transition-colors hover:bg-[#1F3D2B0d] hover:text-[#173F2A] focus:outline-none focus:ring-4 focus:ring-[#3A7D4420]"
             type="button"
             onClick={() => setShowPassword((value) => !value)}
           >
-            <AuthIcon className="size-5" name={showPassword ? "eye-off" : "eye"} />
+            {showPassword ? <EyeOff aria-hidden="true" className="size-5" /> : <Eye aria-hidden="true" className="size-5" />}
           </button>
         </div>
       </div>
@@ -109,12 +122,13 @@ export function LoginForm() {
         type="submit"
         className="auth-primary-button w-full gap-2 disabled:cursor-not-allowed disabled:opacity-70"
         disabled={isSubmitting}
+        aria-busy={isSubmitting}
       >
         <span>{isSubmitting ? "Entrando..." : "Entrar a comunidad"}</span>
-        <AuthIcon className="size-5" name="arrow-right" />
+        <ArrowRight aria-hidden="true" className="size-5" />
       </Button>
       {error ? (
-        <p className="text-center text-sm font-bold text-red-700" role="alert">
+        <p className="text-center text-sm font-bold text-red-700" id="login-form-error" role="alert">
           {error}
         </p>
       ) : null}

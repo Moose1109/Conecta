@@ -1,53 +1,65 @@
 import { connection } from "next/server";
+import type { Metadata } from "next";
 import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { RightRail } from "@/components/layout/right-rail";
-import { Card } from "@/components/ui/card";
+import { CommunityHeader } from "@/features/community/community-header";
+import { CommunityDataProvider } from "@/features/community/community-data-provider";
 import { CommunityFeed } from "@/features/community/community-feed";
-import { getActivities } from "@/lib/api/activities.service";
-import { getCommunityPosts } from "@/lib/api/community.service";
-import { getVillages } from "@/lib/api/villages.service";
+import { getActivitiesStrict } from "@/lib/api/activities.service";
+import { getCommunityPostsStrict } from "@/lib/api/community.service";
+import { getVillagesStrict } from "@/lib/api/villages.service";
 
-export default async function CommunityPage() {
+export const metadata: Metadata = { title: "Comunidad" };
+
+export default async function CommunityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string | string[] }>;
+}) {
   await connection();
 
-  const [posts, villages, activities] = await Promise.all([
-    getCommunityPosts(),
-    getVillages(),
-    getActivities(),
+  const queryParam = (await searchParams).q;
+  const initialQuery = Array.isArray(queryParam) ? (queryParam[0] ?? "") : (queryParam ?? "");
+  const [postsResult, villagesResult, activitiesResult] = await Promise.allSettled([
+    getCommunityPostsStrict(),
+    getVillagesStrict(),
+    getActivitiesStrict(),
   ]);
+  const initialUnavailable = {
+    activities: activitiesResult.status === "rejected",
+    posts: postsResult.status === "rejected",
+    villages: villagesResult.status === "rejected",
+  };
+
+  if (process.env.NODE_ENV === "development") {
+    if (postsResult.status === "rejected") {
+      console.warn("Unable to load the public community feed:", postsResult.reason);
+    }
+    if (villagesResult.status === "rejected") {
+      console.warn("Unable to load villages for the community:", villagesResult.reason);
+    }
+    if (activitiesResult.status === "rejected") {
+      console.warn("Unable to load activities for the community:", activitiesResult.reason);
+    }
+  }
+
+  const posts = postsResult.status === "fulfilled" ? postsResult.value : [];
+  const villages = villagesResult.status === "fulfilled" ? villagesResult.value : [];
+  const activities = activitiesResult.status === "fulfilled" ? activitiesResult.value : [];
 
   return (
-    <AuthenticatedShell
-      right={<RightRail activities={activities} villages={villages} />}
-      variant="three-column"
+    <CommunityDataProvider
+      initialData={{ activities, posts, villages }}
+      initialUnavailable={initialUnavailable}
     >
-      <div className="mb-4">
-        <p className="text-xs font-black uppercase tracking-[0.16em] text-[#3A7D44]">
-          Comunidad
-        </p>
-        <h1 className="mt-1 text-2xl font-black text-[#1F3D2B]">
-          Tu plaza digital
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-[#1E1E1E]/62">
-          Publicaciones, avisos y momentos compartidos por vecinos y visitantes.
-        </p>
-      </div>
-      <CommunityFeed posts={posts} user={{ name: "Usuario", avatar: "CP" }} villages={villages} />
-      <div className="mt-5 grid gap-5">
-        <Card className="p-4">
-          <p className="text-sm font-black text-[#1F3D2B]">Tendencias locales</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {["Huertos", "Mercados", "Rutas", "Fiestas"].map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-[#D9A44124] px-3 py-1 text-xs font-black text-[#1F3D2B]"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
-        </Card>
-      </div>
-    </AuthenticatedShell>
+      <AuthenticatedShell right={<RightRail />} variant="three-column">
+        <CommunityHeader />
+        <CommunityFeed
+          key={`community-feed-${initialQuery}`}
+          initialQuery={initialQuery}
+          user={{ name: "Usuario", avatar: "CP" }}
+        />
+      </AuthenticatedShell>
+    </CommunityDataProvider>
   );
 }

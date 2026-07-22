@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ConectaPueblos
 
-## Getting Started
+Frontend de una red social local para descubrir pueblos, compartir publicaciones y participar en actividades. Está construido con Next.js 16 (App Router), React 19, TypeScript y Tailwind CSS 4, y consume una API REST FastAPI mediante JWT.
 
-First, run the development server:
+## Requisitos
+
+- Node.js compatible con Next.js 16.
+- npm y las dependencias fijadas en `package-lock.json`.
+- Una API ConectaPueblos accesible. Para validar datos reales, el backend debe ejecutarse con su modo mock desactivado.
+
+## Configuración
+
+Crea `.env.local` sin versionar y define una de estas variables públicas:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`NEXT_PUBLIC_API_BASE_URL` es la única fuente de verdad para la URL de la API. No incluyas secretos JWT ni credenciales de PostgreSQL en el frontend: cualquier variable `NEXT_PUBLIC_*` forma parte del bundle público.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Desarrollo y comprobaciones
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+npx tsc --noEmit
+npm run lint
+npm run build
+```
 
-## Learn More
+El build usa el modo Webpack soportado por Next.js 16 para ser reproducible en entornos que bloquean el puerto auxiliar de Turbopack.
 
-To learn more about Next.js, take a look at the following resources:
+La aplicación queda disponible normalmente en `http://localhost:3000`. Las rutas principales son `/community`, `/villages`, `/activities`, `/profile`, `/settings`, `/saved`, `/notifications`, `/messages` y `/admin`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Smoke test del backend
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+El modo por defecto solo realiza comprobaciones de lectura:
 
-## Deploy on Vercel
+```bash
+npm run smoke:backend -- --base-url http://127.0.0.1:8000
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+El script también contiene un modo mutable para una base QA local descartable. Está bloqueado para hosts no loopback y no debe ejecutarse contra producción. Consulta el checkpoint antes de usarlo.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Documentación de integración
+
+- [Matriz full-stack](docs/MATRIZ_INTEGRACION_FULLSTACK.md)
+- [Auditoría full-stack](docs/AUDITORIA_FULLSTACK.md)
+- [Backend pendiente](docs/FUNCIONALIDADES_PENDIENTES_BACKEND.md)
+- [Endpoints backend sin uso](docs/ENDPOINTS_BACKEND_SIN_USO.md)
+- [Roadmap recomendado](docs/ROADMAP_RECOMENDADO.md)
+- [Checkpoint post-auditoría](docs/CHECKPOINT_POST_AUDITORIA.md)
+
+El backend vive en un repositorio independiente. Durante la auditoría asociada a estos documentos se trató estrictamente como solo lectura: no se modificaron su código, configuración, migraciones ni datos.
