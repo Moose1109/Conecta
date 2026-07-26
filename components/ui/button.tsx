@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 type Variant = "primary" | "secondary" | "ghost" | "terracotta" | "mustard";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-[#184B34] text-white shadow-[0_10px_24px_rgba(24,75,52,0.18)] hover:bg-[#0E3325]",
+  primary: "bg-primary text-primary-foreground shadow-[0_10px_24px_rgba(24,75,52,0.18)] hover:bg-forest-deep",
   secondary:
-    "border border-[#184B3424] bg-white/88 text-[#184B34] hover:border-[#184B3438] hover:bg-white",
-  ghost: "text-[#184B34] hover:bg-[#184B340d]",
-  terracotta: "bg-[#C96D4A] text-white shadow-sm hover:bg-[#A95539]",
-  mustard: "bg-[#D7A63C] text-[#18231D] shadow-sm hover:bg-[#C8952D]",
+    "border border-[#184B3424] bg-white/88 text-primary hover:border-[#184B3438] hover:bg-white",
+  ghost: "text-primary hover:bg-[#184B340d]",
+  terracotta: "bg-accent text-white shadow-sm hover:bg-[#A95539]",
+  mustard: "bg-highlight text-text-primary shadow-sm hover:bg-[#C8952D]",
 };
 
 const base =

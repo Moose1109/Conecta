@@ -116,6 +116,7 @@ export function VillageExplorer({ villages: initialVillages }: { villages: Villa
           placeholder="Buscar pueblo, provincia o interés local"
           value={query}
           onChange={setQuery}
+          onClear={() => setQuery("")}
         />
         <a
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#184B3420] bg-white/90 px-5 text-sm font-extrabold text-[#184B34] shadow-[0_8px_24px_rgba(43,55,38,0.05)] transition hover:border-[#184B3438] hover:bg-white"
@@ -125,6 +126,12 @@ export function VillageExplorer({ villages: initialVillages }: { villages: Villa
           Ver en mapa
         </a>
       </div>
+
+      {villages.length >= 100 ? (
+        <p className="px-1 text-xs font-semibold leading-5 text-text-muted" role="status">
+          Se muestran hasta 100 pueblos disponibles; los filtros se aplican sobre ese conjunto.
+        </p>
+      ) : null}
 
       <div aria-label="Filtrar pueblos por región" className="flex gap-2 overflow-x-auto pb-1">
         <button

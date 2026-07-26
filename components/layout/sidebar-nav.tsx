@@ -53,7 +53,7 @@ export function SidebarNav() {
             <div className="mx-2 my-3 h-px bg-[#184B3414]" />
             <p className="eyebrow px-2 pb-2">Mi espacio</p>
             <nav aria-label="Accesos personales" className="grid gap-1">
-              {secondaryNavigationItems.slice(0, 3).map((link) => {
+              {secondaryNavigationItems.map((link) => {
                 const active = isNavigationRoute(pathname, link.href);
                 const Icon = link.icon;
 

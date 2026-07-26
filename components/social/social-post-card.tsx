@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { SocialPostActions } from "@/components/social/social-post-actions";
+import { PostTrustMenu } from "@/components/social/post-trust-menu";
 import { UserAvatar } from "@/components/social/user-avatar";
 import { Card } from "@/components/ui/card";
 import { getPostCapabilities } from "@/lib/api/entity-capabilities";
@@ -67,6 +68,7 @@ export function SocialPostCard({
                 <time dateTime={post.date}>{readableDate(post.date)}</time>
               </div>
             </div>
+            <PostTrustMenu />
           </div>
 
           {showTitle ? (

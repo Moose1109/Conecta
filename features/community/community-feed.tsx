@@ -6,18 +6,18 @@ import {
   MapPin,
   Megaphone,
   Search,
-  SlidersHorizontal,
   Sparkles,
   UsersRound,
-  X,
   type LucideIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { type FormEvent, useMemo, useState } from "react";
 import { EmptyState } from "@/components/social/empty-state";
 import { PostComposer } from "@/components/social/post-composer";
 import { SocialPostCard } from "@/components/social/social-post-card";
 import { Card } from "@/components/ui/card";
 import { ErrorState } from "@/components/ui/error-state";
+import { SearchInput } from "@/components/ui/search-input";
 import { useCommunityData } from "@/features/community/community-data-provider";
 import { cn } from "@/lib/utils";
 import type { AuthUser, CommunityPost } from "@/lib/types";
@@ -62,6 +62,7 @@ export function CommunityFeed({
   initialQuery?: string;
   user: ComposerUser;
 }) {
+  const router = useRouter();
   const {
     personalizationUnavailable,
     posts,
@@ -125,6 +126,21 @@ export function CommunityFeed({
 
   const activeFilterLabel = filters.find((filter) => filter.id === activeFilter)?.label ?? "Para ti";
 
+  function submitSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const normalizedQuery = query.trim();
+    const params = new URLSearchParams();
+    if (normalizedQuery) params.set("q", normalizedQuery);
+    router.replace(`/community${params.size ? `?${params.toString()}` : ""}#community-search`, {
+      scroll: false,
+    });
+  }
+
+  function clearSearch() {
+    setQuery("");
+    if (initialQuery) router.replace("/community#community-search", { scroll: false });
+  }
+
   return (
     <div className="grid gap-4 sm:gap-5">
       {personalizationUnavailable ? (
@@ -133,37 +149,19 @@ export function CommunityFeed({
         </Card>
       ) : null}
       <Card className="p-2">
-        <label className="relative block">
-          <span className="sr-only">Buscar publicaciones</span>
-          <Search
-            aria-hidden="true"
-            className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[#435048]"
-            strokeWidth={1.8}
-          />
-          <input
-            className="min-h-12 w-full rounded-[17px] border-0 bg-transparent py-2 pl-12 pr-12 text-sm font-semibold text-[#18231D] outline-none placeholder:text-[#687269]/80 focus:bg-white focus:ring-4 focus:ring-[#347A4818] sm:min-h-14 sm:text-[15px]"
-            onChange={(event) => setQuery(event.target.value)}
+        <form action="/community" onSubmit={submitSearch}>
+          <SearchInput
+            appearance="embedded"
+            id="community-search"
+            label="Buscar publicaciones"
+            name="q"
+            onChange={setQuery}
+            onClear={clearSearch}
             placeholder="Buscar publicaciones..."
-            type="search"
+            showFilterHint
             value={query}
           />
-          {query ? (
-            <button
-              aria-label="Limpiar búsqueda"
-              className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full text-[#687269] transition-colors hover:bg-[#184B340a] hover:text-[#184B34]"
-              onClick={() => setQuery("")}
-              type="button"
-            >
-              <X aria-hidden="true" className="size-[18px]" />
-            </button>
-          ) : (
-            <SlidersHorizontal
-              aria-hidden="true"
-              className="pointer-events-none absolute right-4 top-1/2 size-[18px] -translate-y-1/2 text-[#184B34]"
-              strokeWidth={1.8}
-            />
-          )}
-        </label>
+        </form>
       </Card>
 
       <PostComposer
@@ -228,6 +226,12 @@ export function CommunityFeed({
           </label>
         </div>
       </Card>
+
+      {posts.length >= 100 ? (
+        <p className="px-1 text-xs font-semibold leading-5 text-text-muted" role="status">
+          Se muestran hasta 100 publicaciones disponibles; la búsqueda se aplica sobre ese conjunto.
+        </p>
+      ) : null}
 
       <div className="grid gap-4 sm:gap-5">
         {unavailableSources.posts ? (

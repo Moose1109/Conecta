@@ -68,6 +68,16 @@ export function Navbar() {
         )}
 
         <div className={cn("ml-auto flex shrink-0 items-center gap-2", socialRoute && "md:ml-0")}>
+          {socialRoute ? (
+            <Link
+              aria-label="Buscar publicaciones"
+              className="grid size-11 place-items-center rounded-full border border-[#184B3414] bg-white/80 text-[#184B34] transition-colors hover:bg-white md:hidden"
+              href="/community#community-search"
+              title="Buscar publicaciones"
+            >
+              <Search aria-hidden="true" className="size-5" strokeWidth={1.8} />
+            </Link>
+          ) : null}
           {isAuthenticated ? (
             <Link
               aria-current={isNavigationRoute(pathname, "/messages") ? "page" : undefined}

@@ -17,6 +17,17 @@
   --line: rgba(24, 75, 52, 0.1);
   --line-strong: rgba(24, 75, 52, 0.18);
   --surface: rgba(255, 252, 247, 0.94);
+  --primary: var(--forest);
+  --primary-foreground: var(--ivory);
+  --accent: var(--terracotta);
+  --highlight: var(--mustard);
+  --surface-muted: var(--cream);
+  --border: var(--line);
+  --text-primary: var(--text);
+  --text-muted: var(--muted);
+  --success: var(--forest-mid);
+  --warning: var(--mustard);
+  --danger: var(--terracotta);
   --shadow-soft: 0 14px 42px rgba(43, 55, 38, 0.07);
   --shadow-card: 0 18px 58px rgba(43, 55, 38, 0.09);
   --shadow-lifted: 0 28px 90px rgba(28, 51, 35, 0.16);
@@ -42,6 +53,18 @@
   --color-mustard: var(--mustard);
   --color-mineral: var(--mineral);
   --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-highlight: var(--highlight);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
   --font-sans: var(--font-manrope);
   --font-serif: var(--font-fraunces);
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
@@ -163,6 +186,10 @@ button:disabled,
 
 .field-with-action {
   padding-right: 3.25rem;
+}
+
+#community-search {
+  scroll-margin-top: var(--topbar-height);
 }
 
 .label {

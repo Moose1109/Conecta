@@ -38,6 +38,7 @@ type ApiActivity = {
   image_url?: unknown;
   banner_url?: unknown;
   starts_at?: unknown;
+  ends_at?: unknown;
   date?: unknown;
   time?: unknown;
   location?: unknown;
@@ -49,6 +50,7 @@ type ApiActivity = {
   joined_by_me?: unknown;
   is_saved?: unknown;
   saved_by_me?: unknown;
+  status?: unknown;
 };
 
 type ApiCollection<T> = T[] | { items?: T[] };
@@ -68,7 +70,13 @@ export type CreateActivityPayload = {
 };
 
 export type GetActivitiesOptions = {
+  category?: string;
+  dateFrom?: string;
+  dateTo?: string;
   limit?: number;
+  offset?: number;
+  search?: string;
+  status?: string;
   villageId?: string;
 };
 
@@ -143,6 +151,8 @@ function adaptActivity(activity: ApiActivity): Activity | null {
     category: asCategory(activity.category),
     villageId,
     villageName: asString(activity.village?.name, asString(activity.village_name)) || undefined,
+    startsAt: asOptionalString(activity.starts_at),
+    endsAt: asOptionalString(activity.ends_at),
     date,
     time,
     capacity: asNumber(activity.capacity, asNumber(activity.spots)),
@@ -158,6 +168,7 @@ function adaptActivity(activity: ApiActivity): Activity | null {
       asString(activity.organizer_name, "Organizador"),
     ),
     location: asOptionalString(activity.location),
+    status: asOptionalString(activity.status),
     isJoined: asBoolean(activity.is_joined) ?? asBoolean(activity.joined_by_me),
     isSaved: asBoolean(activity.is_saved) ?? asBoolean(activity.saved_by_me),
   };
@@ -170,12 +181,24 @@ function adaptActivities(response: ApiCollection<ApiActivity>) {
 }
 
 function activitiesPath({
+  category,
+  dateFrom,
+  dateTo,
   limit = 100,
+  offset,
+  search,
+  status,
   villageId,
 }: GetActivitiesOptions = {}) {
   const params = new URLSearchParams({ limit: String(limit) });
 
+  if (search) params.set("search", search);
+  if (category) params.set("category", category);
   if (villageId) params.set("village_id", villageId);
+  if (dateFrom) params.set("date_from", `${dateFrom}T00:00:00`);
+  if (dateTo) params.set("date_to", `${dateTo}T23:59:59`);
+  if (status) params.set("status", status);
+  if (typeof offset === "number") params.set("offset", String(offset));
 
   return `/api/v1/activities?${params.toString()}`;
 }

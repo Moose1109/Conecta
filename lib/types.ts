@@ -38,6 +38,8 @@ export type Activity = {
   category: ActivityCategory;
   villageId: string;
   villageName?: string;
+  startsAt?: string;
+  endsAt?: string;
   date: string;
   time: string;
   capacity: number;
@@ -48,6 +50,7 @@ export type Activity = {
   description: string;
   organizer: string;
   location?: string;
+  status?: string;
   isJoined?: boolean;
   isSaved?: boolean;
 };

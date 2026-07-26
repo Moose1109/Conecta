@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { ActivitiesHero } from "@/features/activities/activities-hero";
 import { ActivityExplorer } from "@/features/activities/activity-explorer";
+import type { ActivityExplorerFilters } from "@/features/activities/activity-explorer";
 import { ActivitiesPageSkeleton } from "@/features/activities/activities-loading";
 import { ProtectedLinkButton } from "@/features/auth/protected-link-button";
 import {
@@ -12,24 +13,39 @@ import {
   getActivityCategories,
 } from "@/lib/api/activities.service";
 import { getVillagesStrict } from "@/lib/api/villages.service";
+import type { ActivityCategory } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Actividades" };
 
-export default async function ActivitiesPage() {
+type ActivityPageSearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export default async function ActivitiesPage({
+  searchParams,
+}: {
+  searchParams: ActivityPageSearchParams;
+}) {
   await connection();
 
   return (
     <AuthenticatedShell>
       <Suspense fallback={<ActivitiesPageSkeleton />}>
-        <ActivitiesContent />
+        <ActivitiesContent searchParams={searchParams} />
       </Suspense>
     </AuthenticatedShell>
   );
 }
 
-async function ActivitiesContent() {
+async function ActivitiesContent({ searchParams }: { searchParams: ActivityPageSearchParams }) {
+  const activityCategories = getActivityCategories();
+  const filters = activityFilters(await searchParams, activityCategories);
   const [activitiesResult, villagesResult] = await Promise.allSettled([
-    getActivitiesStrict(),
+    getActivitiesStrict(undefined, {
+      category: filters.category || undefined,
+      dateFrom: filters.dateFrom || undefined,
+      dateTo: filters.dateTo || undefined,
+      search: filters.search || undefined,
+      villageId: filters.villageId || undefined,
+    }),
     getVillagesStrict(),
   ]);
   const activitiesUnavailable = activitiesResult.status === "rejected";
@@ -45,7 +61,6 @@ async function ActivitiesContent() {
       console.warn("Unable to load villages for activity filters:", villagesResult.reason);
     }
   }
-  const activityCategories = getActivityCategories();
   const featuredActivity = activities[0];
 
   return (
@@ -74,13 +89,46 @@ async function ActivitiesContent() {
       />
       <div className="min-w-0" id="agenda">
         <ActivityExplorer
+          key={JSON.stringify(filters)}
           activities={activities}
           activitiesUnavailable={activitiesUnavailable}
           categories={activityCategories}
+          filters={filters}
           villages={villages}
           villagesUnavailable={villagesUnavailable}
         />
       </div>
     </>
   );
+}
+
+function activityFilters(
+  params: Record<string, string | string[] | undefined>,
+  categories: ActivityCategory[],
+): ActivityExplorerFilters {
+  const search = firstValue(params.search).trim().slice(0, 160);
+  const categoryValue = firstValue(params.category);
+  const category = categories.includes(categoryValue as ActivityCategory)
+    ? categoryValue as ActivityCategory
+    : "";
+  const villageValue = firstValue(params.village_id);
+  const villageId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(villageValue)
+    ? villageValue
+    : "";
+
+  return {
+    category,
+    dateFrom: validDate(firstValue(params.date_from)),
+    dateTo: validDate(firstValue(params.date_to)),
+    search,
+    villageId,
+  };
+}
+
+function firstValue(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
+}
+
+function validDate(value: string) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
 }

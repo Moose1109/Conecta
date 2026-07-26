@@ -16,6 +16,7 @@ import {
   activityCategoryPill,
 } from "@/features/activities/activity-category-icon";
 import { ActivityImage } from "@/features/activities/activity-image";
+import { ActivityStatusBadges } from "@/features/activities/activity-status-badges";
 import { canJoinActivity } from "@/lib/api/entity-capabilities";
 import { formatDate } from "@/lib/utils";
 import type { Activity } from "@/lib/types";
@@ -76,10 +77,13 @@ export function ActivityCard({
             <div className="absolute inset-0 bg-gradient-to-t from-[#0E3325]/30 to-transparent" />
           </div>
           <div className="flex min-w-0 flex-col p-3.5">
-            <span className="flex items-center gap-1.5 text-[0.67rem] font-extrabold uppercase tracking-[0.1em] text-[#347A48]">
-              <ActivityCategoryIcon category={activity.category} className="size-3.5" />
-              <span className="truncate">{activity.category}</span>
-            </span>
+            <div className="flex flex-wrap items-start justify-between gap-1.5">
+              <span className="flex min-w-0 items-center gap-1.5 text-[0.67rem] font-extrabold uppercase tracking-[0.1em] text-[#347A48]">
+                <ActivityCategoryIcon category={activity.category} className="size-3.5 shrink-0" />
+                <span className="truncate">{activity.category}</span>
+              </span>
+              <ActivityStatusBadges activity={activity} compact />
+            </div>
             <h3 className="mt-1.5 line-clamp-2 text-sm font-extrabold leading-[1.35] tracking-[-0.015em] text-[#18231D]">
               {activity.title}
             </h3>
@@ -121,6 +125,10 @@ export function ActivityCard({
             <ActivityCategoryIcon category={activity.category} className="size-3.5" />
             {activity.category}
           </span>
+          <ActivityStatusBadges
+            activity={activity}
+            className={`absolute right-3 max-w-[calc(100%-5.25rem)] ${activity.image ? "top-3" : "top-12"}`}
+          />
         </div>
       </Link>
 
