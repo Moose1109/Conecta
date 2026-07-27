@@ -239,6 +239,11 @@ export function ProfileView() {
     () => data.villages.filter((village) => village.isFollowing === true),
     [data.villages],
   );
+  const limitedSources = {
+    activities: data.activities.length >= 100,
+    posts: data.posts.length >= 100,
+    villages: data.villages.length >= 100,
+  };
   const stats = {
     posts: metricValue(
       profileUser?.stats?.posts,
@@ -247,7 +252,7 @@ export function ProfileView() {
       data.posts.length >= 100,
     ),
     activities: metricValue(
-      profileUser?.stats?.activities,
+      undefined,
       joinedActivities.length,
       unavailableSources.activities,
       data.activities.length >= 100,
@@ -272,6 +277,8 @@ export function ProfileView() {
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
           <ProfileTabs
             activities={joinedActivities}
+            isLoading={isLoading}
+            limitedSources={limitedSources}
             posts={userPosts}
             unavailableSources={unavailableSources}
             villages={followedVillages}

@@ -15,8 +15,7 @@ type ProfileStats = {
 
 function profileHandle(user?: AuthUser) {
   if (user?.username) return `@${user.username.replace(/^@/, "")}`;
-  if (user?.email) return user.email;
-  return "Cuenta de ConectaPueblos";
+  return "Tu identidad en ConectaPueblos";
 }
 
 export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: ProfileStats }) {
@@ -58,7 +57,6 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
             <div className="min-w-0 pb-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="truncate text-3xl font-extrabold tracking-[-0.04em] text-[#0E3325] sm:text-4xl">{name}</h1>
-                {user?.role ? <span className="rounded-full bg-[#D7A63C24] px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-[#184B34]">{user.role}</span> : null}
               </div>
               <p className="mt-1 truncate text-sm font-extrabold text-[#347A48]">{profileHandle(user)}</p>
             </div>
@@ -78,8 +76,8 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
           </p>
           <dl className="grid grid-cols-3 gap-5 rounded-2xl border border-[#184B3412] bg-[#F8F5EE] px-4 py-3 text-center sm:gap-8 sm:px-6">
             <Metric label="Publicaciones" value={stats.posts} />
-            <Metric label="Actividades" value={stats.activities} />
-            <Metric label="Pueblos" value={stats.followedVillages} />
+            <Metric label="Inscripciones" value={stats.activities} />
+            <Metric label="Pueblos seguidos" value={stats.followedVillages} />
           </dl>
         </div>
       </div>

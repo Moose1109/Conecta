@@ -13,9 +13,10 @@ export function ProfileRecommendationsRail({ activities, villages }: { activitie
     <aside className="grid content-start gap-4 xl:sticky xl:top-[92px]">
       <Card className="p-5">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="font-extrabold text-[#0E3325]">Lugares que sigues</h2>
-          <Link className="text-xs font-extrabold text-[#347A48]" href="/villages">Ver todos</Link>
+          <h2 className="font-extrabold text-[#0E3325]">Pueblos que sigues</h2>
+          <Link className="text-xs font-extrabold text-[#347A48]" href="/villages">Explorar</Link>
         </div>
+        <p className="mt-1 text-[11px] font-medium text-[#687269]">Detectados en el catálogo actual.</p>
         {followed.length ? (
           <div className="mt-4 grid gap-3">
             {followed.map((village) => (
