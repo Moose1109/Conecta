@@ -10,9 +10,11 @@ import type { Village } from "@/lib/types";
 export function VillageCard({
   village,
   compact = false,
+  showFollowAction = true,
 }: {
   village: Village;
   compact?: boolean;
+  showFollowAction?: boolean;
 }) {
   const image = village.image ?? village.bannerImage;
   const hasPopulation = village.population > 0;
@@ -103,14 +105,16 @@ export function VillageCard({
           </div>
         ) : null}
 
-        <div className="mt-auto flex items-end justify-between gap-3 border-t border-[#184B3414] pt-4">
-          <FollowButton
-            className="min-h-11 px-3.5 text-xs"
-            demo={village.dataSource === "demo"}
-            initialFollowing={village.isFollowing}
-            interactionSupported={canFollowVillage(village)}
-            storageKey={village.id}
-          />
+        <div className={`mt-auto flex items-end gap-3 border-t border-[#184B3414] pt-4 ${showFollowAction ? "justify-between" : "justify-end"}`}>
+          {showFollowAction ? (
+            <FollowButton
+              className="min-h-11 px-3.5 text-xs"
+              demo={village.dataSource === "demo"}
+              initialFollowing={village.isFollowing}
+              interactionSupported={canFollowVillage(village)}
+              storageKey={village.id}
+            />
+          ) : null}
           <Link
             aria-label={`Abrir ficha de ${village.name}`}
             className="grid size-11 shrink-0 place-items-center rounded-full border border-[#184B341c] bg-white text-[#184B34] transition-colors hover:bg-[#184B34] hover:text-white"
