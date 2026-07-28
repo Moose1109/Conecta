@@ -25,6 +25,7 @@ export function JoinActivityButton({
   interactionSupported = true,
   demo = false,
   storageKey,
+  onInteractionStart,
 }: {
   className?: string;
   compact?: boolean;
@@ -33,6 +34,7 @@ export function JoinActivityButton({
   interactionSupported?: boolean;
   demo?: boolean;
   storageKey?: string;
+  onInteractionStart?: () => void;
 }) {
   const { user } = useAuthSession();
   const localKey = storageKey && user?.id
@@ -96,6 +98,7 @@ export function JoinActivityButton({
     }
 
     requestInFlight.current = true;
+    onInteractionStart?.();
     setIsSubmitting(true);
     setJoined(next);
 

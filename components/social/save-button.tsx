@@ -24,6 +24,7 @@ export function SaveButton({
   storageKey,
   interactionSupported = true,
   demo = false,
+  onInteractionStart,
 }: {
   initialSaved?: boolean;
   compact?: boolean;
@@ -31,6 +32,7 @@ export function SaveButton({
   storageKey?: string;
   interactionSupported?: boolean;
   demo?: boolean;
+  onInteractionStart?: () => void;
 }) {
   const { user } = useAuthSession();
   const localKey = storageKey && user?.id
@@ -100,6 +102,7 @@ export function SaveButton({
     }
 
     requestInFlight.current = true;
+    onInteractionStart?.();
     setIsSubmitting(true);
     setSaved(next);
 

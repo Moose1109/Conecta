@@ -8,9 +8,8 @@ import {
   MapPin,
   UsersRound,
 } from "lucide-react";
-import { JoinActivityButton } from "@/components/social/join-activity-button";
-import { SaveButton } from "@/components/social/save-button";
 import { Card } from "@/components/ui/card";
+import { ActivityCardActions } from "@/features/activities/activity-card-actions";
 import {
   ActivityCategoryIcon,
   activityCategoryPill,
@@ -184,21 +183,13 @@ export function ActivityCard({
             ) : null}
           </div>
           <div className="flex flex-wrap justify-end gap-2">
-            <SaveButton
-              compact
-              demo={activity.dataSource === "demo"}
-              hydrateFromApi={hydrateFromApi}
-              initialSaved={activity.isSaved}
-              interactionSupported={canJoinActivity(activity)}
-              storageKey={`activity:${activity.id}`}
-            />
-            <JoinActivityButton
-              compact
-              demo={activity.dataSource === "demo"}
+            <ActivityCardActions
+              activityId={activity.id}
               hydrateFromApi={hydrateFromApi}
               initialJoined={activity.isJoined}
+              initialSaved={activity.isSaved}
               interactionSupported={canJoinActivity(activity)}
-              storageKey={activity.id}
+              demo={activity.dataSource === "demo"}
             />
           </div>
         </div>

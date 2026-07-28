@@ -41,7 +41,13 @@ const stories = [
   },
 ];
 
-export function PublicAuthShell({ children }: { children: ReactNode }) {
+export function PublicAuthShell({
+  children,
+  discovery,
+}: {
+  children: ReactNode;
+  discovery?: ReactNode;
+}) {
   return (
     <main className="min-h-dvh bg-[#F7F2E8] p-2 text-[#18231D] sm:p-5 lg:p-7 xl:p-9">
       <div className="mx-auto grid min-h-[calc(100dvh-1rem)] max-w-[1540px] overflow-hidden rounded-[24px] border border-white/80 bg-[#FFFCF7]/72 shadow-[0_30px_100px_rgba(45,52,39,0.16)] sm:min-h-[calc(100dvh-2.5rem)] sm:rounded-[34px] lg:grid-cols-[minmax(0,1.42fr)_minmax(430px,0.92fr)] xl:min-h-[calc(100dvh-4.5rem)]">
@@ -90,22 +96,24 @@ export function PublicAuthShell({ children }: { children: ReactNode }) {
                 ))}
               </div>
 
-              <div className="mt-auto hidden gap-3 pt-8 sm:grid sm:grid-cols-3">
-                {stories.map(({ eyebrow, icon: Icon, image, text, title }) => (
-                  <article className="group relative min-h-[220px] overflow-hidden rounded-[22px] border border-white/22 bg-[#0E3325]/46 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-sm" key={title}>
-                    <Image alt="" aria-hidden="true" className="object-cover opacity-28 transition-transform duration-200 group-hover:scale-[1.02]" fill sizes="250px" src={image} />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#0E3325]/60 via-[#0E3325]/76 to-[#0E3325]/96" />
-                    <div className="relative flex h-full flex-col">
-                      <span className="grid size-11 place-items-center rounded-full bg-[#D7A63C]/20 text-[#F0BC43]">
-                        <Icon aria-hidden="true" className="size-5" />
-                      </span>
-                      <p className="mt-4 text-[10px] font-black uppercase tracking-[0.14em] text-[#E7B13B]">{eyebrow}</p>
-                      <h2 className="mt-2 text-lg font-extrabold leading-6 text-white">{title}</h2>
-                      <p className="mt-2 text-xs font-medium leading-5 text-white/68">{text}</p>
-                    </div>
-                  </article>
-                ))}
-              </div>
+              {!discovery ? (
+                <div className="mt-auto hidden gap-3 pt-8 sm:grid sm:grid-cols-3">
+                  {stories.map(({ eyebrow, icon: Icon, image, text, title }) => (
+                    <article className="group relative min-h-[220px] overflow-hidden rounded-[22px] border border-white/22 bg-[#0E3325]/46 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-sm" key={title}>
+                      <Image alt="" aria-hidden="true" className="object-cover opacity-28 transition-transform duration-200 group-hover:scale-[1.02]" fill sizes="250px" src={image} />
+                      <div className="absolute inset-0 bg-gradient-to-b from-[#0E3325]/60 via-[#0E3325]/76 to-[#0E3325]/96" />
+                      <div className="relative flex h-full flex-col">
+                        <span className="grid size-11 place-items-center rounded-full bg-[#D7A63C]/20 text-[#F0BC43]">
+                          <Icon aria-hidden="true" className="size-5" />
+                        </span>
+                        <p className="mt-4 text-[10px] font-black uppercase tracking-[0.14em] text-[#E7B13B]">{eyebrow}</p>
+                        <h2 className="mt-2 text-lg font-extrabold leading-6 text-white">{title}</h2>
+                        <p className="mt-2 text-xs font-medium leading-5 text-white/68">{text}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : null}
 
               <p className="mt-auto flex items-center gap-2 pt-5 text-xs font-semibold text-white/78 sm:mt-6 sm:pt-0 sm:text-sm">
                 <span className="grid size-8 place-items-center rounded-lg bg-[#347A48] text-white"><ShieldCheck aria-hidden="true" className="size-4" /></span>
@@ -128,6 +136,11 @@ export function PublicAuthShell({ children }: { children: ReactNode }) {
           </div>
         </section>
       </div>
+      {discovery ? (
+        <div className="mx-auto mt-8 max-w-[1540px] sm:mt-10 lg:mt-12">
+          {discovery}
+        </div>
+      ) : null}
     </main>
   );
 }

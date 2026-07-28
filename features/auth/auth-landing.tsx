@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type KeyboardEvent, useEffect, useRef, useState } from "react";
-import { LogIn, RefreshCw, UserPlus } from "lucide-react";
+import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import { Compass, LogIn, RefreshCw, UserPlus } from "lucide-react";
+import { LinkButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { LoginForm } from "@/features/auth/login-form";
 import { PublicAuthShell } from "@/features/auth/public-auth-shell";
@@ -20,7 +21,13 @@ import { cn } from "@/lib/utils";
 
 type AuthMode = "login" | "register";
 
-export function AuthLanding({ initialMode = "login" }: { initialMode?: AuthMode }) {
+export function AuthLanding({
+  discovery,
+  initialMode = "login",
+}: {
+  discovery?: ReactNode;
+  initialMode?: AuthMode;
+}) {
   const router = useRouter();
   const { token } = useAuthSession();
   const [mode, setMode] = useState<AuthMode>(initialMode);
@@ -96,7 +103,7 @@ export function AuthLanding({ initialMode = "login" }: { initialMode?: AuthMode 
   }
 
   return (
-    <PublicAuthShell>
+    <PublicAuthShell discovery={discovery}>
       <Card className="auth-fade-scale rounded-[24px] border-white/90 bg-white/94 p-4 shadow-[0_24px_80px_rgba(24,75,52,0.12)] sm:rounded-[28px] sm:p-7">
         {token && failedSessionCheck === token ? (
           <div
@@ -185,6 +192,13 @@ export function AuthLanding({ initialMode = "login" }: { initialMode?: AuthMode 
         </div>
         <div aria-labelledby="auth-tab-register" hidden={mode !== "register"} id="auth-panel-register" role="tabpanel" tabIndex={0}>
           <RegisterForm />
+        </div>
+
+        <div className="mt-4 border-t border-[#184B3414] pt-4 sm:mt-5 sm:pt-5">
+          <LinkButton className="w-full" href="/explore" variant="secondary">
+            <Compass aria-hidden="true" className="size-4" />
+            Explorar sin cuenta
+          </LinkButton>
         </div>
 
         <p className="mt-3 text-center text-sm font-medium text-[#687269] sm:mt-5">
