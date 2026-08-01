@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   CalendarDays,
+  ChevronDown,
   HeartHandshake,
   LockKeyhole,
   MapPin,
@@ -10,6 +11,7 @@ import {
   ShieldCheck,
   UsersRound,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const signals = [
   { icon: MapPin, label: "Actividades cerca" },
@@ -48,16 +50,25 @@ export function PublicAuthShell({
   children: ReactNode;
   discovery?: ReactNode;
 }) {
+  const hasDiscovery = Boolean(discovery);
+
   return (
     <main className="min-h-dvh bg-[#F7F2E8] p-2 text-[#18231D] sm:p-5 lg:p-7 xl:p-9">
-      <div className="mx-auto grid min-h-[calc(100dvh-1rem)] max-w-[1540px] overflow-hidden rounded-[24px] border border-white/80 bg-[#FFFCF7]/72 shadow-[0_30px_100px_rgba(45,52,39,0.16)] sm:min-h-[calc(100dvh-2.5rem)] sm:rounded-[34px] lg:grid-cols-[minmax(0,1.42fr)_minmax(430px,0.92fr)] xl:min-h-[calc(100dvh-4.5rem)]">
+      <div
+        className={cn(
+          "mx-auto grid max-w-[1540px] overflow-hidden rounded-[24px] border border-white/80 bg-[#FFFCF7]/72 shadow-[0_30px_100px_rgba(45,52,39,0.16)] sm:rounded-[34px] lg:grid-cols-[minmax(0,1.42fr)_minmax(430px,0.92fr)]",
+          hasDiscovery
+            ? "lg:min-h-[calc(100dvh-3.5rem)] xl:min-h-[calc(100dvh-4.5rem)]"
+            : "min-h-[calc(100dvh-1rem)] sm:min-h-[calc(100dvh-2.5rem)] xl:min-h-[calc(100dvh-4.5rem)]",
+        )}
+      >
         <section className="auth-hero-shell order-2 p-2 sm:p-5 lg:order-1 lg:p-0">
           <div className="auth-hero-card relative flex min-h-[360px] overflow-hidden rounded-[22px] bg-[#0E3325] text-white sm:min-h-[600px] sm:rounded-[30px] lg:min-h-full lg:rounded-[32px]">
             <Image
               alt="Pueblo de piedra entre montañas al atardecer"
               className="object-cover object-center lg:object-[58%_center]"
               fill
-              preload
+              loading="eager"
               sizes="(max-width: 1023px) 100vw, 62vw"
               src="/images/raiz-village-hero.webp"
             />
@@ -123,7 +134,13 @@ export function PublicAuthShell({
           </div>
         </section>
 
-        <section className="order-1 flex items-center justify-center p-2 sm:p-7 lg:order-2 lg:p-8 xl:p-10">
+        <section
+          className={cn(
+            "order-1 flex items-center justify-center p-2 sm:p-7 lg:order-2 lg:p-8 xl:p-10",
+            hasDiscovery && "min-h-[calc(100svh-1rem)] scroll-mt-2 lg:min-h-0",
+          )}
+          id="auth-access"
+        >
           <div className="w-full max-w-[500px]">
             {children}
             <div className="mt-3 flex items-center gap-3 rounded-[20px] border border-[#D7A63C]/30 bg-[#FFF8EC] p-3 text-[#184B34] sm:mt-5 sm:rounded-[22px] sm:p-4">
@@ -133,11 +150,20 @@ export function PublicAuthShell({
                 <p className="mt-1 text-xs font-medium text-[#687269]">No compartimos tus datos con terceros.</p>
               </div>
             </div>
+            {hasDiscovery ? (
+              <a
+                className="mx-auto mt-2 flex min-h-11 w-fit items-center gap-2 rounded-full px-4 text-xs font-extrabold text-[#526158] transition-colors hover:bg-white/72 hover:text-[#184B34] sm:mt-3"
+                href="#landing-discovery"
+              >
+                Desliza para descubrir
+                <ChevronDown aria-hidden="true" className="size-4" />
+              </a>
+            ) : null}
           </div>
         </section>
       </div>
       {discovery ? (
-        <div className="mx-auto mt-8 max-w-[1540px] sm:mt-10 lg:mt-12">
+        <div className="mx-auto mt-8 w-full min-w-0 max-w-[1540px] scroll-mt-5 sm:mt-10 lg:mt-12" id="landing-discovery">
           {discovery}
         </div>
       ) : null}

@@ -34,11 +34,13 @@ function activityDateParts(date: string) {
 export function ActivityCard({
   activity,
   compact = false,
+  eager = false,
   hydrateFromApi = false,
   villageName: villageNameOverride,
 }: {
   activity: Activity;
   compact?: boolean;
+  eager?: boolean;
   hydrateFromApi?: boolean;
   villageName?: string;
 }) {
@@ -109,6 +111,7 @@ export function ActivityCard({
           <ActivityImage
             activity={activity}
             className="transition-transform duration-700 group-hover:scale-105"
+            eager={eager}
             sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
           />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_35%,rgba(14,51,37,0.55)_100%)]" />

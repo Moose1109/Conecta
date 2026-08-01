@@ -133,7 +133,7 @@ export function VillageExplorer({ villages: initialVillages }: { villages: Villa
         </p>
       ) : null}
 
-      <div aria-label="Filtrar pueblos por región" className="flex gap-2 overflow-x-auto pb-1">
+      <div aria-label="Filtrar pueblos por región" className="flex max-w-full snap-x gap-2 overflow-x-auto pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-x-visible [&::-webkit-scrollbar]:hidden">
         <button
           aria-pressed={activeRegion === allRegions}
           className={filterChipClass(activeRegion === allRegions)}
@@ -229,7 +229,7 @@ export function VillageExplorer({ villages: initialVillages }: { villages: Villa
 
 function filterChipClass(active: boolean) {
   return cn(
-    "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-xs font-extrabold transition-colors focus:outline-none focus:ring-4 focus:ring-[#347A481c]",
+    "inline-flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-full border px-4 text-xs font-extrabold transition-colors focus:outline-none focus:ring-4 focus:ring-[#347A481c]",
     active
       ? "border-[#347A48] bg-[#347A48] text-white shadow-[0_8px_20px_rgba(52,122,72,0.18)]"
       : "border-[#184B341a] bg-white/82 text-[#184B34] hover:border-[#184B3430] hover:bg-white",

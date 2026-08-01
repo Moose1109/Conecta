@@ -231,8 +231,9 @@ export function ActivityExplorer({
         className="min-w-0 rounded-[22px] border border-[#184B341a] bg-[#FFFCF7]/92 p-3 shadow-[0_12px_34px_rgba(43,55,38,0.06)] sm:p-4"
         onSubmit={applyFilters}
       >
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(220px,1fr)_minmax(190px,0.55fr)_minmax(150px,0.42fr)_minmax(150px,0.42fr)_auto]">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_minmax(180px,0.65fr)_minmax(145px,0.5fr)_minmax(145px,0.5fr)_auto]">
           <SearchInput
+            className="sm:col-span-2 md:col-span-1 xl:col-span-1"
             label="Buscar actividades"
             name="search"
             onChange={setSearch}
@@ -241,7 +242,7 @@ export function ActivityExplorer({
             value={search}
           />
 
-          <label className="relative block min-w-0">
+          <label className="relative block min-w-0 sm:col-span-2 md:col-span-1 xl:col-span-1">
             <span className="sr-only">Filtrar por pueblo</span>
             <MapPin aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 size-4.5 -translate-y-1/2 text-mineral" />
             <select
@@ -289,7 +290,7 @@ export function ActivityExplorer({
             />
           </label>
 
-          <Button className="min-h-12 px-5" disabled={dateRangeInvalid || isNavigating} type="submit">
+          <Button className="min-h-12 w-full px-5 sm:col-span-2 xl:col-span-1 xl:w-auto" disabled={dateRangeInvalid || isNavigating} type="submit">
             <SlidersHorizontal aria-hidden="true" className="size-4" />
             Aplicar
           </Button>
@@ -302,14 +303,14 @@ export function ActivityExplorer({
           </p>
         ) : null}
 
-        <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mt-3 flex snap-x items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-x-visible [&::-webkit-scrollbar]:hidden">
           <span className="mr-1 hidden shrink-0 items-center gap-1.5 text-xs font-extrabold text-text-muted sm:inline-flex">
             <SlidersHorizontal aria-hidden="true" className="size-3.5" /> Filtros
           </span>
           <Link
             aria-current={!filters.category ? "true" : undefined}
             className={cn(
-              "inline-flex min-h-11 shrink-0 items-center rounded-full border px-3.5 text-xs font-extrabold transition",
+              "inline-flex min-h-11 shrink-0 snap-start items-center rounded-full border px-3.5 text-xs font-extrabold transition",
               !filters.category
                 ? "border-primary bg-primary text-primary-foreground shadow-[0_8px_20px_rgba(24,75,52,0.17)]"
                 : "border-[#184B341a] bg-white/84 text-[#526158] hover:border-[#184B3430] hover:text-primary",
@@ -322,7 +323,7 @@ export function ActivityExplorer({
             <Link
               aria-current={filters.category === item ? "true" : undefined}
               className={cn(
-                "inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-xs font-extrabold transition",
+                "inline-flex min-h-11 shrink-0 snap-start items-center gap-1.5 rounded-full px-3.5 text-xs font-extrabold transition",
                 filters.category === item
                   ? "border border-primary bg-primary text-primary-foreground shadow-[0_8px_20px_rgba(24,75,52,0.17)]"
                   : activityCategoryPill(item),
@@ -361,13 +362,14 @@ export function ActivityExplorer({
           />
         ) : activities.length ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {activities.map((activity) => {
+            {activities.map((activity, index) => {
               const village = villages.find((item) => item.id === activity.villageId);
 
               return (
                 <ActivityCard
                   key={activity.id}
                   activity={activity}
+                  eager={index === 0}
                   villageName={activity.villageName ?? village?.name}
                 />
               );

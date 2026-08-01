@@ -202,12 +202,12 @@ export function SettingsView() {
         description="Gestiona tu identidad y consulta qué preferencias están disponibles en cada área."
       />
 
-      <div className="grid items-start gap-5 lg:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)]">
-        <Card className="p-2 lg:sticky lg:top-[92px]">
-          <nav aria-label="Secciones de Ajustes" className="flex gap-1 overflow-x-auto lg:grid">
+      <div className="grid items-start gap-5 xl:grid-cols-[240px_minmax(0,1fr)]">
+        <Card className="min-w-0 max-w-full p-2 xl:sticky xl:top-[92px]">
+          <nav aria-label="Secciones de Ajustes" className="flex snap-x gap-1 overflow-x-auto [scrollbar-width:none] xl:grid xl:overflow-visible [&::-webkit-scrollbar]:hidden">
             {settingsNavigation.map(({ icon: Icon, id, label }) => (
               <a
-                className="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-2xl px-3.5 text-sm font-extrabold text-[#526057] transition-colors hover:bg-[#184B340a] hover:text-[#184B34] focus:outline-none focus:ring-4 focus:ring-[#347A4824]"
+                className="inline-flex min-h-11 shrink-0 snap-start items-center gap-3 rounded-2xl px-3.5 text-sm font-extrabold text-[#526057] transition-colors hover:bg-[#184B340a] hover:text-[#184B34] focus:outline-none focus:ring-4 focus:ring-[#347A4824]"
                 href={`#settings-${id}`}
                 key={id}
               >
@@ -354,7 +354,7 @@ export function SettingsView() {
                 {success ? <p className="mt-5 flex items-center gap-2 rounded-2xl border border-[#347A4830] bg-[#347A4810] p-4 text-sm font-bold text-[#184B34]" role="status"><CheckCircle2 aria-hidden="true" className="size-5" />{success}</p> : null}
 
                 <div className="mt-6 flex justify-end">
-                  <Button disabled={isLoading || isSubmitting} type="submit">
+                  <Button className="w-full sm:w-auto" disabled={isLoading || isSubmitting} type="submit">
                     {isSubmitting ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin" /> : <Save aria-hidden="true" className="size-4" />}
                     {isSubmitting ? "Guardando…" : "Guardar cambios"}
                   </Button>

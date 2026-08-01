@@ -31,6 +31,14 @@ type ApiVillage = {
 
 type ApiCollection<T> = T[] | { items?: T[] };
 
+export type GetVillagesOptions = {
+  limit?: number;
+  offset?: number;
+  province?: string;
+  region?: string;
+  search?: string;
+};
+
 export type CreateVillagePayload = {
   name: string;
   slug: string;
@@ -103,13 +111,30 @@ function adaptVillages(response: ApiCollection<ApiVillage>) {
     .filter((village): village is Village => Boolean(village));
 }
 
-export async function getVillages(token?: string) {
-  return getVillagesStrict(token);
+function villagesPath({
+  limit = 100,
+  offset,
+  province,
+  region,
+  search,
+}: GetVillagesOptions = {}) {
+  const params = new URLSearchParams({ limit: String(limit) });
+
+  if (search) params.set("search", search);
+  if (province) params.set("province", province);
+  if (region) params.set("region", region);
+  if (typeof offset === "number") params.set("offset", String(offset));
+
+  return `/api/v1/villages?${params.toString()}`;
+}
+
+export async function getVillages(token?: string, options?: GetVillagesOptions) {
+  return getVillagesStrict(token, options);
 }
 
 /** Canonical strict fetch retained as an explicit name for existing callers. */
-export async function getVillagesStrict(token?: string) {
-  const response = await apiFetch<ApiCollection<ApiVillage>>("/api/v1/villages?limit=100", {
+export async function getVillagesStrict(token?: string, options?: GetVillagesOptions) {
+  const response = await apiFetch<ApiCollection<ApiVillage>>(villagesPath(options), {
     token,
   });
 

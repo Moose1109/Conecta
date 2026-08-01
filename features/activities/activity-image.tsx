@@ -6,14 +6,14 @@ import type { Activity } from "@/lib/types";
 export function ActivityImage({
   activity,
   className,
+  eager = false,
   preferBanner = false,
-  preload = false,
   sizes,
 }: {
   activity: Activity;
   className?: string;
+  eager?: boolean;
   preferBanner?: boolean;
-  preload?: boolean;
   sizes: string;
 }) {
   const realImage = preferBanner
@@ -27,7 +27,7 @@ export function ActivityImage({
         alt={isEditorial ? "" : activity.title}
         className={cn("object-cover", className)}
         fill
-        preload={preload}
+        loading={eager ? "eager" : undefined}
         sizes={sizes}
         src={realImage ?? "/images/raiz-market.webp"}
       />

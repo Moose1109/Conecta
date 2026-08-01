@@ -1,10 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from "react";
-import { Compass, LogIn, RefreshCw, UserPlus } from "lucide-react";
-import { LinkButton } from "@/components/ui/button";
+import { type KeyboardEvent, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { LogIn, RefreshCw, UserPlus } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import {
+  AuthLandingActionsProvider,
+  type AuthMode,
+  AuthProviderButtons,
+} from "@/features/auth/auth-landing-actions";
 import { LoginForm } from "@/features/auth/login-form";
 import { PublicAuthShell } from "@/features/auth/public-auth-shell";
 import { RegisterForm } from "@/features/auth/register-form";
@@ -18,8 +22,6 @@ import {
   saveSession,
 } from "@/lib/api/session";
 import { cn } from "@/lib/utils";
-
-type AuthMode = "login" | "register";
 
 export function AuthLanding({
   discovery,
@@ -35,6 +37,22 @@ export function AuthLanding({
   const [sessionCheckAttempt, setSessionCheckAttempt] = useState(0);
   const loginTabRef = useRef<HTMLButtonElement>(null);
   const registerTabRef = useRef<HTMLButtonElement>(null);
+
+  const selectModeAndFocus = useCallback((nextMode: AuthMode) => {
+    setMode(nextMode);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById("auth-access")?.scrollIntoView({
+      behavior: reducedMotion ? "auto" : "smooth",
+      block: "start",
+    });
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const firstFieldId = nextMode === "login" ? "login-email" : "register-name";
+        document.getElementById(firstFieldId)?.focus({ preventScroll: true });
+      });
+    });
+  }, []);
 
   useEffect(() => {
     if (!token) return;
@@ -103,7 +121,8 @@ export function AuthLanding({
   }
 
   return (
-    <PublicAuthShell discovery={discovery}>
+    <AuthLandingActionsProvider selectMode={selectModeAndFocus}>
+      <PublicAuthShell discovery={discovery}>
       <Card className="auth-fade-scale rounded-[24px] border-white/90 bg-white/94 p-4 shadow-[0_24px_80px_rgba(24,75,52,0.12)] sm:rounded-[28px] sm:p-7">
         {token && failedSessionCheck === token ? (
           <div
@@ -194,20 +213,16 @@ export function AuthLanding({
           <RegisterForm />
         </div>
 
-        <div className="mt-4 border-t border-[#184B3414] pt-4 sm:mt-5 sm:pt-5">
-          <LinkButton className="w-full" href="/explore" variant="secondary">
-            <Compass aria-hidden="true" className="size-4" />
-            Explorar sin cuenta
-          </LinkButton>
-        </div>
+        <AuthProviderButtons mode={mode} />
 
         <p className="mt-3 text-center text-sm font-medium text-[#687269] sm:mt-5">
           {mode === "login" ? "¿Aún no tienes cuenta? " : "¿Ya tienes cuenta? "}
-          <button className="inline-flex min-h-11 items-center font-extrabold text-[#347A48] hover:text-[#184B34]" type="button" onClick={() => setMode(mode === "login" ? "register" : "login")}>
+          <button className="inline-flex min-h-11 items-center font-extrabold text-[#347A48] hover:text-[#184B34]" type="button" onClick={() => selectModeAndFocus(mode === "login" ? "register" : "login")}>
             {mode === "login" ? "Crear cuenta" : "Iniciar sesión"}
           </button>
         </p>
       </Card>
-    </PublicAuthShell>
+      </PublicAuthShell>
+    </AuthLandingActionsProvider>
   );
 }

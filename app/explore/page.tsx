@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { PageHeader } from "@/components/ui/page-header";
+import { AuthGate } from "@/features/auth/auth-gate";
 import { ExploreLoading } from "@/features/explore/explore-loading";
 import {
   ExploreView,
@@ -41,14 +42,16 @@ export default async function ExplorePage({
 
   return (
     <AuthenticatedShell>
-      <PageHeader
-        description="Explora pueblos, actividades y publicaciones disponibles en los catálogos públicos cargados."
-        eyebrow="Descubrimiento"
-        title="Explora la vida de los pueblos"
-      />
-      <Suspense fallback={<ExploreLoading />}>
-        <ExploreData key={`${filters.query}:${filters.type}`} filters={filters} />
-      </Suspense>
+      <AuthGate message="Para explorar el catálogo completo y las publicaciones de la comunidad necesitas iniciar sesión.">
+        <PageHeader
+          description="Explora pueblos, actividades y publicaciones disponibles en los catálogos públicos cargados."
+          eyebrow="Descubrimiento"
+          title="Explora la vida de los pueblos"
+        />
+        <Suspense fallback={<ExploreLoading />}>
+          <ExploreData key={`${filters.query}:${filters.type}`} filters={filters} />
+        </Suspense>
+      </AuthGate>
     </AuthenticatedShell>
   );
 }

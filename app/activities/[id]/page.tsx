@@ -83,8 +83,8 @@ export default async function ActivityDetailPage({
           <div className="relative min-h-[360px] sm:min-h-[420px] lg:min-h-[460px]">
             <ActivityImage
               activity={activity}
+              eager
               preferBanner
-              preload
               sizes="(max-width: 1280px) 100vw, 1100px"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(14,51,37,0.10)_12%,rgba(14,51,37,0.22)_43%,rgba(7,28,20,0.93)_100%)]" />

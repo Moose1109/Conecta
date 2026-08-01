@@ -56,7 +56,7 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
             />
             <div className="min-w-0 pb-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="truncate text-3xl font-extrabold tracking-[-0.04em] text-[#0E3325] sm:text-4xl">{name}</h1>
+                <h1 className="break-words text-3xl font-extrabold tracking-[-0.04em] text-[#0E3325] sm:text-4xl">{name}</h1>
               </div>
               <p className="mt-1 truncate text-sm font-extrabold text-[#347A48]">{profileHandle(user)}</p>
             </div>
@@ -70,14 +70,14 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
           </div>
         </div>
 
-        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
           <p className="max-w-2xl text-sm leading-6 text-[#687269]">
             {user?.bio ?? "Añade una bio para contar quién eres, qué lugares te inspiran y cómo participas en tu comunidad."}
           </p>
-          <dl className="grid grid-cols-3 gap-5 rounded-2xl border border-[#184B3412] bg-[#F8F5EE] px-4 py-3 text-center sm:gap-8 sm:px-6">
+          <dl className="grid grid-cols-2 gap-4 rounded-2xl border border-[#184B3412] bg-[#F8F5EE] px-4 py-3 text-center min-[430px]:grid-cols-3 sm:gap-8 sm:px-6">
             <Metric label="Publicaciones" value={stats.posts} />
             <Metric label="Inscripciones" value={stats.activities} />
-            <Metric label="Pueblos seguidos" value={stats.followedVillages} />
+            <Metric className="col-span-2 min-[430px]:col-span-1" label="Pueblos seguidos" value={stats.followedVillages} />
           </dl>
         </div>
       </div>
@@ -85,9 +85,9 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
   );
 }
 
-function Metric({ label, value }: { label: string; value?: number }) {
+function Metric({ className = "", label, value }: { className?: string; label: string; value?: number }) {
   return (
-    <div className="flex flex-col">
+    <div className={`flex flex-col ${className}`}>
       <dt className="text-[10px] font-bold text-[#687269] sm:text-xs">{label}</dt>
       <dd
         aria-label={value === undefined ? `${label}: dato no disponible` : undefined}

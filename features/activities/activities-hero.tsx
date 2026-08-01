@@ -48,8 +48,8 @@ export function ActivitiesHero({
             <ActivityImage
               activity={activity}
               className="transition-transform duration-700 hover:scale-[1.025]"
+              eager
               preferBanner
-              preload
               sizes="(max-width: 1024px) 100vw, 58vw"
             />
           ) : (
@@ -58,7 +58,7 @@ export function ActivitiesHero({
                 alt="Escena editorial de un mercado en una plaza rural"
                 className="object-cover"
                 fill
-                preload
+                loading="eager"
                 sizes="(max-width: 1024px) 100vw, 58vw"
                 src="/images/raiz-market.webp"
               />

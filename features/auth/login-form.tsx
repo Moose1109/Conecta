@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Button } from "@/components/ui/button";
 import { loginUser, type LoginPayload } from "@/lib/api/auth.service";
 import { isUnauthorizedError } from "@/lib/api/client";
@@ -13,6 +14,7 @@ export function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showRecoveryNotice, setShowRecoveryNotice] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -117,7 +119,26 @@ export function LoginForm() {
             {showPassword ? <EyeOff aria-hidden="true" className="size-5" /> : <Eye aria-hidden="true" className="size-5" />}
           </button>
         </div>
+        <div className="mt-1 flex justify-end">
+          <button
+            aria-describedby={showRecoveryNotice ? "password-recovery-pending" : undefined}
+            className="inline-flex min-h-11 items-center rounded-full px-2 text-xs font-extrabold text-[#347A48] transition-colors hover:bg-[#347A480d] hover:text-[#184B34]"
+            type="button"
+            onClick={() => setShowRecoveryNotice(true)}
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+        </div>
       </div>
+      {showRecoveryNotice ? (
+        <div id="password-recovery-pending">
+          <BackendPendingAlert
+            compact
+            description="La recuperación por correo todavía necesita un flujo seguro en el backend. No se ha enviado ningún mensaje ni se ha consultado si el email existe."
+            title="Recuperación pendiente"
+          />
+        </div>
+      ) : null}
       <Button
         type="submit"
         className="auth-primary-button w-full gap-2 disabled:cursor-not-allowed disabled:opacity-70"

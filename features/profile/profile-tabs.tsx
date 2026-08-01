@@ -113,7 +113,7 @@ export function ProfileTabs({
 
   return (
     <section>
-      <Card aria-label="Contenido del perfil" aria-orientation="horizontal" className="mb-5 flex gap-1 overflow-x-auto rounded-[18px] p-1.5" role="tablist">
+      <Card aria-label="Contenido del perfil" aria-orientation="horizontal" className="mb-5 flex max-w-full snap-x gap-1 overflow-x-auto rounded-[18px] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist">
         {tabs.map(({ count, icon: Icon, id, label }) => (
           <button
             key={id}
@@ -123,7 +123,7 @@ export function ProfileTabs({
             aria-controls={`profile-panel-${id}`}
             aria-selected={activeTab === id}
             className={cn(
-              "relative inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3.5 text-sm font-bold transition-colors",
+              "relative inline-flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-xl px-3.5 text-sm font-bold transition-colors",
               activeTab === id ? "bg-[#184B340a] text-[#184B34]" : "text-[#687269] hover:bg-[#184B3408] hover:text-[#184B34]",
             )}
             id={`profile-tab-${id}`}

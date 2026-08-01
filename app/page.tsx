@@ -22,10 +22,23 @@ export default function Home() {
 
 async function LandingDiscoveryData() {
   await connection();
+  const todayParts = new Intl.DateTimeFormat("en-CA", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone: "Europe/Madrid",
+    year: "numeric",
+  }).formatToParts(new Date());
+  const today = ["year", "month", "day"]
+    .map((part) => todayParts.find(({ type }) => type === part)?.value)
+    .join("-");
 
   const [villagesResult, activitiesResult] = await Promise.allSettled([
-    getVillagesStrict(),
-    getActivitiesStrict(),
+    getVillagesStrict(undefined, { limit: 5 }),
+    getActivitiesStrict(undefined, {
+      dateFrom: today,
+      limit: 5,
+      status: "published",
+    }),
   ]);
   const villagesUnavailable = villagesResult.status === "rejected";
   const activitiesUnavailable = activitiesResult.status === "rejected";
@@ -44,10 +57,8 @@ async function LandingDiscoveryData() {
   return (
     <LandingDiscovery
       activities={loadedActivities.filter((activity) => activity.dataSource === "persistent")}
-      activitiesLimited={loadedActivities.length >= 100}
       activitiesUnavailable={activitiesUnavailable}
       villages={loadedVillages.filter((village) => village.dataSource === "persistent")}
-      villagesLimited={loadedVillages.length >= 100}
       villagesUnavailable={villagesUnavailable}
     />
   );
