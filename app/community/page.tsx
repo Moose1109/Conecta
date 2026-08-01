@@ -5,6 +5,7 @@ import { RightRail } from "@/components/layout/right-rail";
 import { CommunityHeader } from "@/features/community/community-header";
 import { CommunityDataProvider } from "@/features/community/community-data-provider";
 import { CommunityFeed } from "@/features/community/community-feed";
+import { MomentsPreviewLink } from "@/features/community/moments-preview-link";
 import { getActivitiesStrict } from "@/lib/api/activities.service";
 import { getCommunityPostsStrict } from "@/lib/api/community.service";
 import { getVillagesStrict } from "@/lib/api/villages.service";
@@ -54,6 +55,7 @@ export default async function CommunityPage({
     >
       <AuthenticatedShell right={<RightRail />} variant="three-column">
         <CommunityHeader />
+        <MomentsPreviewLink />
         <CommunityFeed
           key={`community-feed-${initialQuery}`}
           initialQuery={initialQuery}

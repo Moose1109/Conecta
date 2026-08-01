@@ -83,6 +83,7 @@ export function SidebarNav() {
           aria-hidden="true"
           className="object-cover opacity-25"
           fill
+          loading="eager"
           sizes="248px"
           src="/images/raiz-village-hero.webp"
         />
