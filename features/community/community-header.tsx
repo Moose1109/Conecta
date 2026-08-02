@@ -14,7 +14,7 @@ export function CommunityHeader() {
             Tu plaza digital
           </h1>
           <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#687269] sm:text-[15px]">
-            Publicaciones, avisos y momentos compartidos por vecinos y visitantes.
+            Publicaciones, avisos e historias compartidas por vecinos y visitantes.
           </p>
         </div>
       </div>

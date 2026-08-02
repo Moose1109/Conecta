@@ -5,6 +5,8 @@ import { SocialPostActions } from "@/components/social/social-post-actions";
 import { PostTrustMenu } from "@/components/social/post-trust-menu";
 import { UserAvatar } from "@/components/social/user-avatar";
 import { Card } from "@/components/ui/card";
+import { useAuthSession } from "@/features/auth/use-auth-session";
+import { isOwnPost } from "@/features/trust/ownership";
 import { getPostCapabilities } from "@/lib/api/entity-capabilities";
 import type { CommunityPost } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
@@ -32,6 +34,8 @@ export function SocialPostCard({
   const comments = post.commentsCount ?? post.comments;
   const showTitle = Boolean(post.title.trim() && post.title.trim().toLowerCase() !== "publicación");
   const capabilities = getPostCapabilities(post);
+  const { user } = useAuthSession();
+  const ownPost = isOwnPost(post, user?.id);
 
   return (
     <article>
@@ -68,7 +72,7 @@ export function SocialPostCard({
                 <time dateTime={post.date}>{readableDate(post.date)}</time>
               </div>
             </div>
-            <PostTrustMenu />
+            {ownPost ? null : <PostTrustMenu />}
           </div>
 
           {showTitle ? (

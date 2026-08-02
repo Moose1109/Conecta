@@ -16,6 +16,7 @@ const focusableSelector = [
 
 let openDialogCount = 0;
 let bodyOverflowBeforeDialogs = "";
+const dialogStack: HTMLElement[] = [];
 
 type ModalDialogOptions = {
   dialogRef: RefObject<HTMLElement | null>;
@@ -45,6 +46,11 @@ export function useModalDialog({ dialogRef, open, onClose, triggerRef }: ModalDi
     }
     openDialogCount += 1;
     document.body.style.overflow = "hidden";
+    if (dialog) dialogStack.push(dialog);
+
+    function isTopmostDialog() {
+      return !dialog || dialogStack[dialogStack.length - 1] === dialog;
+    }
 
     function getFocusableElements() {
       if (!dialog) return [];
@@ -68,6 +74,8 @@ export function useModalDialog({ dialogRef, open, onClose, triggerRef }: ModalDi
     });
 
     function handleKeyDown(event: KeyboardEvent) {
+      if (!isTopmostDialog()) return;
+
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopPropagation();
@@ -105,6 +113,7 @@ export function useModalDialog({ dialogRef, open, onClose, triggerRef }: ModalDi
     }
 
     function handleFocusIn(event: FocusEvent) {
+      if (!isTopmostDialog()) return;
       if (dialog && !dialog.contains(event.target as Node)) {
         focusFirstElement();
       }
@@ -117,6 +126,11 @@ export function useModalDialog({ dialogRef, open, onClose, triggerRef }: ModalDi
       window.cancelAnimationFrame(animationFrame);
       document.removeEventListener("keydown", handleKeyDown, true);
       document.removeEventListener("focusin", handleFocusIn);
+
+      if (dialog) {
+        const stackIndex = dialogStack.indexOf(dialog);
+        if (stackIndex !== -1) dialogStack.splice(stackIndex, 1);
+      }
 
       openDialogCount = Math.max(0, openDialogCount - 1);
       if (openDialogCount === 0) {
