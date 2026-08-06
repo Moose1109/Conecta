@@ -13,8 +13,12 @@ import {
 import { getActivitiesStrict } from "@/lib/api/activities.service";
 import { getCommunityPostsStrict } from "@/lib/api/community.service";
 import { getVillagesStrict } from "@/lib/api/villages.service";
+import { getTranslations } from "@/lib/i18n/get-translations";
 
-export const metadata: Metadata = { title: "Explorar" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return { title: t("navigation.explore.label") };
+}
 
 type ExploreSearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -32,6 +36,7 @@ export default async function ExplorePage({
 }) {
   await connection();
 
+  const { t } = await getTranslations();
   const rawParams = await searchParams;
   const filters = exploreFilters(rawParams);
   const canonicalHref = exploreHref(filters.query, filters.type);
@@ -42,11 +47,11 @@ export default async function ExplorePage({
 
   return (
     <AuthenticatedShell>
-      <AuthGate message="Para explorar el catálogo completo y las publicaciones de la comunidad necesitas iniciar sesión.">
+      <AuthGate message={t("explore.authGateMessage")}>
         <PageHeader
-          description="Explora pueblos, actividades y publicaciones disponibles en los catálogos públicos cargados."
-          eyebrow="Descubrimiento"
-          title="Explora la vida de los pueblos"
+          description={t("explore.pageDescription")}
+          eyebrow={t("explore.pageEyebrow")}
+          title={t("explore.pageTitle")}
         />
         <Suspense fallback={<ExploreLoading />}>
           <ExploreData key={`${filters.query}:${filters.type}`} filters={filters} />

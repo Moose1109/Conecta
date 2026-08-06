@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Card } from "@/components/ui/card";
 import { PrototypeBanner } from "@/components/ui/prototype-banner";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import {
   ConversationThread,
   type ThreadPendingAction,
@@ -33,6 +34,7 @@ export function MessagesView({
 }: {
   initialState?: MessagesConceptState;
 }) {
+  const { t } = useTranslations();
   const [filter, setFilter] = useState<ConceptConversationFilter>("all");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | undefined>(
@@ -113,7 +115,7 @@ export function MessagesView({
 
   return (
     <section
-      aria-label="Propuesta visual de mensajería"
+      aria-label={t("messages.ariaProposal")}
       className="flex h-[calc(100dvh-var(--topbar-height)-6.25rem-env(safe-area-inset-bottom))] min-h-0 min-w-0 flex-col gap-3 md:h-[calc(100dvh-var(--topbar-height)-2.5rem)] lg:h-[calc(100dvh-var(--topbar-height)-3rem)]"
       onKeyDown={handleWorkspaceKeyDown}
     >
@@ -173,16 +175,18 @@ export function MessagesView({
 }
 
 function MessagesConceptBanner() {
+  const { t } = useTranslations();
+
   return (
     <PrototypeBanner
-      description="Todos los nombres, mensajes, estados y contadores de esta vista son ejemplos locales; nada se envía ni persiste."
-      title="Vista conceptual · La mensajería requiere backend"
+      description={t("messages.banner.description")}
+      title={t("messages.banner.title")}
       trailingAction={
         <Link
-          aria-label="Salir de la vista previa conceptual y volver al estado real de Mensajes"
+          aria-label={t("messages.banner.exitAria")}
           className="grid size-9 shrink-0 place-items-center rounded-full text-primary transition-colors hover:bg-white/70"
           href="/messages"
-          title="Salir de la propuesta visual"
+          title={t("messages.banner.exitTitle")}
         >
           <X aria-hidden="true" className="size-[18px]" />
         </Link>
@@ -192,6 +196,8 @@ function MessagesConceptBanner() {
 }
 
 function ConversationSelectionEmpty() {
+  const { t } = useTranslations();
+
   return (
     <section
       aria-labelledby="messages-selection-empty-title"
@@ -202,10 +208,10 @@ function ConversationSelectionEmpty() {
           <MessageSquareText aria-hidden="true" className="size-7" />
         </span>
         <h2 className="mt-5 text-2xl font-extrabold tracking-[-0.025em] text-text-primary" id="messages-selection-empty-title">
-          Selecciona una conversación de ejemplo
+          {t("messages.selectionEmptyTitle")}
         </h2>
         <p className="mt-3 text-sm leading-6 text-text-muted">
-          El panel mostrará el futuro historial, contenido compartido y compositor sin realizar ninguna operación real.
+          {t("messages.selectionEmptyDescription")}
         </p>
       </div>
     </section>
@@ -213,25 +219,26 @@ function ConversationSelectionEmpty() {
 }
 
 function MessagesConceptStateView({ state }: { state: Exclude<MessagesConceptState, "ready"> }) {
+  const { t } = useTranslations();
   const content = state === "loading"
     ? {
-        description: "Esta variante permite revisar el esqueleto del futuro listado sin temporizadores ni peticiones simuladas.",
-        eyebrow: "Estado conceptual",
+        description: t("messages.conceptStates.loadingDescription"),
+        eyebrow: t("messages.conceptStates.loadingEyebrow"),
         icon: LoaderCircle,
-        title: "Preparando la vista de ejemplo",
+        title: t("messages.conceptStates.loadingTitle"),
       }
     : state === "error"
       ? {
-          description: "No se ha consultado ningún endpoint. Esta variante documenta cómo se comunicaría un error real cuando exista la integración.",
-          eyebrow: "Variante de error",
+          description: t("messages.conceptStates.errorDescription"),
+          eyebrow: t("messages.conceptStates.errorEyebrow"),
           icon: AlertTriangle,
-          title: "No se pudo mostrar la demostración",
+          title: t("messages.conceptStates.errorTitle"),
         }
       : {
-          description: "Esta variante conceptual representa una cuenta que todavía no tendría conversaciones cuando exista el servicio real.",
-          eyebrow: "Variante vacía",
+          description: t("messages.conceptStates.emptyDescription"),
+          eyebrow: t("messages.conceptStates.emptyEyebrow"),
           icon: MessageCircle,
-          title: "Aún no hay conversaciones",
+          title: t("messages.conceptStates.emptyTitle"),
         };
   const Icon = content.icon;
 
@@ -243,9 +250,9 @@ function MessagesConceptStateView({ state }: { state: Exclude<MessagesConceptSta
     >
       <MessagesConceptBanner />
       <Card className="min-h-0 flex-1 overflow-y-auto bg-white p-5 sm:p-8">
-        <p className="eyebrow">Conversaciones</p>
+        <p className="eyebrow">{t("messages.conversationsEyebrow")}</p>
         <h1 className="mt-1 text-3xl font-extrabold tracking-[-0.04em] text-text-primary sm:text-4xl" id="messages-title">
-          Mensajes
+          {t("messages.title")}
         </h1>
         <div className="grid min-h-[70%] place-items-center px-2 py-8 text-center">
           <div className="max-w-md">

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Suspense } from "react";
@@ -12,6 +11,7 @@ import {
 import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { FollowButton } from "@/components/social/follow-button";
 import { Badge } from "@/components/ui/card";
+import { RemoteEntityImage } from "@/components/ui/remote-entity-image";
 import {
   VillageDetailSections,
   VillageDetailSectionsLoading,
@@ -21,9 +21,13 @@ import { isNotFoundError } from "@/lib/api/client";
 import { getPostsByVillageIdStrict } from "@/lib/api/community.service";
 import { canFollowVillage } from "@/lib/api/entity-capabilities";
 import { getVillageByIdStrict, getVillagesStrict } from "@/lib/api/villages.service";
+import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Village } from "@/lib/types";
 
-export const metadata: Metadata = { title: "Detalle de pueblo" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return { title: t("villages.detail.metaTitle") };
+}
 
 export default async function VillageDetailPage({
   params,
@@ -32,6 +36,7 @@ export default async function VillageDetailPage({
 }) {
   await connection();
 
+  const { t } = await getTranslations();
   const { id } = await params;
   const village = await getVillageByIdStrict(id).catch((error: unknown) => {
     if (isNotFoundError(error)) notFound();
@@ -48,24 +53,23 @@ export default async function VillageDetailPage({
     <AuthenticatedShell>
       <div className="grid gap-6 sm:gap-8">
         <section className="relative isolate min-h-[430px] overflow-hidden rounded-[28px] border border-white/30 bg-[#0E3325] shadow-[0_24px_72px_rgba(14,51,37,0.18)] sm:min-h-[500px]">
-          {heroImage ? (
-            <Image
-              alt={village.name}
-              className="object-cover"
-              fill
-              preload
-              sizes="(max-width: 1024px) 100vw, 1160px"
-              src={heroImage}
-            />
-          ) : (
-            <div className="topographic-pattern absolute inset-0 bg-[linear-gradient(145deg,#0E3325_0%,#347A48_55%,#78947D_100%)]">
-              <Landmark
-                aria-hidden="true"
-                className="absolute right-[10%] top-1/2 size-32 -translate-y-1/2 text-white/12 sm:size-44"
-                strokeWidth={1.1}
-              />
-            </div>
-          )}
+          <RemoteEntityImage
+            alt={village.name}
+            className="object-cover"
+            fill
+            preload
+            sizes="(max-width: 1024px) 100vw, 1160px"
+            src={heroImage}
+            fallback={
+              <div className="topographic-pattern absolute inset-0 bg-[linear-gradient(145deg,#0E3325_0%,#347A48_55%,#78947D_100%)]">
+                <Landmark
+                  aria-hidden="true"
+                  className="absolute right-[10%] top-1/2 size-32 -translate-y-1/2 text-white/12 sm:size-44"
+                  strokeWidth={1.1}
+                />
+              </div>
+            }
+          />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,36,26,0.36)_0%,rgba(10,36,26,0.10)_34%,rgba(10,36,26,0.90)_100%)]" />
           <div className="topographic-pattern absolute inset-0 opacity-35" />
 
@@ -75,7 +79,7 @@ export default async function VillageDetailPage({
               href="/villages"
             >
               <ArrowLeft aria-hidden="true" className="size-4" />
-              Volver a pueblos
+              {t("villages.detail.backToVillages")}
             </Link>
 
             <div className="max-w-4xl">

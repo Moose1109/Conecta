@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { LoadingState } from "@/components/ui/loading-state";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { AuthGate } from "@/features/auth/auth-gate";
 import { ProfileHeader } from "@/features/profile/profile-header";
 import { ProfileRecommendationsRail } from "@/features/profile/profile-recommendations";
@@ -60,6 +61,7 @@ function metricValue(
 }
 
 export function ProfileView() {
+  const { t } = useTranslations();
   const { token, user: sessionUser } = useAuthSession();
   const sessionUserId = sessionUser?.id;
   const sessionUserName = sessionUser?.name;
@@ -180,9 +182,9 @@ export function ProfileView() {
         villages: villagesResult.status === "rejected",
       };
       const missingLabels = [
-        nextUnavailable.posts ? "publicaciones" : "",
-        nextUnavailable.activities ? "actividades" : "",
-        nextUnavailable.villages ? "pueblos" : "",
+        nextUnavailable.posts ? t("explore.sourceLabels.posts") : "",
+        nextUnavailable.activities ? t("explore.sourceLabels.activities") : "",
+        nextUnavailable.villages ? t("explore.sourceLabels.villages") : "",
       ].filter(Boolean);
 
       if (userResult.status === "fulfilled" && userResult.value) {
@@ -196,9 +198,9 @@ export function ProfileView() {
       setUnavailableSources(nextUnavailable);
       setError(
         missingLabels.length
-          ? `No hemos podido cargar ${missingLabels.join(", ")}. El resto de tu perfil sigue disponible.`
+          ? t("profile.loadErrorPartial", { labels: missingLabels.join(", ") })
           : userResult.status === "rejected"
-            ? "Mostramos los datos guardados en tu sesión porque no hemos podido actualizar el perfil."
+            ? t("profile.loadErrorStaleSession")
             : "",
       );
       setData((current) => ({
@@ -223,6 +225,7 @@ export function ProfileView() {
     refreshRequest,
     sessionFallbackUser,
     sessionUserId,
+    t,
     token,
   ]);
 
@@ -266,14 +269,14 @@ export function ProfileView() {
   };
 
   return (
-    <AuthGate message="Para acceder a tu perfil necesitas iniciar sesión.">
+    <AuthGate message={t("profile.authGateMessage")}>
       <div className="grid gap-5">
         {error ? (
           <Card className="border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-800" role="status">
             {error}
           </Card>
         ) : null}
-        {isLoading && !profileUser ? <LoadingState variant="profile" label="Cargando perfil" /> : <ProfileHeader stats={stats} user={profileUser} />}
+        {isLoading && !profileUser ? <LoadingState variant="profile" label={t("profile.loadingLabel")} /> : <ProfileHeader stats={stats} user={profileUser} />}
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
           <ProfileTabs
             activities={joinedActivities}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Bookmark, LoaderCircle } from "lucide-react";
 import { useKeyedOptimisticBoolean } from "@/components/social/use-keyed-optimistic-boolean";
 import { AppToast } from "@/components/ui/app-toast";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useAuthGuard } from "@/features/auth/use-auth-guard";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { requestCommunityDataRefresh } from "@/features/community/community-events";
@@ -35,6 +36,7 @@ export function SaveButton({
   onInteractionStart?: () => void;
 }) {
   const { user } = useAuthSession();
+  const { t } = useTranslations();
   const localKey = storageKey && user?.id
     ? `cp:user:${user.id}:item:${storageKey}:saved`
     : undefined;
@@ -82,22 +84,20 @@ export function SaveButton({
     setMessageTone("error");
 
     if (!activityId) {
-      setErrorMessage("No se pudo identificar la actividad.");
+      setErrorMessage(t("social.missingActivity"));
       return;
     }
 
     if (!interactionSupported) {
       setMessageTone("info");
       setErrorMessage(
-        demo
-          ? "Esta actividad forma parte de los datos de demostración y todavía no admite guardado persistente."
-          : "Esta actividad no está disponible para guardado persistente.",
+        demo ? t("social.save.demoUnsupported") : t("social.save.unsupported"),
       );
       return;
     }
 
     if (!token) {
-      requireAuth("Para guardar actividades necesitas iniciar sesión.", () => undefined);
+      requireAuth(t("social.save.authRequired"), () => undefined);
       return;
     }
 
@@ -120,12 +120,12 @@ export function SaveButton({
       setSaved(!next);
       if (isUnauthorizedError(error)) {
         clearSession();
-        setErrorMessage("Tu sesión ha caducado. Inicia sesión nuevamente para continuar.");
+        setErrorMessage(t("social.sessionExpired"));
       } else if (isNotFoundError(error)) {
-        setErrorMessage("No encontramos esta actividad. Actualiza el contenido e inténtalo nuevamente.");
+        setErrorMessage(t("social.activityNotFound"));
       } else {
         setErrorMessage(
-          getApiErrorMessage(error, "No se pudo actualizar el guardado."),
+          getApiErrorMessage(error, t, t("social.save.genericError")),
         );
       }
     } finally {
@@ -154,7 +154,7 @@ export function SaveButton({
           }}
         >
           {isSubmitting ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin" /> : <Bookmark aria-hidden="true" className="size-4" fill={saved ? "currentColor" : "none"} />}
-          {saved ? "Guardado" : "Guardar"}
+          {saved ? t("social.save.savedLabel") : t("social.save.saveCta")}
         </button>
       </span>
       <AppToast

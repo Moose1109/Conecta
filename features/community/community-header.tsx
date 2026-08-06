@@ -1,6 +1,9 @@
 import { Plus, Sprout } from "lucide-react";
+import { getTranslations } from "@/lib/i18n/get-translations";
 
-export function CommunityHeader() {
+export async function CommunityHeader() {
+  const { t } = await getTranslations();
+
   return (
     <header className="mb-5 flex items-start justify-between gap-4 sm:mb-6 sm:items-center">
       <div className="flex min-w-0 items-start gap-3 sm:gap-4">
@@ -9,12 +12,12 @@ export function CommunityHeader() {
           <span className="absolute -right-1 -top-1 size-2.5 rounded-full border-2 border-[#F7F2E8] bg-[#D7A63C]" />
         </span>
         <div className="min-w-0">
-          <p className="eyebrow">Comunidad</p>
+          <p className="eyebrow">{t("navigation.community.label")}</p>
           <h1 className="mt-1 text-[2rem] font-extrabold leading-none tracking-[-0.045em] text-[#0E3325] sm:text-[2.45rem]">
-            Tu plaza digital
+            {t("navigation.community.meta")}
           </h1>
           <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#687269] sm:text-[15px]">
-            Publicaciones, avisos e historias compartidas por vecinos y visitantes.
+            {t("community.header.description")}
           </p>
         </div>
       </div>
@@ -24,7 +27,7 @@ export function CommunityHeader() {
         href="#publicar"
       >
         <Plus aria-hidden="true" className="size-[18px]" strokeWidth={2.2} />
-        Publicar
+        {t("community.composer.submit")}
       </a>
     </header>
   );

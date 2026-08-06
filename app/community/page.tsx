@@ -13,8 +13,12 @@ import { StoriesStrip } from "@/features/stories/stories-strip";
 import { getActivitiesStrict } from "@/lib/api/activities.service";
 import { getCommunityPostsStrict } from "@/lib/api/community.service";
 import { getVillagesStrict } from "@/lib/api/villages.service";
+import { getTranslations } from "@/lib/i18n/get-translations";
 
-export const metadata: Metadata = { title: "Comunidad" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return { title: t("navigation.community.label") };
+}
 
 export default async function CommunityPage({
   searchParams,
@@ -26,6 +30,8 @@ export default async function CommunityPage({
   }>;
 }) {
   await connection();
+
+  const { t } = await getTranslations();
 
   const params = await searchParams;
   const queryParam = params.q;
@@ -80,7 +86,7 @@ export default async function CommunityPage({
         <CommunityFeed
           key={`community-feed-${initialQuery}`}
           initialQuery={initialQuery}
-          user={{ name: "Usuario", avatar: "CP" }}
+          user={{ name: t("userMenu.defaultName"), avatar: "CP" }}
         />
       </AuthenticatedShell>
     </CommunityDataProvider>

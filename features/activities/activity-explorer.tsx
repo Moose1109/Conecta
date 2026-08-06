@@ -19,8 +19,10 @@ import { SearchInput } from "@/components/ui/search-input";
 import { ActivityCard } from "@/features/activities/activity-card";
 import {
   ActivityCategoryIcon,
+  activityCategoryLabelKey,
   activityCategoryPill,
 } from "@/features/activities/activity-category-icon";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { getActivitiesStrict } from "@/lib/api/activities.service";
 import { isUnauthorizedError } from "@/lib/api/client";
@@ -56,6 +58,7 @@ export function ActivityExplorer({
   villagesUnavailable?: boolean;
 }) {
   const router = useRouter();
+  const { t, tPlural } = useTranslations();
   const { token } = useAuthSession();
   const [isNavigating, startNavigation] = useTransition();
   const [search, setSearch] = useState(filters.search);
@@ -193,34 +196,34 @@ export function ActivityExplorer({
     <section aria-labelledby="activities-list-title" className="mt-7 min-w-0">
       {currentResult?.failed ? (
         <Card className="mb-5 border border-[#D7A63C45] bg-[#FFF8E8] p-4 text-sm font-bold leading-6 text-[#72551C]" role="status">
-          No hemos podido actualizar tus inscripciones y guardados. Mostramos la agenda pública disponible.
+          {t("activities.explorer.personalizationError")}
         </Card>
       ) : null}
       {villagesUnavailable ? (
         <Card className="mb-5 border border-[#D7A63C45] bg-[#FFF8E8] p-4 text-sm font-bold leading-6 text-[#72551C]" role="status">
-          No hemos podido cargar el catálogo de pueblos. La agenda sigue disponible, pero el filtro por pueblo está temporalmente incompleto.
+          {t("activities.explorer.villagesLoadError")}
         </Card>
       ) : null}
 
       <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
         <div className="min-w-0">
-          <p className="eyebrow">Explorar la agenda</p>
+          <p className="eyebrow">{t("activities.explorer.exploreEyebrow")}</p>
           <h2 className="mt-1.5 text-2xl font-extrabold tracking-[-0.03em] text-text-primary sm:text-3xl" id="activities-list-title">
-            Actividades para descubrir
+            {t("activities.explorer.title")}
           </h2>
           <p className="mt-2 text-sm leading-6 text-text-muted">
-            Busca actividades reales por texto, pueblo, categoría o intervalo de fechas.
+            {t("activities.explorer.description")}
           </p>
         </div>
         <div className="shrink-0 text-right text-xs font-extrabold text-text-muted">
           <p aria-live="polite">
             {isNavigating
-              ? "Buscando actividades…"
-              : `${activities.length} ${activities.length === 1 ? "actividad" : "actividades"}`}
+              ? t("activities.explorer.searching")
+              : tPlural("villages.card.activitiesCount", activities.length)}
           </p>
           {activities.length >= 100 ? (
             <p className="mt-1 max-w-xs font-semibold leading-5">
-              Se muestran hasta 100 resultados; puede haber más actividades disponibles.
+              {t("activities.explorer.resultsLimitNotice")}
             </p>
           ) : null}
         </div>
@@ -234,25 +237,25 @@ export function ActivityExplorer({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_minmax(180px,0.65fr)_minmax(145px,0.5fr)_minmax(145px,0.5fr)_auto]">
           <SearchInput
             className="sm:col-span-2 md:col-span-1 xl:col-span-1"
-            label="Buscar actividades"
+            label={t("activities.explorer.searchLabel")}
             name="search"
             onChange={setSearch}
             onClear={clearSearch}
-            placeholder="Buscar por título, descripción o lugar..."
+            placeholder={t("activities.explorer.searchPlaceholder")}
             value={search}
           />
 
           <label className="relative block min-w-0 sm:col-span-2 md:col-span-1 xl:col-span-1">
-            <span className="sr-only">Filtrar por pueblo</span>
+            <span className="sr-only">{t("activities.explorer.villageFilterSrLabel")}</span>
             <MapPin aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 size-4.5 -translate-y-1/2 text-mineral" />
             <select
-              aria-label="Filtrar actividades por pueblo"
+              aria-label={t("activities.explorer.villageFilterAriaLabel")}
               className="min-h-12 w-full appearance-none rounded-full border border-[#184B3420] bg-white/90 py-3 pl-11 pr-10 text-sm font-bold text-text-primary outline-none transition hover:bg-white focus:border-forest-mid focus:ring-4 focus:ring-[#347A481f]"
               name="village_id"
               onChange={(event) => setVillageId(event.target.value)}
               value={villageId}
             >
-              <option value="">Todos los pueblos</option>
+              <option value="">{t("activities.explorer.allVillagesOption")}</option>
               {villages.map((village) => (
                 <option key={village.id} value={village.id}>{village.name}</option>
               ))}
@@ -261,10 +264,10 @@ export function ActivityExplorer({
           </label>
 
           <label className="relative block min-w-0">
-            <span className="sr-only">Fecha inicial</span>
+            <span className="sr-only">{t("activities.explorer.dateFromSrLabel")}</span>
             <CalendarDays aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 size-4 -translate-y-1/2 text-mineral" />
             <input
-              aria-label="Fecha inicial"
+              aria-label={t("activities.explorer.dateFromSrLabel")}
               className="min-h-12 w-full rounded-full border border-[#184B3420] bg-white/90 py-2 pl-11 pr-3 text-sm font-bold text-text-primary outline-none focus:border-forest-mid focus:ring-4 focus:ring-[#347A481f]"
               max={dateTo || undefined}
               name="date_from"
@@ -275,12 +278,12 @@ export function ActivityExplorer({
           </label>
 
           <label className="relative block min-w-0">
-            <span className="sr-only">Fecha final</span>
+            <span className="sr-only">{t("activities.explorer.dateToSrLabel")}</span>
             <CalendarDays aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 size-4 -translate-y-1/2 text-mineral" />
             <input
               aria-describedby={dateRangeInvalid ? "activity-date-error" : undefined}
               aria-invalid={dateRangeInvalid || undefined}
-              aria-label="Fecha final"
+              aria-label={t("activities.explorer.dateToSrLabel")}
               className="min-h-12 w-full rounded-full border border-[#184B3420] bg-white/90 py-2 pl-11 pr-3 text-sm font-bold text-text-primary outline-none focus:border-forest-mid focus:ring-4 focus:ring-[#347A481f]"
               min={dateFrom || undefined}
               name="date_to"
@@ -292,20 +295,20 @@ export function ActivityExplorer({
 
           <Button className="min-h-12 w-full px-5 sm:col-span-2 xl:col-span-1 xl:w-auto" disabled={dateRangeInvalid || isNavigating} type="submit">
             <SlidersHorizontal aria-hidden="true" className="size-4" />
-            Aplicar
+            {t("activities.explorer.applyAction")}
           </Button>
         </div>
 
         {filters.category ? <input name="category" type="hidden" value={filters.category} /> : null}
         {dateRangeInvalid ? (
           <p className="mt-2 text-xs font-bold text-danger" id="activity-date-error" role="alert">
-            La fecha final no puede ser anterior a la fecha inicial.
+            {t("activities.explorer.dateRangeError")}
           </p>
         ) : null}
 
         <div className="mt-3 flex snap-x items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-x-visible [&::-webkit-scrollbar]:hidden">
           <span className="mr-1 hidden shrink-0 items-center gap-1.5 text-xs font-extrabold text-text-muted sm:inline-flex">
-            <SlidersHorizontal aria-hidden="true" className="size-3.5" /> Filtros
+            <SlidersHorizontal aria-hidden="true" className="size-3.5" /> {t("activities.explorer.filtersLabel")}
           </span>
           <Link
             aria-current={!filters.category ? "true" : undefined}
@@ -317,7 +320,7 @@ export function ActivityExplorer({
             )}
             href={filterHref({ category: "" })}
           >
-            Todas
+            {t("activities.explorer.allCategoriesLabel")}
           </Link>
           {categories.map((item) => (
             <Link
@@ -332,20 +335,20 @@ export function ActivityExplorer({
               key={item}
             >
               <ActivityCategoryIcon category={item} className="size-3.5" />
-              {item}
+              {t(activityCategoryLabelKey(item))}
             </Link>
           ))}
         </div>
 
         {hasFilters ? (
-          <div aria-label="Filtros activos" className="mt-3 flex flex-wrap items-center gap-2">
-            {search.trim() ? <ActiveFilter label={`Texto: ${search.trim()}`} href={filterHref({ search: "" })} onClick={() => setSearch("")} /> : null}
-            {filters.category ? <ActiveFilter label={filters.category} href={filterHref({ category: "" })} /> : null}
-            {villageId ? <ActiveFilter label={villageName ?? "Pueblo seleccionado"} href={filterHref({ villageId: "" })} onClick={() => setVillageId("")} /> : null}
-            {dateFrom ? <ActiveFilter label={`Desde ${dateFrom}`} href={filterHref({ dateFrom: "" })} onClick={() => setDateFrom("")} /> : null}
-            {dateTo ? <ActiveFilter label={`Hasta ${dateTo}`} href={filterHref({ dateTo: "" })} onClick={() => setDateTo("")} /> : null}
+          <div aria-label={t("activities.explorer.activeFiltersLabel")} className="mt-3 flex flex-wrap items-center gap-2">
+            {search.trim() ? <ActiveFilter label={t("activities.explorer.textFilterLabel", { value: search.trim() })} href={filterHref({ search: "" })} onClick={() => setSearch("")} t={t} /> : null}
+            {filters.category ? <ActiveFilter label={t(activityCategoryLabelKey(filters.category))} href={filterHref({ category: "" })} t={t} /> : null}
+            {villageId ? <ActiveFilter label={villageName ?? t("activities.explorer.villageSelectedFallback")} href={filterHref({ villageId: "" })} onClick={() => setVillageId("")} t={t} /> : null}
+            {dateFrom ? <ActiveFilter label={t("activities.explorer.fromDateLabel", { date: dateFrom })} href={filterHref({ dateFrom: "" })} onClick={() => setDateFrom("")} t={t} /> : null}
+            {dateTo ? <ActiveFilter label={t("activities.explorer.toDateLabel", { date: dateTo })} href={filterHref({ dateTo: "" })} onClick={() => setDateTo("")} t={t} /> : null}
             <Button className="ml-auto min-h-11 px-3 text-xs" onClick={clearAllFilters} type="button" variant="ghost">
-              <X aria-hidden="true" className="size-3.5" /> Limpiar todo
+              <X aria-hidden="true" className="size-3.5" /> {t("activities.explorer.clearAllAction")}
             </Button>
           </div>
         ) : null}
@@ -355,10 +358,10 @@ export function ActivityExplorer({
         {activitiesUnavailable ? (
           <ErrorState
             actionHref={filterHref()}
-            actionLabel="Reintentar"
-            description="No hemos recibido la agenda del servidor. Los filtros y el catálogo de pueblos siguen disponibles."
+            actionLabel={t("common.retry")}
+            description={t("activities.explorer.loadErrorDescription")}
             network
-            title="No hemos podido cargar las actividades"
+            title={t("villages.detail.activitiesErrorTitle")}
           />
         ) : activities.length ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -378,15 +381,15 @@ export function ActivityExplorer({
         ) : (
           <EmptyState
             actionHref={hasFilters ? undefined : "/activities/create"}
-            actionLabel={hasFilters ? "Limpiar filtros" : "Publicar actividad"}
+            actionLabel={hasFilters ? t("community.feed.clearFilters") : t("activities.createForm.submit")}
             description={
               hasFilters
-                ? "Prueba con otro pueblo, categoría, intervalo de fechas o palabra clave."
-                : "Cuando la comunidad publique un nuevo plan, aparecerá aquí con su información."
+                ? t("activities.explorer.emptyFilteredDescription")
+                : t("activities.explorer.emptyNoActivitiesDescription")
             }
             icon={CalendarSearch}
             onAction={hasFilters ? () => navigate({ category: "", dateFrom: "", dateTo: "", search: "", villageId: "" }) : undefined}
-            title={hasFilters ? "No hay actividades con estos filtros" : "Aún no hay actividades publicadas"}
+            title={hasFilters ? t("activities.explorer.emptyFilteredTitle") : t("activities.hero.emptyTitle")}
           />
         )}
       </div>
@@ -398,14 +401,16 @@ function ActiveFilter({
   href,
   label,
   onClick,
+  t,
 }: {
   href: string;
   label: string;
   onClick?: () => void;
+  t: ReturnType<typeof useTranslations>["t"];
 }) {
   return (
     <Link
-      aria-label={`Quitar filtro ${label}`}
+      aria-label={t("activities.explorer.removeFilterAria", { label })}
       className="inline-flex min-h-11 max-w-full items-center gap-1.5 rounded-full border border-[#184B341a] bg-[#78947D12] px-3 text-xs font-extrabold text-primary hover:border-[#184B3430] hover:bg-[#78947D1c]"
       href={href}
       onClick={onClick}

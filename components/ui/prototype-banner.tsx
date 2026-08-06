@@ -1,5 +1,8 @@
+"use client";
+
 import { Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { cn } from "@/lib/utils";
 
 export function PrototypeBanner({
@@ -13,6 +16,8 @@ export function PrototypeBanner({
   trailingAction?: ReactNode;
   className?: string;
 }) {
+  const { t } = useTranslations();
+
   return (
     <div
       className={cn(
@@ -31,7 +36,7 @@ export function PrototypeBanner({
         </p>
       </div>
       <span className="hidden shrink-0 rounded-full bg-white px-3 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-forest-mid shadow-sm sm:inline-flex">
-        Propuesta visual
+        {t("common.prototypeBadge")}
       </span>
       {trailingAction}
     </div>

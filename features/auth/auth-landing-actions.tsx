@@ -9,6 +9,7 @@ import {
 import { Apple, LogIn, UserPlus } from "lucide-react";
 import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 
 export type AuthMode = "login" | "register";
 
@@ -34,6 +35,7 @@ export function AuthLandingActionsProvider({
 
 export function LandingAuthActions() {
   const actions = useContext(AuthLandingActionsContext);
+  const { t } = useTranslations();
 
   if (!actions) {
     return null;
@@ -43,27 +45,32 @@ export function LandingAuthActions() {
     <div className="mt-5 grid gap-2 sm:grid-cols-2">
       <Button className="w-full px-4" type="button" onClick={() => actions.selectMode("register")}>
         <UserPlus aria-hidden="true" className="size-4" />
-        Crear cuenta
+        {t("auth.createAccount")}
       </Button>
       <Button className="w-full px-4" type="button" variant="secondary" onClick={() => actions.selectMode("login")}>
         <LogIn aria-hidden="true" className="size-4" />
-        Iniciar sesión
+        {t("auth.landing.signInLabel")}
       </Button>
     </div>
   );
 }
 
 export function AuthProviderButtons({ mode }: { mode: AuthMode }) {
+  const { t } = useTranslations();
   const [pendingProvider, setPendingProvider] = useState<"Apple" | "Google">();
   const pendingDescription = pendingProvider
-    ? `El acceso con ${pendingProvider} todavía necesita una integración OAuth segura en el backend. Puedes continuar con email y contraseña.`
+    ? t("auth.providers.pendingDescription", { provider: pendingProvider })
     : "";
 
   return (
     <div className="mt-4 sm:mt-5">
       <div className="flex items-center gap-3 text-xs font-semibold text-[#7A837C]">
         <span aria-hidden="true" className="h-px flex-1 bg-[#184B3414]" />
-        <span>{mode === "login" ? "o continúa con" : "o regístrate con"}</span>
+        <span>
+          {mode === "login"
+            ? t("auth.providers.continueWithLogin")
+            : t("auth.providers.continueWithRegister")}
+        </span>
         <span aria-hidden="true" className="h-px flex-1 bg-[#184B3414]" />
       </div>
       <div className="mt-3 grid gap-2 min-[390px]:grid-cols-2">
@@ -75,7 +82,7 @@ export function AuthProviderButtons({ mode }: { mode: AuthMode }) {
           onClick={() => setPendingProvider("Google")}
         >
           <span aria-hidden="true" className="grid size-5 place-items-center rounded-full bg-white text-sm font-black text-[#4285F4] shadow-sm">G</span>
-          Continuar con Google
+          {t("auth.providers.continueWithGoogle")}
         </Button>
         <Button
           aria-describedby={pendingProvider === "Apple" ? "auth-provider-pending" : undefined}
@@ -85,7 +92,7 @@ export function AuthProviderButtons({ mode }: { mode: AuthMode }) {
           onClick={() => setPendingProvider("Apple")}
         >
           <Apple aria-hidden="true" className="size-5 text-[#18231D]" />
-          Continuar con Apple
+          {t("auth.providers.continueWithApple")}
         </Button>
       </div>
       {pendingProvider ? (
@@ -94,7 +101,7 @@ export function AuthProviderButtons({ mode }: { mode: AuthMode }) {
             compact
             className="mt-3"
             description={pendingDescription}
-            title={`Acceso con ${pendingProvider} pendiente`}
+            title={t("auth.providers.pendingTitle", { provider: pendingProvider })}
           />
         </div>
       ) : null}

@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { BlockUserDialog } from "@/features/trust/block-user-dialog";
 import { ReportContentDialog } from "@/features/trust/report-content-dialog";
 
@@ -18,7 +19,7 @@ export function TrustActionsMenu({
   blockTargetName,
   className,
   contentLabel,
-  triggerAriaLabel = "Opciones de confianza",
+  triggerAriaLabel,
   triggerClassName,
 }: {
   blockTargetName?: string;
@@ -27,6 +28,8 @@ export function TrustActionsMenu({
   triggerAriaLabel?: string;
   triggerClassName?: string;
 }) {
+  const { t } = useTranslations();
+  const resolvedTriggerAriaLabel = triggerAriaLabel ?? t("trust.optionsLabel");
   const reactId = useId().replaceAll(":", "");
   const menuId = `trust-menu-${reactId}`;
   const [menuOpen, setMenuOpen] = useState(false);
@@ -124,7 +127,7 @@ export function TrustActionsMenu({
         aria-controls={menuId}
         aria-expanded={menuOpen}
         aria-haspopup="menu"
-        aria-label={triggerAriaLabel}
+        aria-label={resolvedTriggerAriaLabel}
         className={
           triggerClassName ??
           "grid size-11 shrink-0 place-items-center rounded-full text-text-muted transition-colors hover:bg-[#184B340a] hover:text-primary"
@@ -140,7 +143,7 @@ export function TrustActionsMenu({
         <div className="fixed inset-0 z-[140] isolate" onPointerDown={() => setMenuOpen(false)}>
           <div
             ref={menuRef}
-            aria-label="Opciones de confianza"
+            aria-label={t("trust.optionsLabel")}
             className="absolute inset-x-3 bottom-[max(1rem,env(safe-area-inset-bottom))] rounded-[20px] border border-[#184B3417] bg-ivory p-2 text-text-primary shadow-[0_22px_64px_rgba(14,51,37,0.18)] outline-none sm:inset-x-auto sm:bottom-auto sm:right-[var(--trust-menu-right)] sm:top-[var(--trust-menu-top)] sm:w-60"
             id={menuId}
             role="menu"
@@ -158,7 +161,7 @@ export function TrustActionsMenu({
               <span className="grid size-9 place-items-center rounded-full bg-[#C96D4A14]">
                 <Flag aria-hidden="true" className="size-4" />
               </span>
-              Reportar
+              {t("trust.reportAction")}
             </button>
             {blockTargetName ? (
               <button
@@ -171,7 +174,7 @@ export function TrustActionsMenu({
                 <span className="grid size-9 place-items-center rounded-full bg-[#184B340a]">
                   <ShieldAlert aria-hidden="true" className="size-4" />
                 </span>
-                Bloquear a {blockTargetName}
+                {t("trust.blockAction", { name: blockTargetName })}
               </button>
             ) : null}
           </div>

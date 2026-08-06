@@ -19,6 +19,7 @@ import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Card } from "@/components/ui/card";
 import {
   ActivityCategoryIcon,
+  activityCategoryLabelKey,
   activityCategoryPill,
 } from "@/features/activities/activity-category-icon";
 import { ActivityImage } from "@/features/activities/activity-image";
@@ -26,17 +27,21 @@ import { getActivityByIdStrict } from "@/lib/api/activities.service";
 import { isNotFoundError } from "@/lib/api/client";
 import { canJoinActivity } from "@/lib/api/entity-capabilities";
 import { getVillageByIdStrict } from "@/lib/api/villages.service";
+import { getTranslations } from "@/lib/i18n/get-translations";
+import { formatDayNumber, formatMonthLong, formatWeekdayLong } from "@/lib/i18n/formatters";
 import { formatDate } from "@/lib/utils";
+import type { Locale } from "@/lib/i18n/config";
 
-export const metadata: Metadata = { title: "Detalle de actividad" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return { title: t("activities.detail.metaTitle") };
+}
 
-function dateParts(date: string) {
-  const value = new Date(`${date}T12:00:00`);
-
+function dateParts(date: string, locale: Locale) {
   return {
-    day: new Intl.DateTimeFormat("es-ES", { day: "2-digit" }).format(value),
-    month: new Intl.DateTimeFormat("es-ES", { month: "long" }).format(value),
-    weekday: new Intl.DateTimeFormat("es-ES", { weekday: "long" }).format(value),
+    day: formatDayNumber(date, locale),
+    month: formatMonthLong(date, locale),
+    weekday: formatWeekdayLong(date, locale),
   };
 }
 
@@ -47,6 +52,7 @@ export default async function ActivityDetailPage({
 }) {
   await connection();
 
+  const { t, tPlural, locale } = await getTranslations();
   const { id } = await params;
   const activity = await getActivityByIdStrict(id).catch((error: unknown) => {
     if (isNotFoundError(error)) notFound();
@@ -66,7 +72,7 @@ export default async function ActivityDetailPage({
     },
   );
   const villageName = village?.name ?? activity.villageName;
-  const date = dateParts(activity.date);
+  const date = dateParts(activity.date, locale);
 
   return (
     <AuthenticatedShell>
@@ -76,7 +82,7 @@ export default async function ActivityDetailPage({
           href="/activities"
         >
           <ArrowLeft aria-hidden="true" className="size-4" />
-          Volver a actividades
+          {t("activities.detail.backToActivities")}
         </Link>
 
         <Card className="relative overflow-hidden rounded-[26px] border-white/20 bg-[#0E3325]">
@@ -93,7 +99,7 @@ export default async function ActivityDetailPage({
                 className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-extrabold shadow-sm backdrop-blur-md ${activityCategoryPill(activity.category)}`}
               >
                 <ActivityCategoryIcon category={activity.category} className="size-3.5" />
-                {activity.category}
+                {t(activityCategoryLabelKey(activity.category))}
               </span>
               <h1 className="mt-4 max-w-4xl text-3xl font-extrabold leading-[1.04] tracking-[-0.045em] sm:text-5xl lg:text-6xl">
                 {activity.title}
@@ -101,7 +107,7 @@ export default async function ActivityDetailPage({
               <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold text-white/80">
                 <span className="inline-flex items-center gap-2">
                   <CalendarDays aria-hidden="true" className="size-4 text-[#F1CA70]" />
-                  {formatDate(activity.date)}
+                  {formatDate(activity.date, locale)}
                 </span>
                 <span className="inline-flex items-center gap-2">
                   <Clock3 aria-hidden="true" className="size-4 text-[#F1CA70]" />
@@ -121,9 +127,9 @@ export default async function ActivityDetailPage({
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
           <div className="grid min-w-0 content-start gap-6">
             <Card className="p-6 sm:p-8">
-              <p className="eyebrow">Sobre la actividad</p>
+              <p className="eyebrow">{t("activities.detail.aboutEyebrow")}</p>
               <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.03em] text-[#18231D]">
-                Información para participar
+                {t("activities.detail.participationInfoTitle")}
               </h2>
               {activity.description ? (
                 <p className="mt-4 whitespace-pre-line text-base leading-8 text-[#526158]">
@@ -131,49 +137,49 @@ export default async function ActivityDetailPage({
                 </p>
               ) : (
                 <p className="mt-4 text-sm leading-6 text-[#687269]">
-                  La organización todavía no ha añadido una descripción.
+                  {t("activities.detail.noDescription")}
                 </p>
               )}
             </Card>
 
             <Card className="p-6 sm:p-8">
-              <p className="eyebrow">Datos publicados</p>
+              <p className="eyebrow">{t("activities.detail.publishedDataEyebrow")}</p>
               <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.03em] text-[#18231D]">
-                Detalles de la convocatoria
+                {t("activities.detail.callDetailsTitle")}
               </h2>
               <dl className="mt-6 grid gap-3 sm:grid-cols-2">
                 <DetailItem
                   icon={CalendarDays}
-                  label="Fecha"
-                  value={formatDate(activity.date)}
+                  label={t("activities.detail.dateLabel")}
+                  value={formatDate(activity.date, locale)}
                 />
-                <DetailItem icon={Clock3} label="Hora" value={activity.time} />
+                <DetailItem icon={Clock3} label={t("activities.createForm.timeLabel")} value={activity.time} />
                 {activity.location ? (
-                  <DetailItem icon={MapPin} label="Lugar" value={activity.location} />
+                  <DetailItem icon={MapPin} label={t("activities.detail.locationLabel")} value={activity.location} />
                 ) : null}
                 {villageName ? (
                   <DetailItem
                     href={village ? `/villages/${village.id}` : undefined}
                     icon={MapPin}
-                    label="Pueblo"
+                    label={t("activities.createForm.villageLabel")}
                     value={villageName}
                   />
                 ) : null}
                 <DetailItem
                   icon={UserRound}
-                  label="Organiza"
+                  label={t("activities.detail.organizerLabel")}
                   value={activity.organizer}
                 />
                 {typeof activity.spotsLeft === "number" ? (
                   <DetailItem
                     icon={UsersRound}
-                    label="Disponibles"
+                    label={t("activities.detail.availableLabel")}
                     value={`${activity.spotsLeft}`}
                   />
                 ) : activity.capacity > 0 ? (
                   <DetailItem
                     icon={UsersRound}
-                    label="Aforo"
+                    label={t("activities.detail.capacityDetailLabel")}
                     value={`${activity.capacity}`}
                   />
                 ) : null}
@@ -181,7 +187,7 @@ export default async function ActivityDetailPage({
                 activity.participantsCount > 0 ? (
                   <DetailItem
                     icon={UsersRound}
-                    label="Personas inscritas"
+                    label={t("activities.detail.participantsLabel")}
                     value={`${activity.participantsCount}`}
                   />
                 ) : null}
@@ -216,17 +222,17 @@ export default async function ActivityDetailPage({
 
               <div className="p-5 sm:p-6">
                 <h2 className="text-xl font-extrabold tracking-[-0.025em] text-[#18231D]">
-                  Participa en la actividad
+                  {t("activities.detail.joinCardTitle")}
                 </h2>
                 {typeof activity.spotsLeft === "number" ? (
                   <p className="mt-2 flex items-center gap-2 text-sm font-bold text-[#347A48]">
                     <UsersRound aria-hidden="true" className="size-4" />
-                    {activity.spotsLeft} plazas disponibles
+                    {tPlural("community.rightRail.spotsLeftLabel", activity.spotsLeft)}
                   </p>
                 ) : activity.capacity > 0 ? (
                   <p className="mt-2 flex items-center gap-2 text-sm font-bold text-[#347A48]">
                     <UsersRound aria-hidden="true" className="size-4" />
-                    Aforo: {activity.capacity} plazas
+                    {tPlural("community.rightRail.capacityLabel", activity.capacity)}
                   </p>
                 ) : null}
 
@@ -256,7 +262,7 @@ export default async function ActivityDetailPage({
                     aria-hidden="true"
                     className="mt-0.5 size-4 shrink-0 text-[#184B34]"
                   />
-                  El guardado y la inscripción se vinculan a tu cuenta cuando has iniciado sesión.
+                  {t("activities.detail.sessionLinkNotice")}
                 </div>
               </div>
             </Card>
@@ -265,10 +271,10 @@ export default async function ActivityDetailPage({
 
         <BackendPendingAlert
           actionHref="/activities"
-          actionLabel="Explorar actividades"
+          actionLabel={t("activities.detail.exploreActivitiesAction")}
           className="mt-6"
-          description="Esta sección está preparada, pero necesita que el backend exponga recomendaciones relacionadas con esta actividad."
-          title="Recomendaciones pendientes de backend"
+          description={t("activities.detail.recommendationsPendingDescription")}
+          title={t("activities.detail.recommendationsPendingTitle")}
         />
       </article>
     </AuthenticatedShell>

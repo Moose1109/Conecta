@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Bell, CheckCheck, X } from "lucide-react";
 import { type KeyboardEvent, useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useModalDialog } from "@/components/ui/use-modal-dialog";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +12,7 @@ type NotificationFilter = "all" | "unread";
 const panelId = "notifications-popover";
 
 export function NotificationBell() {
+  const { t } = useTranslations();
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<NotificationFilter>("all");
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -47,7 +49,7 @@ export function NotificationBell() {
         ref={buttonRef}
         aria-controls={panelId}
         aria-expanded={open}
-        aria-label={open ? "Cerrar notificaciones" : "Abrir notificaciones"}
+        aria-label={open ? t("notifications.bell.close") : t("notifications.bell.open")}
         className={cn("relative grid size-11 place-items-center rounded-full border border-[#184B3414] bg-white/80 text-[#184B34] transition-colors hover:bg-white", open && "bg-white shadow-sm")}
         type="button"
         onClick={() => setOpen((current) => !current)}
@@ -73,13 +75,13 @@ export function NotificationBell() {
           >
             <div className="border-b border-[#184B3414] p-4 sm:p-5">
               <div className="flex items-center justify-between gap-3">
-                <div><p className="eyebrow">Centro social</p><h2 className="mt-1 text-xl font-extrabold" id="notifications-panel-title">Notificaciones</h2></div>
+                <div><p className="eyebrow">{t("notifications.bell.eyebrow")}</p><h2 className="mt-1 text-xl font-extrabold" id="notifications-panel-title">{t("navigation.notifications.label")}</h2></div>
                 <div className="flex items-center gap-1">
-                  <Link className="inline-flex min-h-11 items-center rounded-full px-3 text-xs font-extrabold text-[#347A48] hover:bg-[#184B340a]" href="/notifications" onClick={closePanel}>Ver todo</Link>
-                  <button aria-label="Cerrar panel" className="grid size-11 place-items-center rounded-full bg-[#184B340a] text-[#184B34]" data-dialog-initial-focus type="button" onClick={closePanel}><X aria-hidden="true" className="size-5" /></button>
+                  <Link className="inline-flex min-h-11 items-center rounded-full px-3 text-xs font-extrabold text-[#347A48] hover:bg-[#184B340a]" href="/notifications" onClick={closePanel}>{t("notifications.bell.seeAll")}</Link>
+                  <button aria-label={t("notifications.bell.closePanel")} className="grid size-11 place-items-center rounded-full bg-[#184B340a] text-[#184B34]" data-dialog-initial-focus type="button" onClick={closePanel}><X aria-hidden="true" className="size-5" /></button>
                 </div>
               </div>
-              <div aria-label="Filtros de notificaciones" aria-orientation="horizontal" className="mt-4 grid grid-cols-2 gap-1 rounded-[15px] bg-[#F1EFE8] p-1" role="tablist">
+              <div aria-label={t("notifications.filters.label")} aria-orientation="horizontal" className="mt-4 grid grid-cols-2 gap-1 rounded-[15px] bg-[#F1EFE8] p-1" role="tablist">
                 {(["all", "unread"] as const).map((id) => (
                   <button
                     key={id}
@@ -94,7 +96,7 @@ export function NotificationBell() {
                     onClick={() => setFilter(id)}
                     onKeyDown={handleFilterKeyDown}
                   >
-                    {id === "all" ? "Todas" : "No leídas"}
+                    {id === "all" ? t("notifications.filters.all") : t("notifications.filters.unread")}
                   </button>
                 ))}
               </div>
@@ -103,8 +105,8 @@ export function NotificationBell() {
               <div className="grid min-h-56 place-items-center">
                 <div>
                 <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#78947D1f] text-[#184B34]">{filter === "unread" ? <CheckCheck aria-hidden="true" className="size-6" /> : <Bell aria-hidden="true" className="size-6" />}</span>
-                <h3 className="mt-4 text-lg font-extrabold">{filter === "unread" ? "No tienes pendientes" : "Aún no tienes notificaciones"}</h3>
-                <p className="mx-auto mt-2 max-w-xs text-sm leading-6 text-[#687269]">El backend todavía no expone notificaciones reales; no mostramos avisos simulados.</p>
+                <h3 className="mt-4 text-lg font-extrabold">{filter === "unread" ? t("notifications.empty.unreadTitle") : t("notifications.empty.allTitle")}</h3>
+                <p className="mx-auto mt-2 max-w-xs text-sm leading-6 text-[#687269]">{t("notifications.empty.description")}</p>
                 </div>
               </div>
             </div>

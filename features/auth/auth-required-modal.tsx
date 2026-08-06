@@ -5,9 +5,10 @@ import { LockKeyhole, X } from "lucide-react";
 import { useRef } from "react";
 import { createPortal } from "react-dom";
 import { useModalDialog } from "@/components/ui/use-modal-dialog";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 
 export function AuthRequiredModal({
-  message = "Para realizar esta acción debes entrar con tu cuenta o crear una nueva.",
+  message,
   onClose,
   open,
 }: {
@@ -15,6 +16,8 @@ export function AuthRequiredModal({
   onClose: () => void;
   open: boolean;
 }) {
+  const { t } = useTranslations();
+  const resolvedMessage = message ?? t("auth.requiredModal.defaultMessage");
   const panelRef = useRef<HTMLDivElement>(null);
 
   useModalDialog({ dialogRef: panelRef, onClose, open });
@@ -38,17 +41,17 @@ export function AuthRequiredModal({
         role="dialog"
         tabIndex={-1}
       >
-        <button aria-label="Cerrar" className="absolute right-4 top-4 grid size-11 place-items-center rounded-full bg-[#184B340a] text-[#184B34] hover:bg-[#184B3414]" data-dialog-initial-focus type="button" onClick={onClose}>
+        <button aria-label={t("common.close")} className="absolute right-4 top-4 grid size-11 place-items-center rounded-full bg-[#184B340a] text-[#184B34] hover:bg-[#184B3414]" data-dialog-initial-focus type="button" onClick={onClose}>
           <X aria-hidden="true" className="size-5" />
         </button>
         <span className="grid size-12 place-items-center rounded-2xl bg-[#D7A63C26] text-[#184B34]">
           <LockKeyhole aria-hidden="true" className="size-5" />
         </span>
-        <h2 id="auth-required-title" className="mt-5 pr-10 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">Necesitas iniciar sesión</h2>
-        <p id="auth-required-description" className="mt-3 text-sm leading-6 text-[#687269]">{message}</p>
+        <h2 id="auth-required-title" className="mt-5 pr-10 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">{t("auth.gate.needsLoginTitle")}</h2>
+        <p id="auth-required-description" className="mt-3 text-sm leading-6 text-[#687269]">{resolvedMessage}</p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <Link href="/login" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]">Entrar</Link>
-          <Link href="/register" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[#184B3424] bg-white px-5 py-2.5 text-sm font-extrabold text-[#184B34] hover:bg-[#F7F2E8]">Crear cuenta</Link>
+          <Link href="/login" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]">{t("auth.signIn")}</Link>
+          <Link href="/register" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[#184B3424] bg-white px-5 py-2.5 text-sm font-extrabold text-[#184B34] hover:bg-[#F7F2E8]">{t("auth.createAccount")}</Link>
         </div>
       </div>
     </div>,

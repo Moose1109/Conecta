@@ -17,27 +17,22 @@ import { CreateActivityForm } from "@/features/activities/create-activity-form";
 import { AuthGate } from "@/features/auth/auth-gate";
 import { getActivityCategories } from "@/lib/api/activities.service";
 import { getVillagesStrict } from "@/lib/api/villages.service";
+import { getTranslations } from "@/lib/i18n/get-translations";
 
-export const metadata: Metadata = { title: "Crear actividad" };
-
-const publishingTips = [
-  {
-    icon: CalendarDays,
-    text: "Indica una fecha y una hora confirmadas.",
-  },
-  {
-    icon: MapPin,
-    text: "Escribe el punto de encuentro con claridad.",
-  },
-  {
-    icon: UsersRound,
-    text: "Indica el aforo real previsto para la actividad.",
-  },
-];
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return { title: t("activities.create.metaTitle") };
+}
 
 export default async function CreateActivityPage() {
   await connection();
 
+  const { t } = await getTranslations();
+  const publishingTips = [
+    { icon: CalendarDays, text: t("activities.create.tipDate") },
+    { icon: MapPin, text: t("activities.create.tipLocation") },
+    { icon: UsersRound, text: t("activities.create.tipCapacity") },
+  ];
   const activityCategories = getActivityCategories();
   const villagesResult = await getVillagesStrict()
     .then((villages) => ({ ok: true as const, villages }))
@@ -50,14 +45,14 @@ export default async function CreateActivityPage() {
 
   return (
     <AuthenticatedShell>
-      <AuthGate message="Para crear una actividad necesitas iniciar sesión.">
+      <AuthGate message={t("villages.detail.createActivityAuthRequired")}>
         <div className="mx-auto max-w-6xl">
           <Link
             className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-extrabold text-[#526158] transition hover:bg-[#184B340d] hover:text-[#184B34]"
             href="/activities"
           >
             <ArrowLeft aria-hidden="true" className="size-4" />
-            Volver a actividades
+            {t("activities.detail.backToActivities")}
           </Link>
 
           <div className="mt-4 grid gap-6 xl:grid-cols-[minmax(0,1fr)_310px]">
@@ -65,14 +60,13 @@ export default async function CreateActivityPage() {
               <header className="mb-6 rounded-[24px] border border-[#184B3418] bg-[#FFFCF7]/72 p-6 shadow-[0_12px_34px_rgba(43,55,38,0.05)] sm:p-7">
                 <p className="eyebrow flex items-center gap-2">
                   <Sparkles aria-hidden="true" className="size-3.5" />
-                  Nueva actividad
+                  {t("activities.create.newActivityEyebrow")}
                 </p>
                 <h1 className="mt-3 max-w-2xl text-3xl font-extrabold leading-[1.08] tracking-[-0.04em] text-[#18231D] sm:text-4xl">
-                  Comparte un plan con tu comunidad
+                  {t("activities.create.title")}
                 </h1>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-[#687269] sm:text-base sm:leading-7">
-                  Completa la información confirmada de la actividad. Se publicará en la agenda
-                  para que otras personas puedan descubrirla y apuntarse.
+                  {t("activities.create.description")}
                 </p>
               </header>
 
@@ -86,10 +80,10 @@ export default async function CreateActivityPage() {
               ) : (
                 <ErrorState
                   actionHref="/activities/create"
-                  actionLabel="Reintentar"
-                  description="Necesitamos el catálogo real de pueblos para asociar la actividad. No se enviará ningún dato hasta que esté disponible."
+                  actionLabel={t("common.retry")}
+                  description={t("activities.create.formErrorDescription")}
                   network
-                  title="No hemos podido preparar el formulario"
+                  title={t("activities.create.formErrorTitle")}
                 />
               )}
             </div>
@@ -98,7 +92,7 @@ export default async function CreateActivityPage() {
               <Card className="overflow-hidden rounded-[22px]">
                 <div className="relative aspect-[16/10] overflow-hidden bg-[#D9E0D7]">
                   <Image
-                    alt="Escena editorial de un mercado en una plaza rural"
+                    alt={t("activities.hero.editorialImageAlt")}
                     className="object-cover"
                     fill
                     sizes="(max-width: 1280px) 100vw, 310px"
@@ -106,15 +100,15 @@ export default async function CreateActivityPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0E3325]/70 via-transparent to-transparent" />
                   <span className="absolute bottom-3 left-3 rounded-full border border-white/24 bg-[#0E3325]/72 px-2.5 py-1 text-[0.65rem] font-extrabold text-white backdrop-blur-md">
-                    Imagen editorial
+                    {t("activities.hero.editorialImageBadge")}
                   </span>
                 </div>
                 <div className="p-5">
                   <p className="text-xs font-extrabold uppercase tracking-[0.13em] text-[#347A48]">
-                    Antes de publicar
+                    {t("activities.create.beforePublishingLabel")}
                   </p>
                   <h2 className="mt-2 text-xl font-extrabold tracking-[-0.025em] text-[#18231D]">
-                    Una ficha clara ayuda a participar
+                    {t("activities.create.clearFormTitle")}
                   </h2>
                   <div className="mt-5 grid gap-4">
                     {publishingTips.map(({ icon: Icon, text }) => (
@@ -128,7 +122,7 @@ export default async function CreateActivityPage() {
                   </div>
                   <div className="mt-5 flex items-start gap-2.5 rounded-2xl bg-[#D7A63C17] p-3.5 text-xs font-bold leading-5 text-[#6D5215]">
                     <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-                    Revisa los datos antes de publicar para que la comunidad reciba información precisa.
+                    {t("activities.create.reviewNotice")}
                   </div>
                 </div>
               </Card>

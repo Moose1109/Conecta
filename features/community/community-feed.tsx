@@ -18,6 +18,7 @@ import { SocialPostCard } from "@/components/social/social-post-card";
 import { Card } from "@/components/ui/card";
 import { ErrorState } from "@/components/ui/error-state";
 import { SearchInput } from "@/components/ui/search-input";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useCommunityData } from "@/features/community/community-data-provider";
 import { cn } from "@/lib/utils";
 import type { AuthUser, CommunityPost } from "@/lib/types";
@@ -30,14 +31,6 @@ type ComposerUser = {
 
 type FeedFilter = "for-you" | "following" | "notices" | "activities" | "villages";
 type SortMode = "recent" | "popular";
-
-const filters = [
-  { id: "for-you", label: "Para ti", icon: Sparkles },
-  { id: "following", label: "Siguiendo", icon: UsersRound },
-  { id: "notices", label: "Avisos", icon: Megaphone },
-  { id: "activities", label: "Actividades", icon: CalendarDays },
-  { id: "villages", label: "Pueblos", icon: MapPin },
-] satisfies Array<{ id: FeedFilter; label: string; icon: LucideIcon }>;
 
 const noticePattern = /\b(aviso|comunicado|importante|incidencia|corte|alerta|informaci[oó]n)\b/i;
 const activityPattern =
@@ -63,6 +56,7 @@ export function CommunityFeed({
   user: ComposerUser;
 }) {
   const router = useRouter();
+  const { t, tPlural } = useTranslations();
   const {
     personalizationUnavailable,
     posts,
@@ -72,6 +66,14 @@ export function CommunityFeed({
   const [query, setQuery] = useState(initialQuery);
   const [activeFilter, setActiveFilter] = useState<FeedFilter>("for-you");
   const [sortMode, setSortMode] = useState<SortMode>("recent");
+
+  const filters = [
+    { id: "for-you", label: t("community.feed.forYouFilter"), icon: Sparkles },
+    { id: "following", label: t("social.follow.followedLabel"), icon: UsersRound },
+    { id: "notices", label: t("community.feed.noticesFilter"), icon: Megaphone },
+    { id: "activities", label: t("navigation.activities.label"), icon: CalendarDays },
+    { id: "villages", label: t("navigation.villages.label"), icon: MapPin },
+  ] satisfies Array<{ id: FeedFilter; label: string; icon: LucideIcon }>;
 
   const visiblePosts = useMemo(() => {
     const normalizedQuery = normalize(query.trim());
@@ -124,7 +126,7 @@ export function CommunityFeed({
     });
   }, [activeFilter, posts, query, sortMode, villages]);
 
-  const activeFilterLabel = filters.find((filter) => filter.id === activeFilter)?.label ?? "Para ti";
+  const activeFilterLabel = filters.find((filter) => filter.id === activeFilter)?.label ?? t("community.feed.forYouFilter");
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -145,7 +147,7 @@ export function CommunityFeed({
     <div className="grid gap-4 sm:gap-5">
       {personalizationUnavailable ? (
         <Card className="border border-[#D7A63C45] bg-[#FFF8E8] p-4 text-sm font-bold leading-6 text-[#72551C]" role="status">
-          No hemos podido actualizar ahora tus seguimientos y guardados. Mostramos el contenido público disponible.
+          {t("community.feed.personalizationUnavailable")}
         </Card>
       ) : null}
       <Card className="p-2">
@@ -153,11 +155,11 @@ export function CommunityFeed({
           <SearchInput
             appearance="embedded"
             id="community-search"
-            label="Buscar publicaciones"
+            label={t("navigation.searchLabel")}
             name="q"
             onChange={setQuery}
             onClear={clearSearch}
-            placeholder="Buscar publicaciones..."
+            placeholder={t("navigation.searchPlaceholder")}
             showFilterHint
             value={query}
           />
@@ -172,7 +174,7 @@ export function CommunityFeed({
 
       <Card className="overflow-hidden">
         <div
-          aria-label="Filtros de publicaciones"
+          aria-label={t("community.feed.filtersAriaLabel")}
           className="flex gap-1 overflow-x-auto border-b border-[#184B3412] px-2 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="group"
         >
@@ -203,21 +205,19 @@ export function CommunityFeed({
 
         <div className="flex min-h-12 items-center justify-between gap-3 px-4 py-2">
           <p aria-live="polite" className="text-xs font-semibold text-[#687269]">
-            {visiblePosts.length === 1
-              ? "1 publicación"
-              : `${visiblePosts.length} publicaciones`}
-            {query ? ` para “${query.trim()}”` : ""}
+            {tPlural("villages.card.postsCount", visiblePosts.length)}
+            {query ? ` ${t("community.feed.resultsForQuery", { query: query.trim() })}` : ""}
           </p>
           <label className="relative shrink-0">
-            <span className="sr-only">Ordenar publicaciones</span>
+            <span className="sr-only">{t("community.feed.sortLabel")}</span>
             <select
-              aria-label="Ordenar publicaciones"
+              aria-label={t("community.feed.sortLabel")}
               className="min-h-11 appearance-none rounded-full border-0 bg-transparent py-2 pl-3 pr-8 text-xs font-extrabold text-[#435048] outline-none transition-colors hover:bg-[#184B3408] focus:ring-4 focus:ring-[#347A4818]"
               onChange={(event) => setSortMode(event.target.value as SortMode)}
               value={sortMode}
             >
-              <option value="recent">Más recientes</option>
-              <option value="popular">Más populares</option>
+              <option value="recent">{t("community.feed.sortRecent")}</option>
+              <option value="popular">{t("community.feed.sortPopular")}</option>
             </select>
             <ChevronDown
               aria-hidden="true"
@@ -229,7 +229,7 @@ export function CommunityFeed({
 
       {posts.length >= 100 ? (
         <p className="px-1 text-xs font-semibold leading-5 text-text-muted" role="status">
-          Se muestran hasta 100 publicaciones disponibles; la búsqueda se aplica sobre ese conjunto.
+          {t("community.feed.resultsLimitNotice")}
         </p>
       ) : null}
 
@@ -237,27 +237,27 @@ export function CommunityFeed({
         {unavailableSources.posts ? (
           <ErrorState
             actionHref="/community"
-            actionLabel="Reintentar"
-            description="La plaza digital sigue disponible, pero no hemos podido obtener sus publicaciones del servidor."
+            actionLabel={t("common.retry")}
+            description={t("community.feed.loadErrorDescription")}
             network
-            title="No hemos podido cargar las publicaciones"
+            title={t("villages.detail.postsErrorTitle")}
           />
         ) : visiblePosts.length ? (
           visiblePosts.map((post) => <SocialPostCard key={post.id} post={post} />)
         ) : (
           <EmptyState
             actionHref={posts.length ? undefined : "/community#publicar"}
-            actionLabel={posts.length ? "Limpiar filtros" : "Crear publicación"}
+            actionLabel={posts.length ? t("community.feed.clearFilters") : t("villages.detail.createPostAction")}
             icon={Search}
             onAction={posts.length ? () => {
               setActiveFilter("for-you");
               setQuery("");
             } : undefined}
-            title={`No hay publicaciones en “${activeFilterLabel}”`}
+            title={t("community.feed.emptyTitle", { filter: activeFilterLabel })}
             description={
               query
-                ? "Prueba con otro pueblo, autor o tema comunitario, o limpia la búsqueda."
-                : "Todavía no hay contenido real que coincida con este filtro. Explora otra sección del feed."
+                ? t("community.feed.emptyDescriptionQuery")
+                : t("community.feed.emptyDescriptionNoQuery")
             }
           />
         )}

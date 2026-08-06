@@ -9,6 +9,8 @@ import {
   useState,
 } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "@/components/i18n/i18n-provider";
+import { localeIntlTag } from "@/lib/i18n/config";
 
 function reducedMotionRequested() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -23,6 +25,7 @@ export function AccessibleCarousel({
   itemCount: number;
   label: string;
 }) {
+  const { t, locale } = useTranslations();
   const trackRef = useRef<HTMLUListElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(itemCount <= 1);
@@ -64,14 +67,14 @@ export function AccessibleCarousel({
   }
 
   return (
-    <div aria-label={label} aria-roledescription="carrusel" className="mt-5 min-w-0" role="region">
+    <div aria-label={label} aria-roledescription={t("common.carousel.roleDescription")} className="mt-5 min-w-0" role="region">
       <div className="mb-3 flex items-center justify-between gap-3 px-2 sm:px-0">
         <p className="text-xs font-semibold text-text-muted">
-          Desliza o utiliza los controles para recorrer {itemCount} tarjetas.
+          {t("common.carousel.instructions", { count: itemCount })}
         </p>
         <div className="flex shrink-0 gap-2">
           <button
-            aria-label={`Ver tarjetas anteriores de ${label.toLocaleLowerCase("es")}`}
+            aria-label={t("common.carousel.previousAria", { label: label.toLocaleLowerCase(localeIntlTag[locale]) })}
             className="grid size-11 place-items-center rounded-full border border-[#184B3424] bg-white/88 text-primary transition-colors hover:bg-white disabled:opacity-40"
             disabled={atStart}
             type="button"
@@ -80,7 +83,7 @@ export function AccessibleCarousel({
             <ChevronLeft aria-hidden="true" className="size-5" />
           </button>
           <button
-            aria-label={`Ver tarjetas siguientes de ${label.toLocaleLowerCase("es")}`}
+            aria-label={t("common.carousel.nextAria", { label: label.toLocaleLowerCase(localeIntlTag[locale]) })}
             className="grid size-11 place-items-center rounded-full border border-[#184B3424] bg-white/88 text-primary transition-colors hover:bg-white disabled:opacity-40"
             disabled={atEnd}
             type="button"

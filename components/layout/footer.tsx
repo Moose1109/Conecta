@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { isAdminUser } from "@/features/auth/roles";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { clearSession } from "@/lib/api/session";
@@ -9,6 +10,7 @@ import { clearSession } from "@/lib/api/session";
 export function Footer() {
   const router = useRouter();
   const { token, user } = useAuthSession();
+  const { t } = useTranslations();
   const isAuthenticated = Boolean(token);
 
   function handleLogout() {
@@ -23,34 +25,33 @@ export function Footer() {
         <div>
           <p className="text-xl font-black">ConectaPueblos</p>
           <p className="mt-3 max-w-sm text-sm leading-6 text-white/72">
-            Una plataforma para descubrir pueblos, sumarte a actividades locales
-            y cuidar la vida comunitaria desde lo cercano.
+            {t("footer.tagline")}
           </p>
         </div>
         <div>
-          <p className="font-bold">Explorar</p>
+          <p className="font-bold">{t("navigation.exploreSection")}</p>
           <div className="mt-3 grid gap-2 text-sm text-white/72">
-            <Link href="/villages">Pueblos</Link>
-            <Link href="/activities">Actividades</Link>
-            <Link href="/community">Comunidad</Link>
+            <Link href="/villages">{t("navigation.villages.label")}</Link>
+            <Link href="/activities">{t("navigation.activities.label")}</Link>
+            <Link href="/community">{t("navigation.community.label")}</Link>
           </div>
         </div>
         <div>
-          <p className="font-bold">Cuenta</p>
+          <p className="font-bold">{t("footer.account")}</p>
           <div className="mt-3 grid gap-2 text-sm text-white/72">
             {isAuthenticated ? (
               <>
-                <Link href="/community">Comunidad</Link>
-                <Link href="/profile">Mi perfil</Link>
-                {isAdminUser(user) ? <Link href="/admin">Panel admin</Link> : null}
+                <Link href="/community">{t("navigation.community.label")}</Link>
+                <Link href="/profile">{t("userMenu.profile.label")}</Link>
+                {isAdminUser(user) ? <Link href="/admin">{t("userMenu.adminPanel")}</Link> : null}
                 <button className="text-left hover:text-white" type="button" onClick={handleLogout}>
-                  Cerrar sesión
+                  {t("userMenu.logout")}
                 </button>
               </>
             ) : (
               <>
-                <Link href="/login">Entrar</Link>
-                <Link href="/register">Crear cuenta</Link>
+                <Link href="/login">{t("auth.signIn")}</Link>
+                <Link href="/register">{t("auth.createAccount")}</Link>
               </>
             )}
           </div>

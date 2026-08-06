@@ -1,21 +1,10 @@
+"use client";
+
 import { CalendarCheck2, CircleSlash2, UsersRound } from "lucide-react";
+import { useTranslations } from "@/components/i18n/i18n-provider";
+import { activityDisplayState } from "@/features/activities/activity-status";
 import { cn } from "@/lib/utils";
 import type { Activity } from "@/lib/types";
-
-function activityTimestamp(activity: Activity) {
-  const candidate = activity.endsAt ?? activity.startsAt ?? `${activity.date}T${activity.time}`;
-  const timestamp = Date.parse(candidate);
-
-  return Number.isFinite(timestamp) ? timestamp : undefined;
-}
-
-export function activityDisplayState(activity: Activity) {
-  const timestamp = activityTimestamp(activity);
-  const finished = timestamp !== undefined && timestamp < Date.now();
-  const full = activity.spotsLeft === 0;
-
-  return { finished, full };
-}
 
 export function ActivityStatusBadges({
   activity,
@@ -26,21 +15,22 @@ export function ActivityStatusBadges({
   compact?: boolean;
   className?: string;
 }) {
+  const { t } = useTranslations();
   const { finished, full } = activityDisplayState(activity);
   const states = finished
     ? [
-        { icon: CircleSlash2, label: "Finalizada", tone: "bg-mineral text-white" },
+        { icon: CircleSlash2, label: t("activities.status.finished"), tone: "bg-mineral text-white" },
         ...(full
-          ? [{ icon: UsersRound, label: "Completo", tone: "bg-accent text-white" }]
+          ? [{ icon: UsersRound, label: t("activities.status.full"), tone: "bg-accent text-white" }]
           : []),
       ]
     : full
-      ? [{ icon: UsersRound, label: "Completo", tone: "bg-accent text-white" }]
-      : [{ icon: CalendarCheck2, label: "Próxima", tone: "bg-primary text-primary-foreground" }];
+      ? [{ icon: UsersRound, label: t("activities.status.full"), tone: "bg-accent text-white" }]
+      : [{ icon: CalendarCheck2, label: t("activities.status.upcoming"), tone: "bg-primary text-primary-foreground" }];
 
   return (
     <span
-      aria-label={`Estado: ${states.map((state) => state.label).join(", ")}`}
+      aria-label={t("activities.status.ariaLabel", { states: states.map((state) => state.label).join(", ") })}
       className={cn("flex flex-wrap justify-end gap-1.5", className)}
     >
       {states.map(({ icon: Icon, label, tone }, index) => (

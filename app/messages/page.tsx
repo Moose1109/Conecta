@@ -8,8 +8,12 @@ import { PageHeader } from "@/components/ui/page-header";
 import { AuthGate } from "@/features/auth/auth-gate";
 import { isMessagesConceptState } from "@/features/messages/messages-concept-data";
 import { MessagesView } from "@/features/messages/messages-view";
+import { getTranslations } from "@/lib/i18n/get-translations";
 
-export const metadata: Metadata = { title: "Mensajes" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return { title: t("messages.title") };
+}
 
 export default async function MessagesPage({
   searchParams,
@@ -27,9 +31,11 @@ export default async function MessagesPage({
   const showConceptView = requestedView === "concept"
     || (requestedState !== undefined && isMessagesConceptState(requestedState));
 
+  const { t } = await getTranslations();
+
   return (
     <AuthenticatedShell>
-      <AuthGate message="Para ver tus mensajes necesitas iniciar sesión.">
+      <AuthGate message={t("messages.authGateMessage")}>
         {showConceptView ? (
           <MessagesView initialState={initialState} />
         ) : (
@@ -40,39 +46,41 @@ export default async function MessagesPage({
   );
 }
 
-function MessagesRealState() {
+async function MessagesRealState() {
+  const { t } = await getTranslations();
+
   return (
     <>
       <PageHeader
-        description="Un espacio cercano para conversar con vecinos y organizadores."
-        eyebrow="Conversaciones"
-        title="Mensajes"
+        description={t("messages.realState.description")}
+        eyebrow={t("messages.conversationsEyebrow")}
+        title={t("messages.title")}
       />
       <BackendPendingAlert
         actionHref="/community"
-        actionLabel="Ir a comunidad"
+        actionLabel={t("common.backendPending.actionLabel")}
         className="mb-5"
-        description="La experiencia de mensajería está diseñada, pero todavía no existe un endpoint real para listar conversaciones o enviar mensajes."
+        description={t("messages.realState.pendingDescription")}
       />
 
       <Card className="grid min-h-[360px] place-items-center p-6 text-center sm:min-h-[440px] sm:p-10" aria-labelledby="messages-empty-title">
         <div className="max-w-md">
           <span className="mx-auto grid size-16 place-items-center rounded-[22px] bg-[#C96D4A1a] text-[#C96D4A]"><MessageCircle aria-hidden="true" className="size-7" /></span>
-          <p className="eyebrow mt-5">Sin datos simulados</p>
-          <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]" id="messages-empty-title">La mensajería aún no está disponible</h2>
-          <p className="mt-3 text-sm leading-6 text-[#687269]">Cuando exista una API real de conversaciones, aquí aparecerán tus contactos y mensajes. Hasta entonces no mostramos una interfaz de chat que no pueda funcionar.</p>
+          <p className="eyebrow mt-5">{t("messages.realState.noSimulatedDataEyebrow")}</p>
+          <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]" id="messages-empty-title">{t("messages.realState.emptyTitle")}</h2>
+          <p className="mt-3 text-sm leading-6 text-[#687269]">{t("messages.realState.emptyDescription")}</p>
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link className="inline-flex min-h-11 items-center rounded-full bg-[#184B34] px-5 text-sm font-extrabold text-white hover:bg-[#0E3325]" href="/community">Ir a comunidad</Link>
+            <Link className="inline-flex min-h-11 items-center rounded-full bg-[#184B34] px-5 text-sm font-extrabold text-white hover:bg-[#0E3325]" href="/community">{t("common.backendPending.actionLabel")}</Link>
             <Link
               className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#184B3424] bg-white px-5 text-sm font-extrabold text-[#184B34] hover:bg-[#F5F6F1]"
               href="/messages?view=concept"
             >
               <Sparkles aria-hidden="true" className="size-4" />
-              Ver propuesta visual
+              {t("messages.realState.viewProposal")}
             </Link>
           </div>
           <p className="mt-3 text-xs font-semibold leading-5 text-[#687269]">
-            La propuesta visual es una demostración de diseño sin datos ni personas reales.
+            {t("messages.realState.proposalDisclaimer")}
           </p>
         </div>
       </Card>

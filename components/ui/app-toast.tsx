@@ -3,6 +3,7 @@
 import { CircleAlert, Info, X } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { cn } from "@/lib/utils";
 
 const subscribeToClientState = () => () => undefined;
@@ -23,6 +24,7 @@ export function AppToast({
     getClientSnapshot,
     getServerSnapshot,
   );
+  const { t } = useTranslations();
 
   if (!mounted || !message) return null;
 
@@ -44,7 +46,7 @@ export function AppToast({
       <span className="min-w-0 flex-1">{message}</span>
       {onDismiss ? (
         <button
-          aria-label="Cerrar mensaje"
+          aria-label={t("common.dismissMessage")}
           className="-m-2 grid size-11 shrink-0 place-items-center rounded-full transition-colors hover:bg-black/5 focus:outline-none focus:ring-4 focus:ring-[#347A4824]"
           onClick={onDismiss}
           type="button"

@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowUpRight, MapPin, Newspaper } from "lucide-react";
 import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Card } from "@/components/ui/card";
+import { useTranslations } from "@/components/i18n/i18n-provider";
+import type { Translator } from "@/lib/i18n/translate";
 import { VillageCard } from "@/features/villages/village-card";
 import type { CommunityPost, Village } from "@/lib/types";
 
@@ -12,7 +16,7 @@ type RelatedPlace = {
   postsCount: number;
 };
 
-function relatedPlaces(posts: CommunityPost[]) {
+function relatedPlaces(posts: CommunityPost[], t: Translator["t"]) {
   const places = new Map<string, RelatedPlace>();
 
   for (const post of posts) {
@@ -23,7 +27,7 @@ function relatedPlaces(posts: CommunityPost[]) {
     places.set(key, {
       id: post.villageId || current?.id,
       key,
-      name: post.villageName || current?.name || "Pueblo relacionado",
+      name: post.villageName || current?.name || t("profile.map.defaultVillageName"),
       postsCount: (current?.postsCount ?? 0) + 1,
     });
   }
@@ -42,30 +46,31 @@ export function ProfileMap({
   postsUnavailable: boolean;
   villagesUnavailable: boolean;
 }) {
-  const places = relatedPlaces(posts);
+  const { t, tPlural } = useTranslations();
+  const places = relatedPlaces(posts, t);
 
   return (
     <div className="grid gap-5">
       <BackendPendingAlert
         compact
-        description="Este espacio reúne solo pueblos seguidos y pueblos asociados a tus publicaciones. Un mapa territorial completo necesita colecciones personales paginadas del backend; aquí no se muestran visitas, deseos ni geolocalización."
-        title="Mi mapa está preparado con alcance limitado"
+        description={t("profile.map.limitedScopeDescription")}
+        title={t("profile.map.limitedScopeTitle")}
       />
 
       <section aria-labelledby="followed-villages-title">
         <div className="mb-3 flex items-end justify-between gap-4">
           <div>
-            <p className="eyebrow">Relación real</p>
+            <p className="eyebrow">{t("profile.map.realRelationEyebrow")}</p>
             <h2 className="mt-1 text-xl font-extrabold text-[#0E3325]" id="followed-villages-title">
-              Pueblos que sigo
+              {t("profile.map.followedVillagesTitle")}
             </h2>
           </div>
           <Link className="text-xs font-extrabold text-[#347A48]" href="/villages">
-            Explorar pueblos
+            {t("profile.map.exploreVillagesAction")}
           </Link>
         </div>
         {villagesUnavailable ? (
-          <MapDataUnavailable label="los pueblos que sigues" />
+          <MapDataUnavailable label={t("profile.map.unavailableFollowedVillages")} t={t} />
         ) : followedVillages.length ? (
           <div className="grid gap-5 md:grid-cols-2">
             {followedVillages.map((village) => (
@@ -74,20 +79,20 @@ export function ProfileMap({
           </div>
         ) : (
           <Card className="p-5 text-sm leading-6 text-[#687269]">
-            No se han detectado pueblos seguidos en el catálogo disponible.
+            {t("profile.map.noFollowedVillages")}
           </Card>
         )}
       </section>
 
       <section aria-labelledby="related-villages-title">
         <div className="mb-3">
-          <p className="eyebrow">Contexto de tus publicaciones</p>
+          <p className="eyebrow">{t("profile.map.postsContextEyebrow")}</p>
           <h2 className="mt-1 text-xl font-extrabold text-[#0E3325]" id="related-villages-title">
-            Pueblos relacionados con mis publicaciones
+            {t("profile.map.relatedVillagesTitle")}
           </h2>
         </div>
         {postsUnavailable ? (
-          <MapDataUnavailable label="los pueblos de tus publicaciones" />
+          <MapDataUnavailable label={t("profile.map.unavailablePostVillages")} t={t} />
         ) : places.length ? (
           <div className="grid gap-3 sm:grid-cols-2">
             {places.map((place) => {
@@ -100,7 +105,7 @@ export function ProfileMap({
                     <span className="block truncate font-extrabold text-[#18231D]">{place.name}</span>
                     <span className="mt-1 flex items-center gap-1.5 text-xs font-medium text-[#687269]">
                       <Newspaper aria-hidden="true" className="size-3.5" />
-                      {place.postsCount} {place.postsCount === 1 ? "publicación" : "publicaciones"}
+                      {tPlural("villages.card.postsCount", place.postsCount)}
                     </span>
                   </span>
                   {place.id ? <ArrowUpRight aria-hidden="true" className="size-4 shrink-0 text-[#347A48]" /> : null}
@@ -124,7 +129,7 @@ export function ProfileMap({
           </div>
         ) : (
           <Card className="p-5 text-sm leading-6 text-[#687269]">
-            Tus publicaciones todavía no incluyen un pueblo identificable.
+            {t("profile.map.noRelatedVillages")}
           </Card>
         )}
       </section>
@@ -132,10 +137,10 @@ export function ProfileMap({
   );
 }
 
-function MapDataUnavailable({ label }: { label: string }) {
+function MapDataUnavailable({ label, t }: { label: string; t: Translator["t"] }) {
   return (
     <Card className="p-5 text-sm font-medium leading-6 text-[#687269]" role="status">
-      No podemos cargar {label} ahora. Tus datos no se han borrado.
+      {t("profile.map.mapUnavailableDescription", { label })}
     </Card>
   );
 }

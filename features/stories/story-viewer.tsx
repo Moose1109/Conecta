@@ -7,11 +7,8 @@ import { createPortal } from "react-dom";
 import { UserAvatar } from "@/components/social/user-avatar";
 import { Badge } from "@/components/ui/card";
 import { useModalDialog } from "@/components/ui/use-modal-dialog";
-import {
-  STORIES_BACKEND_NOTICE,
-  storyOwnerTypeLabels,
-  type ConceptStoryGroup,
-} from "@/features/stories/stories-concept-data";
+import { useTranslations } from "@/components/i18n/i18n-provider";
+import { type ConceptStoryGroup } from "@/features/stories/stories-concept-data";
 import { TrustActionsMenu } from "@/features/trust/trust-actions-menu";
 
 export function StoryViewer({
@@ -31,9 +28,11 @@ export function StoryViewer({
   storyIndex: number;
   triggerRef: RefObject<HTMLElement | null>;
 }) {
+  const { t } = useTranslations();
   const dialogRef = useRef<HTMLDivElement>(null);
   const portalRef = useRef<HTMLDivElement>(null);
   const story = group.stories[storyIndex];
+  const ownerTypeLabel = t(`stories.ownerType.${group.ownerType}` as const);
 
   useModalDialog({ dialogRef, onClose, open: true, triggerRef });
 
@@ -77,8 +76,8 @@ export function StoryViewer({
   if (!story || typeof document === "undefined") return null;
 
   const storyCountLabel = group.stories.length === 1
-    ? "Historia única"
-    : `Historia ${storyIndex + 1} de ${group.stories.length}`;
+    ? t("stories.singleStoryLabel")
+    : t("stories.storyPositionLabel", { position: storyIndex + 1, total: group.stories.length });
 
   return createPortal(
     <div
@@ -101,7 +100,7 @@ export function StoryViewer({
       >
         <div className="shrink-0 px-3 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-4 sm:pt-4">
           <div
-            aria-label={`${storyCountLabel} de ${group.ownerName}`}
+            aria-label={t("stories.viewerGroupAriaLabel", { position: storyCountLabel, owner: group.ownerName })}
             className="grid auto-cols-fr grid-flow-col gap-1.5"
             role="group"
           >
@@ -118,7 +117,7 @@ export function StoryViewer({
             <UserAvatar
               className="size-10 bg-[#D7A63C] text-[#0E3325] ring-2 ring-white/15"
               initials={group.ownerInitials}
-              name={`${group.ownerName} · ${storyOwnerTypeLabels[group.ownerType]}`}
+              name={`${group.ownerName} · ${ownerTypeLabel}`}
             />
             <div className="min-w-0 flex-1">
               <h2 className="truncate text-sm font-extrabold" id={`story-title-${story.id}`}>
@@ -132,24 +131,24 @@ export function StoryViewer({
                     <span aria-hidden="true">·</span>
                   </>
                 ) : null}
-                <span className="truncate">{storyOwnerTypeLabels[group.ownerType]}</span>
+                <span className="truncate">{ownerTypeLabel}</span>
               </p>
             </div>
             <span className="hidden shrink-0 sm:inline-flex">
               <Badge className="bg-white/12 text-white">
                 <Sparkles aria-hidden="true" className="mr-1 size-3" />
-                Propuesta visual
+                {t("common.prototypeBadge")}
               </Badge>
             </span>
             <TrustActionsMenu
               blockTargetName={group.ownerType === "user" ? group.ownerName : undefined}
               className="shrink-0"
-              contentLabel={`esta historia de ${group.ownerName}`}
-              triggerAriaLabel="Opciones de confianza para esta historia"
+              contentLabel={t("stories.trustContentLabel", { owner: group.ownerName })}
+              triggerAriaLabel={t("stories.trustMenuAriaLabel")}
               triggerClassName="grid size-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/18"
             />
             <button
-              aria-label="Cerrar el visor de historias"
+              aria-label={t("stories.closeViewer")}
               className="grid size-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/18"
               data-dialog-initial-focus
               type="button"
@@ -177,14 +176,14 @@ export function StoryViewer({
             >
               <span>
                 <ImageOff aria-hidden="true" className="mx-auto size-14 text-white/46" strokeWidth={1.4} />
-                <span className="mt-3 block text-sm font-bold text-white/68">Imagen no disponible</span>
+                <span className="mt-3 block text-sm font-bold text-white/68">{t("stories.imageUnavailable")}</span>
               </span>
             </div>
           )}
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/76 via-transparent to-black/8" />
 
           <button
-            aria-label="Historia anterior"
+            aria-label={t("stories.previousStory")}
             className="absolute left-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-black/42 text-white backdrop-blur-sm transition-colors hover:bg-black/58 disabled:opacity-25 sm:left-4 sm:size-12"
             disabled={!hasPrevious}
             type="button"
@@ -193,7 +192,7 @@ export function StoryViewer({
             <ChevronLeft aria-hidden="true" className="size-6" />
           </button>
           <button
-            aria-label="Siguiente historia"
+            aria-label={t("stories.nextStory")}
             className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-black/42 text-white backdrop-blur-sm transition-colors hover:bg-black/58 sm:right-4 sm:size-12"
             type="button"
             onClick={onNext}
@@ -210,7 +209,7 @@ export function StoryViewer({
 
         <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/10 bg-[#101713] px-4 pb-[max(0.8rem,env(safe-area-inset-bottom))] pt-3 text-xs font-semibold text-white/64">
           <span className="truncate">{storyCountLabel} · {group.ownerName}</span>
-          <span className="shrink-0 text-right">{STORIES_BACKEND_NOTICE}</span>
+          <span className="shrink-0 text-right">{t("stories.backendNotice")}</span>
         </div>
       </div>
     </div>,

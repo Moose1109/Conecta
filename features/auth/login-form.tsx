@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { loginUser, type LoginPayload } from "@/lib/api/auth.service";
 import { isUnauthorizedError } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/error-message";
@@ -12,6 +13,7 @@ import { saveSession } from "@/lib/api/session";
 
 export function LoginForm() {
   const router = useRouter();
+  const { t } = useTranslations();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showRecoveryNotice, setShowRecoveryNotice] = useState(false);
@@ -26,7 +28,7 @@ export function LoginForm() {
     const password = String(formData.get("password") ?? "");
 
     if (!email || !password) {
-      setError("Completa email y contraseña.");
+      setError(t("auth.login.errorEmptyFields"));
       return;
     }
 
@@ -42,7 +44,7 @@ export function LoginForm() {
       const token = response.token ?? response.access_token;
 
       if (!token) {
-        setError("No se pudo iniciar sesión. Revisa email y contraseña.");
+        setError(t("auth.login.genericError"));
         return;
       }
 
@@ -53,10 +55,11 @@ export function LoginForm() {
     } catch (error) {
       setError(
         isUnauthorizedError(error)
-          ? "El email o la contraseña no son correctos."
+          ? t("auth.login.errorInvalidCredentials")
           : getApiErrorMessage(
               error,
-              "No se pudo iniciar sesión. Revisa email y contraseña.",
+              t,
+              t("auth.login.genericError"),
             ),
       );
     } finally {
@@ -68,7 +71,7 @@ export function LoginForm() {
     <form aria-busy={isSubmitting} className="mt-4 grid gap-3 sm:mt-6 sm:gap-4" onSubmit={handleSubmit}>
       <div>
         <label className="label" htmlFor="login-email">
-          Email
+          {t("auth.login.emailLabel")}
         </label>
         <div className="relative">
           <Mail
@@ -79,7 +82,7 @@ export function LoginForm() {
             className="field field-with-icon"
             id="login-email"
             name="email"
-            placeholder="tu@email.com"
+            placeholder={t("auth.login.emailPlaceholder")}
             type="email"
             autoComplete="email"
             aria-describedby={error ? "login-form-error" : undefined}
@@ -90,7 +93,7 @@ export function LoginForm() {
       </div>
       <div>
         <label className="label" htmlFor="login-password">
-          Contraseña
+          {t("auth.login.passwordLabel")}
         </label>
         <div className="relative">
           <LockKeyhole
@@ -110,7 +113,7 @@ export function LoginForm() {
             required
           />
           <button
-            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            aria-label={showPassword ? t("auth.login.hidePassword") : t("auth.login.showPassword")}
             aria-pressed={showPassword}
             className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full text-[#5E6F63] transition-colors hover:bg-[#1F3D2B0d] hover:text-[#173F2A] focus:outline-none focus:ring-4 focus:ring-[#3A7D4420]"
             type="button"
@@ -126,7 +129,7 @@ export function LoginForm() {
             type="button"
             onClick={() => setShowRecoveryNotice(true)}
           >
-            ¿Olvidaste tu contraseña?
+            {t("auth.login.forgotPassword")}
           </button>
         </div>
       </div>
@@ -134,8 +137,8 @@ export function LoginForm() {
         <div id="password-recovery-pending">
           <BackendPendingAlert
             compact
-            description="La recuperación por correo todavía necesita un flujo seguro en el backend. No se ha enviado ningún mensaje ni se ha consultado si el email existe."
-            title="Recuperación pendiente"
+            description={t("auth.login.recoveryPendingDescription")}
+            title={t("auth.login.recoveryPendingTitle")}
           />
         </div>
       ) : null}
@@ -145,7 +148,7 @@ export function LoginForm() {
         disabled={isSubmitting}
         aria-busy={isSubmitting}
       >
-        <span>{isSubmitting ? "Entrando..." : "Entrar a comunidad"}</span>
+        <span>{isSubmitting ? t("auth.login.submitting") : t("auth.login.submit")}</span>
         <ArrowRight aria-hidden="true" className="size-5" />
       </Button>
       {error ? (

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import {
   primaryNavigationItems,
   secondaryNavigationItems,
@@ -17,6 +18,7 @@ const drawerId = "responsive-sidebar-drawer";
 
 export function ResponsiveSidebarDrawer() {
   const pathname = usePathname();
+  const { t } = useTranslations();
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -55,8 +57,8 @@ export function ResponsiveSidebarDrawer() {
           <Icon aria-hidden="true" className="size-5" strokeWidth={1.8} />
         </span>
         <span>
-          <span className="block">{item.label}</span>
-          <span className={cn("mt-0.5 block text-[11px] font-semibold text-[#687269]", selected && "text-white/70")}>{item.meta}</span>
+          <span className="block">{t(item.labelKey)}</span>
+          <span className={cn("mt-0.5 block text-[11px] font-semibold text-[#687269]", selected && "text-white/70")}>{t(item.metaKey)}</span>
         </span>
       </Link>
     );
@@ -68,7 +70,7 @@ export function ResponsiveSidebarDrawer() {
         ref={buttonRef}
         aria-controls={drawerId}
         aria-expanded={open}
-        aria-label={open ? "Cerrar navegación" : "Abrir navegación"}
+        aria-label={open ? t("navigation.closeDrawer") : t("navigation.openDrawer")}
         className="grid size-11 place-items-center rounded-full border border-[#184B3414] bg-white/80 text-[#184B34] transition-colors hover:bg-white"
         type="button"
         onClick={() => setOpen((current) => !current)}
@@ -94,11 +96,11 @@ export function ResponsiveSidebarDrawer() {
           >
             <div className="flex items-center justify-between border-b border-[#184B3414] px-1 pb-4">
               <div>
-                <p className="eyebrow">Navegación</p>
+                <p className="eyebrow">{t("navigation.drawerEyebrow")}</p>
                 <h2 className="mt-1 text-xl font-extrabold text-[#18231D]" id="responsive-sidebar-title">ConectaPueblos</h2>
               </div>
               <button
-                aria-label="Cerrar navegación"
+                aria-label={t("navigation.closeDrawer")}
                 data-dialog-initial-focus
                 className="grid size-11 place-items-center rounded-full bg-[#184B340a] text-[#184B34]"
                 type="button"
@@ -107,7 +109,7 @@ export function ResponsiveSidebarDrawer() {
                 <X aria-hidden="true" className="size-5" />
               </button>
             </div>
-            <nav className="mt-4 grid gap-2" aria-label="Secciones de la app">
+            <nav className="mt-4 grid gap-2" aria-label={t("navigation.appSections")}>
               {primaryNavigationItems.map((item) => <NavLink item={item} key={item.href} primary />)}
               <div className="hidden h-px bg-[#184B3414] sm:block" />
               {secondaryNavigationItems.map((item) => <NavLink item={item} key={item.href} />)}

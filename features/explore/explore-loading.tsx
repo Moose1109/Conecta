@@ -1,8 +1,11 @@
 import { Card } from "@/components/ui/card";
+import { getTranslations } from "@/lib/i18n/get-translations";
 
-export function ExploreLoading() {
+export async function ExploreLoading() {
+  const { t } = await getTranslations();
+
   return (
-    <div aria-busy="true" aria-label="Cargando resultados de exploración">
+    <div aria-busy="true" aria-label={t("explore.loadingResultsAria")}>
       <Card className="p-4 sm:p-5">
         <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
           <div className="skeleton-shimmer h-12 rounded-full" />
@@ -17,7 +20,7 @@ export function ExploreLoading() {
 
       <div className="mt-7 grid gap-8">
         {Array.from({ length: 3 }, (_, sectionIndex) => (
-          <section aria-label={`Cargando bloque ${sectionIndex + 1}`} key={sectionIndex}>
+          <section aria-label={t("explore.loadingBlockAria", { number: sectionIndex + 1 })} key={sectionIndex}>
             <div className="skeleton-shimmer h-7 w-48 rounded-full" />
             <div className="skeleton-shimmer mt-2 h-4 w-72 max-w-full rounded-full" />
             <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -33,7 +36,7 @@ export function ExploreLoading() {
           </section>
         ))}
       </div>
-      <span className="sr-only">Cargando pueblos, actividades y publicaciones</span>
+      <span className="sr-only">{t("explore.loadingContentSr")}</span>
     </div>
   );
 }

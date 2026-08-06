@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Button } from "@/components/ui/button";
 import { useModalDialog } from "@/components/ui/use-modal-dialog";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 
 export function BlockUserDialog({
   onClose,
@@ -18,6 +19,7 @@ export function BlockUserDialog({
   targetName: string;
   triggerRef: RefObject<HTMLElement | null>;
 }) {
+  const { t } = useTranslations();
   const dialogRef = useRef<HTMLDivElement>(null);
   const [confirmed, setConfirmed] = useState(false);
 
@@ -42,7 +44,7 @@ export function BlockUserDialog({
       />
       <div
         ref={dialogRef}
-        aria-label={`Bloquear a ${targetName}`}
+        aria-label={t("trust.blockAction", { name: targetName })}
         aria-modal="true"
         className="absolute inset-x-3 top-1/2 mx-auto max-w-lg -translate-y-1/2 rounded-[26px] border border-[#184B3417] bg-ivory p-4 shadow-[0_28px_90px_rgba(14,51,37,0.22)] outline-none sm:p-5"
         role="dialog"
@@ -50,7 +52,7 @@ export function BlockUserDialog({
       >
         <div className="mb-1 flex justify-end">
           <button
-            aria-label="Cerrar aviso"
+            aria-label={t("trust.closeNotice")}
             className="grid size-11 place-items-center rounded-full bg-[#184B340a] text-primary"
             data-dialog-initial-focus={confirmed ? undefined : true}
             type="button"
@@ -62,8 +64,8 @@ export function BlockUserDialog({
 
         {confirmed ? (
           <BackendPendingAlert
-            description={`${targetName} no ha sido bloqueada ni bloqueado. El backend todavía no ofrece bloqueo entre personas, así que no se ha alterado tu perfil ni el suyo.`}
-            title="Bloqueo pendiente de backend"
+            description={t("trust.blockPendingDescription", { name: targetName })}
+            title={t("trust.blockPendingTitle")}
           />
         ) : (
           <>
@@ -71,19 +73,17 @@ export function BlockUserDialog({
               <ShieldAlert aria-hidden="true" className="size-6" />
             </span>
             <h2 className="mt-4 text-lg font-extrabold tracking-[-0.015em] text-text-primary">
-              Bloquear a {targetName}
+              {t("trust.blockAction", { name: targetName })}
             </h2>
             <p className="mt-2 text-sm leading-6 text-text-muted">
-              Cuando esta función exista, dejarías de ver su contenido y esa persona no podría
-              contactarte ni interactuar contigo. Esta es una demostración: nada se bloqueará
-              todavía.
+              {t("trust.blockConfirmDescription")}
             </p>
             <div className="mt-5 flex flex-col gap-2.5 sm:flex-row-reverse">
               <Button className="sm:flex-1" type="button" variant="terracotta" onClick={() => setConfirmed(true)}>
-                Bloquear
+                {t("trust.blockConfirmAction")}
               </Button>
               <Button className="sm:flex-1" type="button" variant="secondary" onClick={onClose}>
-                Cancelar
+                {t("common.cancel")}
               </Button>
             </div>
           </>

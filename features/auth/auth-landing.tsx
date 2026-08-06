@@ -13,6 +13,7 @@ import { LoginForm } from "@/features/auth/login-form";
 import { PublicAuthShell } from "@/features/auth/public-auth-shell";
 import { RegisterForm } from "@/features/auth/register-form";
 import { useAuthSession } from "@/features/auth/use-auth-session";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { getCurrentUser } from "@/lib/api/auth.service";
 import { isUnauthorizedError } from "@/lib/api/client";
 import { logApiIssue } from "@/lib/api/error-message";
@@ -31,6 +32,7 @@ export function AuthLanding({
   initialMode?: AuthMode;
 }) {
   const router = useRouter();
+  const { t } = useTranslations();
   const { token } = useAuthSession();
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [failedSessionCheck, setFailedSessionCheck] = useState<string>();
@@ -113,8 +115,8 @@ export function AuthLanding({
       <main className="grid min-h-dvh place-items-center bg-[#F7F2E8] px-5">
         <Card className="w-full max-w-sm p-7 text-center">
           <p className="eyebrow">ConectaPueblos</p>
-          <h1 className="mt-3 text-2xl font-extrabold text-[#18231D]">Abriendo tu comunidad</h1>
-          <p className="mt-2 text-sm leading-6 text-[#687269]">Ya tienes sesión iniciada. Te llevamos a tu plaza digital.</p>
+          <h1 className="mt-3 text-2xl font-extrabold text-[#18231D]">{t("auth.landing.openingCommunity")}</h1>
+          <p className="mt-2 text-sm leading-6 text-[#687269]">{t("auth.landing.alreadySignedIn")}</p>
         </Card>
       </main>
     );
@@ -130,10 +132,10 @@ export function AuthLanding({
             role="alert"
           >
             <p className="text-sm font-extrabold text-[#873E29]">
-              No hemos podido comprobar tu sesión guardada.
+              {t("auth.landing.sessionCheckFailedTitle")}
             </p>
             <p className="mt-1 text-xs font-medium leading-5 text-[#873E29]">
-              Puedes reintentarlo o iniciar sesión de nuevo con otra cuenta.
+              {t("auth.landing.sessionCheckFailedDescription")}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <button
@@ -145,29 +147,31 @@ export function AuthLanding({
                 }}
               >
                 <RefreshCw aria-hidden="true" className="size-4" />
-                Reintentar
+                {t("common.retry")}
               </button>
               <button
                 className="inline-flex min-h-11 items-center rounded-full border border-[#184B3424] bg-white px-4 text-xs font-extrabold text-[#184B34] hover:bg-[#F7F2E8]"
                 type="button"
                 onClick={clearSession}
               >
-                Usar otra cuenta
+                {t("auth.landing.useAnotherAccount")}
               </button>
             </div>
           </div>
         ) : null}
-        <p className="text-sm font-extrabold text-[#184B34]">{mode === "login" ? "Entra a" : "Únete a"}</p>
+        <p className="text-sm font-extrabold text-[#184B34]">
+          {mode === "login" ? t("auth.landing.enterTo") : t("auth.landing.joinTo")}
+        </p>
         <h1 className="mt-1 text-2xl font-extrabold leading-[1.08] tracking-[-0.04em] text-[#0E3325] sm:text-4xl">
           ConectaPueblos
         </h1>
         <p className="mt-3 max-w-md text-sm font-medium leading-6 text-[#687269] sm:mt-4">
           {mode === "login"
-            ? "Accede para publicar, apuntarte a actividades y seguir pueblos que te importan."
-            : "Crea tu cuenta y empieza a participar en la vida de los pueblos que quieres tener cerca."}
+            ? t("auth.landing.loginDescription")
+            : t("auth.landing.registerDescription")}
         </p>
 
-        <div aria-label="Acceso o registro" aria-orientation="horizontal" className="mt-4 grid grid-cols-2 rounded-[15px] border border-[#184B3418] bg-[#F8F7F3] p-1 sm:mt-6" role="tablist">
+        <div aria-label={t("auth.landing.tabsLabel")} aria-orientation="horizontal" className="mt-4 grid grid-cols-2 rounded-[15px] border border-[#184B3418] bg-[#F8F7F3] p-1 sm:mt-6" role="tablist">
           <button
             ref={loginTabRef}
             aria-controls="auth-panel-login"
@@ -184,7 +188,7 @@ export function AuthLanding({
             onClick={() => setMode("login")}
           >
             <LogIn aria-hidden="true" className="size-4" />
-            Iniciar sesión
+            {t("auth.landing.signInLabel")}
           </button>
           <button
             ref={registerTabRef}
@@ -202,7 +206,7 @@ export function AuthLanding({
             onClick={() => setMode("register")}
           >
             <UserPlus aria-hidden="true" className="size-4" />
-            Crear cuenta
+            {t("auth.createAccount")}
           </button>
         </div>
 
@@ -216,9 +220,9 @@ export function AuthLanding({
         <AuthProviderButtons mode={mode} />
 
         <p className="mt-3 text-center text-sm font-medium text-[#687269] sm:mt-5">
-          {mode === "login" ? "¿Aún no tienes cuenta? " : "¿Ya tienes cuenta? "}
+          {mode === "login" ? t("auth.landing.noAccountYet") : t("auth.landing.alreadyHaveAccount")}
           <button className="inline-flex min-h-11 items-center font-extrabold text-[#347A48] hover:text-[#184B34]" type="button" onClick={() => selectModeAndFocus(mode === "login" ? "register" : "login")}>
-            {mode === "login" ? "Crear cuenta" : "Iniciar sesión"}
+            {mode === "login" ? t("auth.createAccount") : t("auth.landing.signInLabel")}
           </button>
         </p>
       </Card>

@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InlineFieldError } from "@/components/ui/inline-field-error";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { registerUser, type RegisterPayload } from "@/lib/api/auth.service";
 import { ApiError } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/error-message";
@@ -15,6 +16,7 @@ type RegisterFieldErrors = Partial<Record<RegisterField, string>>;
 
 export function RegisterForm() {
   const router = useRouter();
+  const { t } = useTranslations();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,17 +37,19 @@ export function RegisterForm() {
     const confirmPassword = String(formData.get("confirmPassword") ?? "");
     const nextFieldErrors: RegisterFieldErrors = {};
 
-    if (name.length < 2) nextFieldErrors.name = "Introduce al menos 2 caracteres.";
-    if (username.length < 3) nextFieldErrors.username = "Introduce al menos 3 caracteres.";
-    if (!email) nextFieldErrors.email = "El correo electrónico es obligatorio.";
-    if (password.length < 8) nextFieldErrors.password = "Usa al menos 8 caracteres.";
-    if (password.length > 128) nextFieldErrors.password = "La contraseña no puede superar 128 caracteres.";
-    if (password !== confirmPassword) nextFieldErrors.confirmPassword = "Las contraseñas no coinciden.";
+    if (name.length < 2) nextFieldErrors.name = t("auth.register.errorNameLength");
+    if (username.length < 3) nextFieldErrors.username = t("auth.register.errorUsernameLength");
+    if (!email) nextFieldErrors.email = t("auth.register.errorEmailRequired");
+    if (password.length < 8) nextFieldErrors.password = t("auth.register.errorPasswordLength");
+    if (password.length > 128)
+      nextFieldErrors.password = t("auth.register.errorPasswordMaxLength");
+    if (password !== confirmPassword)
+      nextFieldErrors.confirmPassword = t("auth.register.errorConfirmPasswordMismatch");
 
     setFieldErrors(nextFieldErrors);
 
     if (Object.keys(nextFieldErrors).length) {
-      setError("Revisa los campos indicados.");
+      setError(t("errors.status422"));
       return;
     }
 
@@ -70,21 +74,21 @@ export function RegisterForm() {
         return;
       }
 
-      setSuccess("Cuenta creada. Te llevamos al login para entrar.");
+      setSuccess(t("auth.register.successNoToken"));
       window.setTimeout(() => router.push("/login"), 900);
     } catch (error) {
       if (error instanceof ApiError) {
         const detail = error.detail;
         if (detail === "Email already registered") {
-          setFieldErrors({ email: "Ya existe una cuenta con este correo electrónico." });
+          setFieldErrors({ email: t("errors.backend.emailTaken") });
         } else if (detail === "Username already taken") {
-          setFieldErrors({ username: "Ese nombre de usuario ya está en uso." });
+          setFieldErrors({ username: t("errors.backend.usernameTaken") });
         } else if (error.status === 422 && error.fieldErrors) {
           const invalidFields = Object.entries(error.fieldErrors).reduce<RegisterFieldErrors>(
             (fields, [path]) => {
               const field = path.split(".").at(-1);
               if (["email", "name", "password", "username"].includes(String(field))) {
-                fields[field as RegisterField] = "Revisa el valor de este campo.";
+                fields[field as RegisterField] = t("auth.register.errorGenericField");
               }
               return fields;
             },
@@ -93,7 +97,7 @@ export function RegisterForm() {
           setFieldErrors(invalidFields);
         }
       }
-      setError(getApiErrorMessage(error, "No se pudo crear la cuenta. Revisa los datos."));
+      setError(getApiErrorMessage(error, t, t("auth.register.fallbackError")));
     } finally {
       setIsSubmitting(false);
     }
@@ -104,7 +108,7 @@ export function RegisterForm() {
       <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
         <div>
           <label className="label" htmlFor="register-name">
-            Nombre
+            {t("auth.register.nameLabel")}
           </label>
           <div className="relative">
             <UserRound
@@ -117,7 +121,7 @@ export function RegisterForm() {
               maxLength={120}
               minLength={2}
               name="name"
-              placeholder="Tu nombre"
+              placeholder={t("auth.register.namePlaceholder")}
               autoComplete="name"
               aria-describedby={fieldErrors.name ? "register-name-error" : undefined}
               aria-invalid={Boolean(fieldErrors.name) || undefined}
@@ -128,7 +132,7 @@ export function RegisterForm() {
         </div>
         <div>
           <label className="label" htmlFor="register-username">
-            Usuario
+            {t("auth.register.usernameLabel")}
           </label>
           <div className="relative">
             <UserRound
@@ -141,7 +145,7 @@ export function RegisterForm() {
               maxLength={80}
               minLength={3}
               name="username"
-              placeholder="vecino.local"
+              placeholder={t("auth.register.usernamePlaceholder")}
               autoComplete="username"
               aria-describedby={fieldErrors.username ? "register-username-error" : undefined}
               aria-invalid={Boolean(fieldErrors.username) || undefined}
@@ -153,7 +157,7 @@ export function RegisterForm() {
       </div>
       <div>
         <label className="label" htmlFor="register-email">
-          Email
+          {t("auth.login.emailLabel")}
         </label>
         <div className="relative">
           <Mail
@@ -164,7 +168,7 @@ export function RegisterForm() {
             className="field field-with-icon"
             id="register-email"
             name="email"
-            placeholder="tu@email.com"
+            placeholder={t("auth.login.emailPlaceholder")}
             type="email"
             autoComplete="email"
             aria-describedby={fieldErrors.email ? "register-email-error" : undefined}
@@ -177,7 +181,7 @@ export function RegisterForm() {
       <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
         <div>
         <label className="label" htmlFor="register-password">
-          Contraseña
+          {t("auth.login.passwordLabel")}
         </label>
         <div className="relative">
           <LockKeyhole
@@ -198,7 +202,7 @@ export function RegisterForm() {
             required
           />
           <button
-            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            aria-label={showPassword ? t("auth.login.hidePassword") : t("auth.login.showPassword")}
             aria-pressed={showPassword}
             className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full text-[#5E6F63] transition-colors hover:bg-[#1F3D2B0d] hover:text-[#173F2A] focus:outline-none focus:ring-4 focus:ring-[#3A7D4420]"
             type="button"
@@ -211,7 +215,7 @@ export function RegisterForm() {
         </div>
         <div>
           <label className="label" htmlFor="register-confirm-password">
-            Repetir contraseña
+            {t("auth.register.confirmPasswordLabel")}
           </label>
           <div className="relative">
             <LockKeyhole
@@ -241,7 +245,7 @@ export function RegisterForm() {
         disabled={isSubmitting}
         aria-busy={isSubmitting}
       >
-        <span>{isSubmitting ? "Creando cuenta..." : "Crear mi cuenta"}</span>
+        <span>{isSubmitting ? t("auth.register.submitting") : t("auth.register.submit")}</span>
         <ArrowRight aria-hidden="true" className="size-5" />
       </Button>
       {error ? (

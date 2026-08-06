@@ -13,9 +13,13 @@ import {
   getActivityCategories,
 } from "@/lib/api/activities.service";
 import { getVillagesStrict } from "@/lib/api/villages.service";
+import { getTranslations } from "@/lib/i18n/get-translations";
 import type { ActivityCategory } from "@/lib/types";
 
-export const metadata: Metadata = { title: "Actividades" };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslations();
+  return { title: t("navigation.activities.label") };
+}
 
 type ActivityPageSearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -36,6 +40,7 @@ export default async function ActivitiesPage({
 }
 
 async function ActivitiesContent({ searchParams }: { searchParams: ActivityPageSearchParams }) {
+  const { t } = await getTranslations();
   const activityCategories = getActivityCategories();
   const filters = activityFilters(await searchParams, activityCategories);
   const [activitiesResult, villagesResult] = await Promise.allSettled([
@@ -72,17 +77,17 @@ async function ActivitiesContent({ searchParams }: { searchParams: ActivityPageS
             <ProtectedLinkButton
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#D7A63C] px-5 py-2.5 text-sm font-extrabold text-[#18231D] shadow-[0_10px_26px_rgba(215,166,60,0.22)] transition hover:-translate-y-0.5 hover:bg-[#E1B550] focus:outline-none focus:ring-4 focus:ring-white/20"
               href="/activities/create"
-              message="Para crear una actividad necesitas iniciar sesión."
+              message={t("villages.detail.createActivityAuthRequired")}
             >
               <Plus aria-hidden="true" className="size-4" />
-              Publicar actividad
+              {t("activities.createForm.submit")}
             </ProtectedLinkButton>
             <a
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/24 bg-white/9 px-5 py-2.5 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-white/15 focus:outline-none focus:ring-4 focus:ring-white/15"
               href="#agenda"
             >
               <CalendarSearch aria-hidden="true" className="size-4" />
-              Explorar agenda
+              {t("activities.exploreAgendaAction")}
             </a>
           </>
         }

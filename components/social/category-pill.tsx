@@ -1,12 +1,12 @@
-import type { ActivityCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+/** Presentational pill; callers pass an already-localized `label` (e.g. via `activityCategoryLabelKey` or the "all" filter string). */
 export function CategoryPill({
-  category,
+  label,
   active,
   onClick,
 }: {
-  category: ActivityCategory | "Todas";
+  label: string;
   active?: boolean;
   onClick?: () => void;
 }) {
@@ -21,7 +21,7 @@ export function CategoryPill({
       type="button"
       onClick={onClick}
     >
-      {category}
+      {label}
     </button>
   );
 }

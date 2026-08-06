@@ -1,10 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import { Camera } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { ProfileEmptyState } from "@/features/profile/profile-empty-state";
 import type { CommunityPost } from "@/lib/types";
 
 export function ProfilePhotoGrid({ posts }: { posts: CommunityPost[] }) {
+  const { t } = useTranslations();
   const photos = posts.filter(
     (post): post is CommunityPost & { image: string } => Boolean(post.image),
   );
@@ -13,9 +17,9 @@ export function ProfilePhotoGrid({ posts }: { posts: CommunityPost[] }) {
     return (
       <ProfileEmptyState
         actionHref="/community#publicar"
-        actionLabel="Crear publicación"
-        description="Las imágenes válidas que incluyas en tus publicaciones aparecerán aquí."
-        title="Todavía no tienes fotografías publicadas"
+        actionLabel={t("villages.detail.createPostAction")}
+        description={t("profile.photoGrid.emptyDescription")}
+        title={t("profile.photoGrid.emptyTitle")}
       />
     );
   }
@@ -27,7 +31,7 @@ export function ProfilePhotoGrid({ posts }: { posts: CommunityPost[] }) {
           <figure>
             <div className="relative aspect-square overflow-hidden bg-[#E8E6DD]">
               <Image
-                alt={`Fotografía de la publicación «${post.title}»`}
+                alt={t("profile.photoGrid.photoAlt", { title: post.title })}
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 250px"

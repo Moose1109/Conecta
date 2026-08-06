@@ -19,6 +19,8 @@ import { ProfileEmptyState } from "@/features/profile/profile-empty-state";
 import { ProfileMap } from "@/features/profile/profile-map";
 import { ProfilePhotoGrid } from "@/features/profile/profile-photo-grid";
 import { VillageCard } from "@/features/villages/village-card";
+import { useTranslations } from "@/components/i18n/i18n-provider";
+import type { Translator } from "@/lib/i18n/translate";
 import { cn } from "@/lib/utils";
 import type { Activity, CommunityPost, Village } from "@/lib/types";
 
@@ -51,6 +53,7 @@ export function ProfileTabs({
   unavailableSources,
   villages,
 }: ProfileTabsProps) {
+  const { t } = useTranslations();
   const [activeTab, setActiveTab] = useState<TabId>("posts");
   const tabRefs = useRef<Record<TabId, HTMLButtonElement | null>>({
     activities: null,
@@ -65,31 +68,31 @@ export function ProfileTabs({
       count: tabCount(posts.length, unavailableSources.posts, limitedSources.posts),
       icon: Newspaper,
       id: "posts" as const,
-      label: "Publicaciones",
+      label: t("explore.postsLabel"),
     },
     {
       count: tabCount(photoCount, unavailableSources.posts, limitedSources.posts),
       icon: Images,
       id: "photos" as const,
-      label: "Fotografías",
+      label: t("profile.tabs.photosLabel"),
     },
     {
       count: tabCount(activities.length, unavailableSources.activities, limitedSources.activities),
       icon: CalendarDays,
       id: "activities" as const,
-      label: "Actividades",
+      label: t("navigation.activities.label"),
     },
     {
       count: tabCount(villages.length, unavailableSources.villages, limitedSources.villages),
       icon: MapPin,
       id: "villages" as const,
-      label: "Pueblos",
+      label: t("navigation.villages.label"),
     },
     {
       count: undefined,
       icon: MapPinned,
       id: "map" as const,
-      label: "Mi mapa",
+      label: t("profile.tabs.mapLabel"),
     },
   ];
 
@@ -113,7 +116,7 @@ export function ProfileTabs({
 
   return (
     <section>
-      <Card aria-label="Contenido del perfil" aria-orientation="horizontal" className="mb-5 flex max-w-full snap-x gap-1 overflow-x-auto rounded-[18px] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist">
+      <Card aria-label={t("profile.tabs.contentAriaLabel")} aria-orientation="horizontal" className="mb-5 flex max-w-full snap-x gap-1 overflow-x-auto rounded-[18px] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist">
         {tabs.map(({ count, icon: Icon, id, label }) => (
           <button
             key={id}
@@ -146,16 +149,16 @@ export function ProfileTabs({
       {activeTab === "posts" ? (
         <ProfilePanel id="posts">
           {isLoading ? (
-            <LoadingState label="Cargando tus publicaciones" variant="post" />
+            <LoadingState label={t("profile.tabs.loadingPosts")} variant="post" />
           ) : unavailableSources.posts ? (
-            <UnavailableProfileData label="tus publicaciones" />
+            <UnavailableProfileData label={t("profile.tabs.unavailablePosts")} t={t} />
           ) : (
             <div className="grid gap-4">
-              {limitedSources.posts ? <CollectionLimitNotice label="publicaciones" /> : null}
+              {limitedSources.posts ? <CollectionLimitNotice label={t("explore.sourceLabels.posts")} t={t} /> : null}
               {posts.length ? (
                 <div className="grid gap-5">{posts.map((post) => <SocialPostCard key={post.id} post={post} />)}</div>
               ) : (
-                <ProfileEmptyState actionHref="/community#publicar" actionLabel="Crear publicación" title="Todavía no has publicado nada" description="Comparte una recomendación, una ruta o una noticia de tu pueblo." />
+                <ProfileEmptyState actionHref="/community#publicar" actionLabel={t("villages.detail.createPostAction")} title={t("profile.tabs.emptyPostsTitle")} description={t("profile.tabs.emptyPostsDescription")} />
               )}
             </div>
           )}
@@ -165,12 +168,12 @@ export function ProfileTabs({
       {activeTab === "photos" ? (
         <ProfilePanel id="photos">
           {isLoading ? (
-            <LoadingState label="Cargando tus fotografías" variant="grid" />
+            <LoadingState label={t("profile.tabs.loadingPhotos")} variant="grid" />
           ) : unavailableSources.posts ? (
-            <UnavailableProfileData label="las fotografías de tus publicaciones" />
+            <UnavailableProfileData label={t("profile.tabs.unavailablePhotos")} t={t} />
           ) : (
             <div className="grid gap-4">
-              {limitedSources.posts ? <CollectionLimitNotice label="fotografías derivadas de publicaciones" /> : null}
+              {limitedSources.posts ? <CollectionLimitNotice label={t("profile.tabs.limitPhotos")} t={t} /> : null}
               <ProfilePhotoGrid posts={posts} />
             </div>
           )}
@@ -180,20 +183,20 @@ export function ProfileTabs({
       {activeTab === "activities" ? (
         <ProfilePanel id="activities">
           {isLoading ? (
-            <LoadingState label="Cargando tus inscripciones" variant="grid" />
+            <LoadingState label={t("profile.tabs.loadingActivities")} variant="grid" />
           ) : unavailableSources.activities ? (
-            <UnavailableProfileData label="tus inscripciones en actividades" />
+            <UnavailableProfileData label={t("profile.tabs.unavailableActivities")} t={t} />
           ) : (
             <div className="grid gap-4">
               <BackendPendingAlert
                 compact
-                description="Las tarjetas siguientes tienen isJoined=true dentro del catálogo actual de hasta 100 actividades. Son inscripciones detectadas: no representan actividades organizadas, guardadas, asistidas ni un historial completo."
-                title="Inscripciones detectadas en el catálogo"
+                description={t("profile.tabs.enrollmentsDetectedDescription")}
+                title={t("profile.tabs.enrollmentsDetectedTitle")}
               />
               {activities.length ? (
                 <div className="grid gap-5 md:grid-cols-2">{activities.map((activity) => <ActivityCard key={activity.id} activity={activity} />)}</div>
               ) : (
-                <ProfileEmptyState actionHref="/activities" actionLabel="Explorar actividades" title="No se han detectado inscripciones" description="Explora actividades locales; esta vista solo puede reconocer inscripciones presentes en el catálogo actual." />
+                <ProfileEmptyState actionHref="/activities" actionLabel={t("activities.detail.exploreActivitiesAction")} title={t("profile.tabs.emptyActivitiesTitle")} description={t("profile.tabs.emptyActivitiesDescription")} />
               )}
             </div>
           )}
@@ -203,20 +206,20 @@ export function ProfileTabs({
       {activeTab === "villages" ? (
         <ProfilePanel id="villages">
           {isLoading ? (
-            <LoadingState label="Cargando los pueblos que sigues" variant="grid" />
+            <LoadingState label={t("profile.tabs.loadingVillages")} variant="grid" />
           ) : unavailableSources.villages ? (
-            <UnavailableProfileData label="los pueblos que sigues" />
+            <UnavailableProfileData label={t("profile.tabs.unavailableVillages")} t={t} />
           ) : (
             <div className="grid gap-4">
               <BackendPendingAlert
                 compact
-                description="Las tarjetas siguientes tienen isFollowing=true dentro del catálogo actual de hasta 100 pueblos. El backend aún no ofrece la colección personal completa y paginada."
-                title="Pueblos seguidos detectados en el catálogo"
+                description={t("profile.tabs.followedVillagesDetectedDescription")}
+                title={t("profile.tabs.followedVillagesDetectedTitle")}
               />
               {villages.length ? (
                 <div className="grid gap-5 md:grid-cols-2">{villages.map((village) => <VillageCard key={village.id} village={village} />)}</div>
               ) : (
-                <ProfileEmptyState actionHref="/villages" actionLabel="Descubrir pueblos" title="No se han detectado pueblos seguidos" description="Sigue pueblos para encontrarlos aquí cuando formen parte del catálogo disponible." />
+                <ProfileEmptyState actionHref="/villages" actionLabel={t("profile.tabs.discoverVillagesAction")} title={t("profile.tabs.emptyVillagesTitle")} description={t("profile.tabs.emptyVillagesDescription")} />
               )}
             </div>
           )}
@@ -226,11 +229,11 @@ export function ProfileTabs({
       {activeTab === "map" ? (
         <ProfilePanel id="map">
           {isLoading ? (
-            <LoadingState label="Preparando Mi mapa" variant="grid" />
+            <LoadingState label={t("profile.tabs.loadingMap")} variant="grid" />
           ) : (
             <div className="grid gap-4">
               {limitedSources.posts || limitedSources.villages ? (
-                <CollectionLimitNotice label="relaciones territoriales" />
+                <CollectionLimitNotice label={t("profile.tabs.limitTerritorial")} t={t} />
               ) : null}
               <ProfileMap
                 followedVillages={villages}
@@ -254,24 +257,24 @@ function ProfilePanel({ children, id }: { children: ReactNode; id: TabId }) {
   );
 }
 
-function CollectionLimitNotice({ label }: { label: string }) {
+function CollectionLimitNotice({ label, t }: { label: string; t: Translator["t"] }) {
   return (
     <Card className="border-[#D7A63C38] bg-[#FFF8E8] px-4 py-3 text-xs font-semibold leading-5 text-[#6C531B]" role="status">
-      Esta vista usa hasta 100 {label} devueltas por el contrato actual; puede ser una colección parcial.
+      {t("profile.tabs.collectionLimitNotice", { label })}
     </Card>
   );
 }
 
-function UnavailableProfileData({ label }: { label: string }) {
+function UnavailableProfileData({ label, t }: { label: string; t: Translator["t"] }) {
   return (
     <Card className="grid min-h-64 place-items-center p-7 text-center">
       <div className="max-w-sm">
         <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#C96D4A18] text-[#A95539]">
           <WifiOff aria-hidden="true" className="size-5" />
         </span>
-        <h2 className="mt-4 text-lg font-extrabold text-[#18231D]">No podemos mostrar {label} ahora</h2>
+        <h2 className="mt-4 text-lg font-extrabold text-[#18231D]">{t("profile.tabs.unavailableTitle", { label })}</h2>
         <p className="mt-2 text-sm font-medium leading-6 text-[#687269]">
-          La conexión con el servicio ha fallado. Tus datos no se han borrado.
+          {t("profile.tabs.unavailableDescription")}
         </p>
         <button
           className="mx-auto mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#184B34] px-5 text-sm font-extrabold text-white transition-colors hover:bg-[#0E3325] focus:outline-none focus:ring-4 focus:ring-[#347A4830]"
@@ -279,7 +282,7 @@ function UnavailableProfileData({ label }: { label: string }) {
           type="button"
         >
           <RefreshCw aria-hidden="true" className="size-4" />
-          Reintentar
+          {t("common.retry")}
         </button>
       </div>
     </Card>

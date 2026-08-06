@@ -6,6 +6,7 @@ import { AlertTriangle, ImageOff, LoaderCircle, Plus, Sparkles, X } from "lucide
 import { useRef, useState } from "react";
 import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Badge, Card } from "@/components/ui/card";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useAuthGuard } from "@/features/auth/use-auth-guard";
 import {
   getConceptStoryGroups,
@@ -13,7 +14,6 @@ import {
   getLastStoryPosition,
   getNextStoryPosition,
   getPreviousStoryPosition,
-  STORIES_BACKEND_NOTICE,
   type StoriesConceptState,
   type StoryPosition,
 } from "@/features/stories/stories-concept-data";
@@ -30,6 +30,7 @@ export function StoriesStrip({
   initialState?: StoriesConceptState;
   initialViewerPosition?: "first" | "last";
 }) {
+  const { t, tPlural } = useTranslations();
   const groups = getConceptStoryGroups(initialState);
   const initialPosition = initialViewerPosition === "first"
     ? getFirstStoryPosition(groups)
@@ -43,7 +44,7 @@ export function StoriesStrip({
 
   function requestStoryCreation() {
     setCreationNoticeVisible(false);
-    requireAuth("Para crear una historia necesitas iniciar sesión.", () => {
+    requireAuth(t("stories.authRequiredCreate"), () => {
       setCreationNoticeVisible(true);
     });
   }
@@ -75,18 +76,18 @@ export function StoriesStrip({
   const activeGroup = position ? groups[position.groupIndex] : undefined;
 
   return (
-    <section aria-label="Historias" className="mb-4 min-w-0 scroll-mt-24 sm:mb-5" id="historias">
+    <section aria-label={t("stories.title")} className="mb-4 min-w-0 scroll-mt-24 sm:mb-5" id="historias">
       <Card className="min-w-0 max-w-full overflow-hidden bg-[#FFFCF7]/96 backdrop-blur-none">
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 pt-2.5 sm:px-4 sm:pt-3">
           <div className="flex min-w-0 items-center gap-2">
-            <h2 className="text-sm font-extrabold text-text-primary sm:text-base">Historias</h2>
+            <h2 className="text-sm font-extrabold text-text-primary sm:text-base">{t("stories.title")}</h2>
             <Badge className="gap-1 bg-[#347A4812] px-2 py-0.5 text-[9px] uppercase tracking-[0.08em] text-primary sm:text-[10px]">
               <Sparkles aria-hidden="true" className="size-3" />
-              Propuesta visual
+              {t("common.prototypeBadge")}
             </Badge>
           </div>
           <p className="min-w-0 shrink-[2] basis-full truncate text-[10px] font-semibold text-text-muted sm:basis-auto sm:text-right">
-            {STORIES_BACKEND_NOTICE}
+            {t("stories.backendNotice")}
           </p>
         </div>
 
@@ -99,7 +100,7 @@ export function StoriesStrip({
             <ul className="flex max-w-full snap-x snap-mandatory gap-2.5 overflow-x-auto overscroll-x-contain scroll-px-3 px-3 pb-3 pt-2 [scrollbar-width:none] sm:scroll-px-4 sm:gap-3 sm:px-4 sm:pb-4 [&::-webkit-scrollbar]:hidden">
               <li className="w-[72px] shrink-0 snap-start sm:w-[78px]">
                 <button
-                  aria-label="Crear tu historia. Requiere backend y subida multimedia"
+                  aria-label={t("stories.createStoryAria")}
                   className="group flex min-h-[104px] w-full flex-col items-center gap-1.5 rounded-2xl px-1 py-1 text-center"
                   type="button"
                   onClick={requestStoryCreation}
@@ -111,21 +112,19 @@ export function StoriesStrip({
                     </span>
                   </span>
                   <span className="w-full truncate text-[11px] font-extrabold text-text-primary sm:text-xs">
-                    Tu historia
+                    {t("stories.createYourStory")}
                   </span>
                 </button>
               </li>
 
               {groups.map((group, groupIndex) => {
                 const thumbnail = group.stories[0];
-                const storyCountLabel = group.stories.length === 1
-                  ? "1 historia"
-                  : `${group.stories.length} historias`;
+                const storyCountLabel = tPlural("stories.storyCount", group.stories.length);
 
                 return (
                   <li className="w-[72px] shrink-0 snap-start sm:w-[78px]" key={group.id}>
                     <button
-                      aria-label={`Abrir historias de ${group.ownerName}, ${storyCountLabel}`}
+                      aria-label={t("stories.openGroupAria", { owner: group.ownerName, count: storyCountLabel })}
                       className="group flex min-h-[104px] w-full flex-col items-center gap-1.5 rounded-2xl px-1 py-1 text-center"
                       type="button"
                       onClick={(event) => openGroup(groupIndex, event.currentTarget)}
@@ -156,7 +155,7 @@ export function StoriesStrip({
 
               {initialState === "empty" ? (
                 <li className="flex min-h-[104px] min-w-[190px] snap-start items-center px-2 text-xs font-semibold leading-5 text-text-muted">
-                  Todavía no hay ejemplos conceptuales para mostrar.
+                  {t("stories.emptyExamples")}
                 </li>
               ) : null}
             </ul>
@@ -171,11 +170,11 @@ export function StoriesStrip({
         <div className="relative mt-2">
           <BackendPendingAlert
             compact
-            title="Crear historias requiere backend y subida multimedia."
-            description="No se ha abierto la cámara, seleccionado archivos, subido contenido ni creado una historia. La expiración real a las 24 horas dependerá del servidor."
+            title={t("stories.creationPendingTitle")}
+            description={t("stories.creationPendingDescription")}
           />
           <button
-            aria-label="Cerrar aviso sobre creación de historias"
+            aria-label={t("stories.dismissCreationNotice")}
             className="absolute right-2 top-2 grid size-11 place-items-center rounded-full text-primary transition-colors hover:bg-black/5"
             type="button"
             onClick={() => setCreationNoticeVisible(false)}
@@ -202,8 +201,10 @@ export function StoriesStrip({
 }
 
 function StoriesLoadingState() {
+  const { t } = useTranslations();
+
   return (
-    <div aria-busy="true" aria-label="Preparando historias conceptuales" className="flex gap-3 overflow-hidden px-3 pb-3 pt-2 sm:px-4 sm:pb-4">
+    <div aria-busy="true" aria-label={t("stories.loadingAriaLabel")} className="flex gap-3 overflow-hidden px-3 pb-3 pt-2 sm:px-4 sm:pb-4">
       <LoaderCircle aria-hidden="true" className="sr-only animate-spin" />
       {[0, 1, 2, 3, 4].map((item) => (
         <span className="w-[72px] shrink-0" key={item}>
@@ -216,14 +217,16 @@ function StoriesLoadingState() {
 }
 
 function StoriesErrorState() {
+  const { t } = useTranslations();
+
   return (
     <div className="flex min-h-[96px] items-center gap-3 px-4 pb-4 pt-2" role="status">
       <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[#C96D4A1f] text-[#A95539]">
         <AlertTriangle aria-hidden="true" className="size-5" />
       </span>
       <div>
-        <p className="text-sm font-extrabold text-text-primary">No se pudo preparar la propuesta visual</p>
-        <p className="mt-1 text-xs leading-5 text-text-muted">No se ha consultado ninguna API ni alterado contenido real.</p>
+        <p className="text-sm font-extrabold text-text-primary">{t("stories.errorTitle")}</p>
+        <p className="mt-1 text-xs leading-5 text-text-muted">{t("stories.errorDescription")}</p>
       </div>
     </div>
   );

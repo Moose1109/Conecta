@@ -6,8 +6,9 @@ export function SearchInput({
   id,
   name,
   appearance = "pill",
-  placeholder = "Buscar",
-  label = "Buscar",
+  placeholder,
+  label,
+  clearLabel,
   value,
   onChange,
   onClear,
@@ -17,8 +18,10 @@ export function SearchInput({
   id?: string;
   name?: string;
   appearance?: "pill" | "embedded";
-  placeholder?: string;
-  label?: string;
+  placeholder: string;
+  label: string;
+  /** Accessible label for the clear button; falls back to `label` when omitted. */
+  clearLabel?: string;
   value?: string;
   onChange?: (value: string) => void;
   onClear?: () => void;
@@ -54,7 +57,7 @@ export function SearchInput({
       />
       {hasValue && onClear ? (
         <button
-          aria-label={`Limpiar ${label.toLocaleLowerCase("es")}`}
+          aria-label={clearLabel ?? label}
           className="absolute right-1 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full text-text-muted transition-colors hover:bg-[#184B340a] hover:text-primary"
           onClick={onClear}
           type="button"

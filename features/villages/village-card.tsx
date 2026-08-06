@@ -1,8 +1,11 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays, FileText, Landmark, MapPin } from "lucide-react";
 import { FollowButton } from "@/components/social/follow-button";
 import { Card } from "@/components/ui/card";
+import { RemoteEntityImage } from "@/components/ui/remote-entity-image";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { canFollowVillage } from "@/lib/api/entity-capabilities";
 import { formatPopulation } from "@/lib/utils";
 import type { Village } from "@/lib/types";
@@ -16,6 +19,7 @@ export function VillageCard({
   compact?: boolean;
   showFollowAction?: boolean;
 }) {
+  const { t, tPlural, locale } = useTranslations();
   const image = village.image ?? village.bannerImage;
   const hasPopulation = village.population > 0;
   const hasActivityCount =
@@ -25,26 +29,25 @@ export function VillageCard({
   return (
     <Card className="group flex h-full flex-col overflow-hidden transition duration-200 hover:-translate-y-1 hover:border-[#184B3429] hover:shadow-[0_22px_58px_rgba(33,58,40,0.13)]">
       <Link
-        aria-label={`Ver ${village.name}`}
+        aria-label={t("community.rightRail.ariaViewVillage", { name: village.name })}
         className="relative block overflow-hidden"
         href={`/villages/${village.id}`}
       >
-        <div className={compact ? "aspect-[16/8]" : "aspect-[16/10]"}>
-          {image ? (
-            <Image
-              alt={village.name}
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.025]"
-              fill
-              sizes={compact ? "(max-width: 1024px) 100vw, 280px" : "(max-width: 768px) 100vw, 33vw"}
-              src={image}
-            />
-          ) : (
-            <div className="topographic-pattern grid h-full place-items-center bg-[linear-gradient(145deg,#184B34,#78947D)] text-white">
-              <span className="grid size-14 place-items-center rounded-[20px] border border-white/18 bg-white/12 backdrop-blur">
-                <Landmark aria-hidden="true" className="size-6" strokeWidth={1.7} />
-              </span>
-            </div>
-          )}
+        <div className={compact ? "relative aspect-[16/8]" : "relative aspect-[16/10]"}>
+          <RemoteEntityImage
+            alt={village.name}
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+            fill
+            sizes={compact ? "(max-width: 1024px) 100vw, 280px" : "(max-width: 768px) 100vw, 33vw"}
+            src={image}
+            fallback={
+              <div className="topographic-pattern grid h-full place-items-center bg-[linear-gradient(145deg,#184B34,#78947D)] text-white">
+                <span className="grid size-14 place-items-center rounded-[20px] border border-white/18 bg-white/12 backdrop-blur">
+                  <Landmark aria-hidden="true" className="size-6" strokeWidth={1.7} />
+                </span>
+              </div>
+            }
+          />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#0E3325]/62 via-transparent to-black/5" />
         <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/35 bg-[#FFFCF7]/92 px-3 py-1.5 text-[11px] font-extrabold text-[#184B34] shadow-sm backdrop-blur">
@@ -59,7 +62,7 @@ export function VillageCard({
           {hasPopulation ? (
             <>
               <span aria-hidden="true" className="size-1 rounded-full bg-[#D7A63C]" />
-              <span>{formatPopulation(village.population)} hab.</span>
+              <span>{t("community.rightRail.populationLabel", { population: formatPopulation(village.population, locale) })}</span>
             </>
           ) : null}
         </div>
@@ -93,13 +96,13 @@ export function VillageCard({
             {hasActivityCount ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#78947D17] px-2.5 py-1.5 text-[11px] font-bold text-[#184B34]">
                 <CalendarDays aria-hidden="true" className="size-3.5" />
-                {village.activitiesCount} actividades
+                {tPlural("villages.card.activitiesCount", village.activitiesCount ?? 0)}
               </span>
             ) : null}
             {hasPostCount ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#D7A63C1c] px-2.5 py-1.5 text-[11px] font-bold text-[#745312]">
                 <FileText aria-hidden="true" className="size-3.5" />
-                {village.postsCount} publicaciones
+                {tPlural("villages.card.postsCount", village.postsCount ?? 0)}
               </span>
             ) : null}
           </div>
@@ -116,7 +119,7 @@ export function VillageCard({
             />
           ) : null}
           <Link
-            aria-label={`Abrir ficha de ${village.name}`}
+            aria-label={t("villages.card.openVillageProfile", { name: village.name })}
             className="grid size-11 shrink-0 place-items-center rounded-full border border-[#184B341c] bg-white text-[#184B34] transition-colors hover:bg-[#184B34] hover:text-white"
             href={`/villages/${village.id}`}
           >

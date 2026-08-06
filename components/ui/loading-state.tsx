@@ -1,13 +1,19 @@
+"use client";
+
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export function LoadingState({
-  label = "Cargando contenido",
+  label,
   variant = "list",
 }: {
   label?: string;
   variant?: "list" | "post" | "profile" | "grid";
 }) {
+  const { t } = useTranslations();
+  const resolvedLabel = label ?? t("common.loadingContent");
+
   if (variant === "profile") {
     return (
       <Card className="overflow-hidden" aria-busy="true">
@@ -17,7 +23,7 @@ export function LoadingState({
           <div className="skeleton-shimmer mt-4 h-7 w-52 rounded-full" />
           <div className="skeleton-shimmer mt-3 h-4 w-72 max-w-full rounded-full" />
         </div>
-        <span className="sr-only">{label}</span>
+        <span className="sr-only">{resolvedLabel}</span>
       </Card>
     );
   }

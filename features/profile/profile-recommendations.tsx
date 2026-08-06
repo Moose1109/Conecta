@@ -1,11 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import type { Activity, Village } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
 export function ProfileRecommendationsRail({ activities, villages }: { activities: Activity[]; villages: Village[] }) {
+  const { t, locale } = useTranslations();
   const followed = villages.filter((village) => village.isFollowing === true).slice(0, 3);
   const suggestedActivities = activities.filter((activity) => activity.isJoined !== true).slice(0, 3);
 
@@ -13,10 +17,10 @@ export function ProfileRecommendationsRail({ activities, villages }: { activitie
     <aside className="grid content-start gap-4 xl:sticky xl:top-[92px]">
       <Card className="p-5">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="font-extrabold text-[#0E3325]">Pueblos que sigues</h2>
-          <Link className="text-xs font-extrabold text-[#347A48]" href="/villages">Explorar</Link>
+          <h2 className="font-extrabold text-[#0E3325]">{t("profile.recommendations.followedVillagesTitle")}</h2>
+          <Link className="text-xs font-extrabold text-[#347A48]" href="/villages">{t("navigation.explore.label")}</Link>
         </div>
-        <p className="mt-1 text-[11px] font-medium text-[#687269]">Detectados en el catálogo actual.</p>
+        <p className="mt-1 text-[11px] font-medium text-[#687269]">{t("profile.recommendations.followedVillagesDescription")}</p>
         {followed.length ? (
           <div className="mt-4 grid gap-3">
             {followed.map((village) => (
@@ -35,15 +39,15 @@ export function ProfileRecommendationsRail({ activities, villages }: { activitie
         ) : (
           <div className="mt-4 rounded-2xl bg-[#F7F2E8] p-4 text-center">
             <MapPin aria-hidden="true" className="mx-auto size-5 text-[#347A48]" />
-            <p className="mt-2 text-xs font-semibold leading-5 text-[#687269]">Los pueblos que sigas aparecerán aquí.</p>
+            <p className="mt-2 text-xs font-semibold leading-5 text-[#687269]">{t("profile.recommendations.emptyFollowedVillages")}</p>
           </div>
         )}
       </Card>
 
       <Card className="p-5">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="font-extrabold text-[#0E3325]">Para tu próxima salida</h2>
-          <Link className="text-xs font-extrabold text-[#347A48]" href="/activities">Ver todas</Link>
+          <h2 className="font-extrabold text-[#0E3325]">{t("profile.recommendations.nextOutingTitle")}</h2>
+          <Link className="text-xs font-extrabold text-[#347A48]" href="/activities">{t("community.rightRail.activitiesViewAll")}</Link>
         </div>
         {suggestedActivities.length ? (
           <div className="mt-4 grid gap-3">
@@ -54,7 +58,7 @@ export function ProfileRecommendationsRail({ activities, villages }: { activitie
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block line-clamp-1 text-sm font-extrabold text-[#18231D]">{activity.title}</span>
-                  <span className="mt-0.5 block truncate text-[11px] font-medium text-[#687269]">{formatDate(activity.date)} · {activity.time}</span>
+                  <span className="mt-0.5 block truncate text-[11px] font-medium text-[#687269]">{formatDate(activity.date, locale)} · {activity.time}</span>
                 </span>
               </Link>
             ))}
@@ -62,7 +66,7 @@ export function ProfileRecommendationsRail({ activities, villages }: { activitie
         ) : (
           <div className="mt-4 rounded-2xl bg-[#FFF7E5] p-4 text-center">
             <CalendarDays aria-hidden="true" className="mx-auto size-5 text-[#B77F14]" />
-            <p className="mt-2 text-xs font-semibold leading-5 text-[#687269]">No hay actividades recomendadas disponibles.</p>
+            <p className="mt-2 text-xs font-semibold leading-5 text-[#687269]">{t("profile.recommendations.emptyRecommendedActivities")}</p>
           </div>
         )}
       </Card>

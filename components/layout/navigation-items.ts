@@ -11,43 +11,44 @@ import {
   UsersRound,
   type LucideIcon,
 } from "lucide-react";
+import type { TranslationKey } from "@/lib/i18n/types";
 
 export type NavigationItem = {
   href: string;
   icon: LucideIcon;
-  label: string;
-  meta: string;
-  mobileLabel?: string;
+  labelKey: TranslationKey;
+  metaKey: TranslationKey;
+  mobileLabelKey?: TranslationKey;
 };
 
 export const primaryNavigationItems = [
   {
     href: "/community",
     icon: Home,
-    label: "Comunidad",
-    meta: "Tu plaza digital",
+    labelKey: "navigation.community.label",
+    metaKey: "navigation.community.meta",
   },
   {
     href: "/activities",
     icon: CalendarDays,
-    label: "Actividades",
-    meta: "Planes cerca de ti",
-    mobileLabel: "Planes",
+    labelKey: "navigation.activities.label",
+    metaKey: "navigation.activities.meta",
+    mobileLabelKey: "navigation.activities.mobileLabel",
   },
   {
     href: "/villages",
     icon: MapPin,
-    label: "Pueblos",
-    meta: "Lugares con vida propia",
+    labelKey: "navigation.villages.label",
+    metaKey: "navigation.villages.meta",
   },
 ] satisfies NavigationItem[];
 
 export const profileNavigationItem = {
   href: "/profile",
   icon: UserRound,
-  label: "Mi perfil",
-  meta: "Tu actividad social",
-  mobileLabel: "Perfil",
+  labelKey: "navigation.profile.label",
+  metaKey: "navigation.profile.meta",
+  mobileLabelKey: "navigation.profile.mobileLabel",
 } satisfies NavigationItem;
 
 export const secondaryNavigationItems = [
@@ -55,38 +56,38 @@ export const secondaryNavigationItems = [
   {
     href: "/explore",
     icon: Compass,
-    label: "Explorar",
-    meta: "Descubre contenido local",
+    labelKey: "navigation.explore.label",
+    metaKey: "navigation.explore.meta",
   },
   {
     href: "/saved",
     icon: Bookmark,
-    label: "Guardados",
-    meta: "Publicaciones y planes",
+    labelKey: "navigation.saved.label",
+    metaKey: "navigation.saved.meta",
   },
   {
     href: "/messages",
     icon: MessageCircle,
-    label: "Mensajes",
-    meta: "Conversaciones locales",
+    labelKey: "navigation.messages.label",
+    metaKey: "navigation.messages.meta",
   },
   {
     href: "/notifications",
     icon: Bell,
-    label: "Notificaciones",
-    meta: "Novedades de tu cuenta",
+    labelKey: "navigation.notifications.label",
+    metaKey: "navigation.notifications.meta",
   },
   {
     href: "/settings",
     icon: Settings,
-    label: "Ajustes",
-    meta: "Perfil y preferencias",
+    labelKey: "navigation.settings.label",
+    metaKey: "navigation.settings.meta",
   },
 ] satisfies NavigationItem[];
 
 export const communityInviteItem = {
   href: "/community#publicar",
   icon: UsersRound,
-  label: "Invita a tus vecinos",
-  meta: "Haz crecer la comunidad",
+  labelKey: "navigation.communityInvite.label",
+  metaKey: "navigation.communityInvite.meta",
 } satisfies NavigationItem;

@@ -1,41 +1,40 @@
 /* eslint-disable @next/next/no-page-custom-font -- Root App Router layout owns the single document head. */
 import type { Metadata } from "next";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
+import { I18nProvider } from "@/components/i18n/i18n-provider";
+import { getLocale } from "@/lib/i18n/get-locale";
+import { getTranslations } from "@/lib/i18n/get-translations";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: {
-    default: "ConectaPueblos",
-    template: "%s | ConectaPueblos",
-  },
-  description:
-    "Red social comunitaria para descubrir pueblos, actividades locales y publicaciones vecinales.",
-  keywords: [
-    "ConectaPueblos",
-    "pueblos",
-    "red social rural",
-    "actividades locales",
-    "comunidad",
-    "eventos",
-    "vida rural",
-  ],
-  openGraph: {
-    title: "ConectaPueblos",
-    description:
-      "Descubre pueblos, participa en actividades locales y comparte comunidad.",
-    type: "website",
-    locale: "es_ES",
-    siteName: "ConectaPueblos",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, t } = await getTranslations();
 
-export default function RootLayout({
+  return {
+    title: {
+      default: t("metadata.titleDefault"),
+      template: t("metadata.titleTemplate"),
+    },
+    description: t("metadata.description"),
+    keywords: t("metadata.keywords").split(",").map((keyword) => keyword.trim()),
+    openGraph: {
+      title: t("metadata.titleDefault"),
+      description: t("metadata.ogDescription"),
+      type: "website",
+      locale: locale === "ca" ? "ca_ES" : "es_ES",
+      siteName: "ConectaPueblos",
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="es" className="h-full antialiased">
+    <html lang={locale} className="h-full antialiased">
       <head>
         <link href="https://fonts.googleapis.com" rel="preconnect" />
         <link crossOrigin="anonymous" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -45,8 +44,10 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col">
-        {children}
-        <MobileBottomNav />
+        <I18nProvider locale={locale}>
+          {children}
+          <MobileBottomNav />
+        </I18nProvider>
       </body>
     </html>
   );

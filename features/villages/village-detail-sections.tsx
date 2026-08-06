@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -21,11 +20,14 @@ import { UserAvatar } from "@/components/social/user-avatar";
 import { LinkButton } from "@/components/ui/button";
 import { Card, SectionHeader } from "@/components/ui/card";
 import { ErrorState } from "@/components/ui/error-state";
+import { RemoteEntityImage } from "@/components/ui/remote-entity-image";
 import { ActivityCard } from "@/features/activities/activity-card";
-import { activityDisplayState } from "@/features/activities/activity-status-badges";
+import { activityDisplayState } from "@/features/activities/activity-status";
 import { ProtectedLinkButton } from "@/features/auth/protected-link-button";
 import { VillageCard } from "@/features/villages/village-card";
 import { VillageDescription } from "@/features/villages/village-description";
+import { getTranslations } from "@/lib/i18n/get-translations";
+import type { Translator } from "@/lib/i18n/translate";
 import { formatDate, formatPopulation } from "@/lib/utils";
 import type { Activity, CommunityPost, Village } from "@/lib/types";
 
@@ -46,7 +48,7 @@ type VillageDetailSectionsProps = {
   village: Village;
 };
 
-export function VillageDetailSections({
+export async function VillageDetailSections({
   activities,
   activitiesUnavailable,
   posts,
@@ -55,6 +57,7 @@ export function VillageDetailSections({
   relatedCatalogUnavailable,
   village,
 }: VillageDetailSectionsProps) {
+  const { t, locale } = await getTranslations();
   const activitiesLimited = activities.length >= 100;
   const postsLimited = posts.length >= 100;
   const relatedCatalogLimited = relatedCatalog.length >= 100;
@@ -82,41 +85,41 @@ export function VillageDetailSections({
         className={`${sectionAnchorClass} grid gap-3 sm:grid-cols-2 xl:grid-cols-4`}
         id="village-stats"
       >
-        <h2 className="sr-only" id="village-stats-title">Estadísticas del pueblo</h2>
+        <h2 className="sr-only" id="village-stats-title">{t("villages.detail.statsAriaLabel")}</h2>
         {village.population > 0 ? (
           <VillageFact
             icon={UsersRound}
-            label="Habitantes"
-            value={formatPopulation(village.population)}
+            label={t("villages.detail.habitantsLabel")}
+            value={formatPopulation(village.population, locale)}
           />
         ) : null}
         <VillageFact
           icon={CalendarDays}
-          label="Actividades cargadas"
+          label={t("villages.detail.activitiesLoadedLabel")}
           value={sourceCount(activities.length, activitiesUnavailable, activitiesLimited)}
         />
         <VillageFact
           icon={FileText}
-          label="Publicaciones cargadas"
+          label={t("villages.detail.postsLoadedLabel")}
           value={sourceCount(posts.length, postsUnavailable, postsLimited)}
         />
         {hasAdministrativeValue(village.province) ? (
-          <VillageFact icon={MapPin} label="Provincia" value={village.province} />
+          <VillageFact icon={MapPin} label={t("villages.detail.provinceLabel")} value={village.province} />
         ) : null}
       </section>
 
       <section className={sectionAnchorClass} id="village-about">
         <Card className="p-6 sm:p-8">
-          <p className="eyebrow">Conoce el lugar</p>
+          <p className="eyebrow">{t("villages.detail.aboutEyebrow")}</p>
           <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-[#18231D]">
-            Sobre el pueblo
+            {t("villages.detail.aboutTitle")}
           </h2>
           <div className="mt-5">
             {village.description ? (
               <VillageDescription description={village.description} />
             ) : (
               <p className="text-sm leading-6 text-[#687269]">
-                Este pueblo todavía no tiene una descripción publicada.
+                {t("villages.detail.noDescription")}
               </p>
             )}
           </div>
@@ -126,9 +129,9 @@ export function VillageDetailSections({
       {highlights.length ? (
         <section className={sectionAnchorClass} id="village-highlights">
           <SectionHeader
-            eyebrow="Señas locales"
-            title={`Qué hace especial a ${village.name}`}
-            description="Rasgos publicados en la ficha actual del pueblo."
+            eyebrow={t("villages.detail.highlightsEyebrow")}
+            title={t("villages.detail.highlightsTitle", { name: village.name })}
+            description={t("villages.detail.highlightsDescription")}
           />
           <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {highlights.map((highlight) => (
@@ -147,63 +150,63 @@ export function VillageDetailSections({
 
       <section className={sectionAnchorClass} id="village-life">
         <Card className="overflow-hidden p-6 text-text-primary sm:p-8">
-          <p className="eyebrow">Vida actual</p>
+          <p className="eyebrow">{t("villages.detail.lifeEyebrow")}</p>
           <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-text-primary">
-            Lo que aparece en los resultados disponibles
+            {t("villages.detail.lifeTitle")}
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-text-muted">
-            Este resumen se calcula con las publicaciones y actividades ya cargadas para esta ficha. No representa un total histórico.
+            {t("villages.detail.lifeDescription")}
           </p>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <LifeSummaryLink
               href="#village-activities"
               icon={CalendarDays}
-              label="Próximas detectadas"
+              label={t("villages.detail.upcomingDetectedLabel")}
               value={activitiesUnavailable ? "—" : upcomingActivities.length}
             />
             <LifeSummaryLink
               href="#village-wall"
               icon={MessageSquareText}
-              label="Publicaciones cargadas"
+              label={t("villages.detail.postsLoadedLabel")}
               value={postsUnavailable ? "—" : posts.length}
             />
             {upcomingActivities[0] ? (
               <LifeSummaryLink
                 href="#village-activities"
                 icon={MapPin}
-                label="Próxima fecha detectada"
-                value={readableDate(upcomingActivities[0].date)}
+                label={t("villages.detail.nextDateLabel")}
+                value={readableDate(upcomingActivities[0].date, t, locale)}
               />
             ) : null}
           </div>
           {activitiesLimited || postsLimited ? (
             <p className="mt-4 text-xs font-semibold leading-5 text-text-muted" role="status">
-              Una o más fuentes han alcanzado el límite de 100 resultados; los valores anteriores describen solo el conjunto cargado.
+              {t("villages.detail.lifeLimitNotice")}
             </p>
           ) : null}
         </Card>
       </section>
 
       <section
-        aria-label={`Actividades en ${village.name}`}
+        aria-label={t("villages.detail.activitiesAriaLabel", { name: village.name })}
         className={sectionAnchorClass}
         id="village-activities"
       >
         <SectionHeader
-          eyebrow="Planes locales"
-          title={`Actividades en ${village.name}`}
-          description="Hasta seis actividades vinculadas por el backend, con las próximas detectadas primero y sus estados reales visibles."
+          eyebrow={t("villages.detail.activitiesEyebrow")}
+          title={t("villages.detail.activitiesAriaLabel", { name: village.name })}
+          description={t("villages.detail.activitiesSectionDescription")}
         />
-        {activitiesLimited ? <CollectionLimitNotice label="actividades" /> : null}
+        {activitiesLimited ? <CollectionLimitNotice label={t("villages.detail.activitiesLimitLabel")} t={t} /> : null}
         <div className={activitiesLimited ? "mt-4" : undefined}>
           {activitiesUnavailable ? (
             <ErrorState
               actionHref="/activities"
-              actionLabel="Explorar agenda"
-              description="La ficha del pueblo sigue disponible, pero su agenda local no ha podido cargarse."
+              actionLabel={t("villages.detail.exploreFilteredAgenda")}
+              description={t("villages.detail.activitiesErrorDescription")}
               network
-              title="No hemos podido cargar las actividades"
+              title={t("villages.detail.activitiesErrorTitle")}
             />
           ) : orderedActivities.length ? (
             <>
@@ -215,7 +218,7 @@ export function VillageDetailSections({
               {orderedActivities.length > VISIBLE_ACTIVITIES ? (
                 <div className="mt-6 flex justify-center">
                   <LinkButton href={activityHref} variant="secondary">
-                    Ver agenda filtrada
+                    {t("villages.detail.exploreFilteredAgenda")}
                     <ArrowRight aria-hidden="true" className="size-4" />
                   </LinkButton>
                 </div>
@@ -224,30 +227,30 @@ export function VillageDetailSections({
           ) : (
             <EmptyState
               actionHref="/activities"
-              actionLabel="Explorar actividades"
-              description="No hay actividades vinculadas a este pueblo entre los resultados disponibles."
+              actionLabel={t("villages.detail.exploreActivitiesEmptyAction")}
+              description={t("villages.detail.activitiesEmptyDescription")}
               icon={CalendarDays}
-              title="Aún no hay actividades publicadas aquí"
+              title={t("villages.detail.activitiesEmptyTitle")}
             />
           )}
         </div>
       </section>
 
-      <section aria-label={`Muro de ${village.name}`} className={sectionAnchorClass} id="village-wall">
+      <section aria-label={t("villages.detail.wallAriaLabel", { name: village.name })} className={sectionAnchorClass} id="village-wall">
         <SectionHeader
-          eyebrow="Comunidad"
-          title="Muro del pueblo"
-          description="Una selección de publicaciones vinculadas a este pueblo por el backend, en el orden recibido."
+          eyebrow={t("villages.detail.postsEyebrow")}
+          title={t("villages.detail.wallTitle")}
+          description={t("villages.detail.postsSectionDescription")}
         />
-        {postsLimited ? <CollectionLimitNotice label="publicaciones" /> : null}
+        {postsLimited ? <CollectionLimitNotice label={t("villages.detail.postsLimitLabel")} t={t} /> : null}
         <div className={postsLimited ? "mt-4" : undefined}>
           {postsUnavailable ? (
             <ErrorState
               actionHref="/community"
-              actionLabel="Ir a comunidad"
-              description="La ficha del pueblo sigue disponible, pero no hemos podido conectar con su muro."
+              actionLabel={t("common.backendPending.actionLabel")}
+              description={t("villages.detail.postsErrorDescription")}
               network
-              title="No hemos podido cargar las publicaciones"
+              title={t("villages.detail.postsErrorTitle")}
             />
           ) : posts.length ? (
             <>
@@ -259,7 +262,7 @@ export function VillageDetailSections({
               {posts.length > VISIBLE_POSTS ? (
                 <div className="mt-6 flex justify-center">
                   <LinkButton href={communityHref} variant="secondary">
-                    Buscar más en Comunidad
+                    {t("villages.detail.searchMoreCommunity")}
                     <ArrowRight aria-hidden="true" className="size-4" />
                   </LinkButton>
                 </div>
@@ -268,23 +271,23 @@ export function VillageDetailSections({
           ) : (
             <EmptyState
               actionHref="/community"
-              actionLabel="Ir a comunidad"
-              description="Cuando haya publicaciones asociadas a este pueblo aparecerán aquí."
+              actionLabel={t("common.backendPending.actionLabel")}
+              description={t("villages.detail.postsEmptyDescription")}
               icon={MessageSquareText}
-              title="El muro todavía está por estrenar"
+              title={t("villages.detail.postsEmptyTitle")}
             />
           )}
         </div>
       </section>
 
-      <section aria-label="Voces de la comunidad" className={sectionAnchorClass} id="village-voices">
+      <section aria-label={t("villages.detail.voicesAriaLabel")} className={sectionAnchorClass} id="village-voices">
         <SectionHeader
-          eyebrow="Publicaciones vinculadas"
-          title="Voces de la comunidad"
-          description={`Textos compartidos en publicaciones asociadas a ${village.name}. No implican residencia ni representación oficial.`}
+          eyebrow={t("villages.detail.voicesEyebrow")}
+          title={t("villages.detail.voicesAriaLabel")}
+          description={t("villages.detail.voicesDescription", { name: village.name })}
         />
         {postsUnavailable ? (
-          <CompactSourceState message="No podemos seleccionar voces porque el muro no está disponible ahora." />
+          <CompactSourceState message={t("villages.detail.voicesEmptyUnavailable")} />
         ) : voices.length ? (
           <div className="grid gap-4 lg:grid-cols-3">
             {voices.map((post) => (
@@ -298,7 +301,7 @@ export function VillageDetailSections({
                     <UserAvatar className="size-10 ring-2 ring-white" imageUrl={post.authorAvatar} name={post.author} />
                     <div className="min-w-0">
                       <p className="truncate text-sm font-extrabold text-[#18231D]">{post.author}</p>
-                      <p className="mt-0.5 text-xs font-medium text-[#687269]">Publicación vinculada · {readableDate(post.date)}</p>
+                      <p className="mt-0.5 text-xs font-medium text-[#687269]">{t("villages.detail.linkedPostLabel")} · {readableDate(post.date, t, locale)}</p>
                     </div>
                   </footer>
                 </Card>
@@ -306,29 +309,34 @@ export function VillageDetailSections({
             ))}
           </div>
         ) : (
-          <CompactSourceState message="Todavía no hay publicaciones con texto suficiente para destacar en esta sección." />
+          <CompactSourceState message={t("villages.detail.voicesEmptyNoVoices")} />
         )}
       </section>
 
-      <section aria-label="Fotos recientes de la comunidad" className={sectionAnchorClass} id="village-photos">
+      <section aria-label={t("villages.detail.photosSectionAriaLabel")} className={sectionAnchorClass} id="village-photos">
         <SectionHeader
-          eyebrow="Imágenes de publicaciones"
-          title="Fotos recientes de la comunidad"
-          description="Imágenes válidas incluidas en publicaciones vinculadas al pueblo, según el orden recibido."
+          eyebrow={t("villages.detail.photosEyebrow")}
+          title={t("villages.detail.photosSectionAriaLabel")}
+          description={t("villages.detail.photosDescription")}
         />
         {postsUnavailable ? (
-          <CompactSourceState message="No podemos cargar las fotos porque el muro no está disponible ahora." />
+          <CompactSourceState message={t("villages.detail.photosEmptyUnavailable")} />
         ) : photos.length ? (
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
             {photos.map((post) => (
               <figure className="group overflow-hidden rounded-[22px] border border-[#184B341a] bg-[#FFFCF7] shadow-[0_14px_42px_rgba(43,55,38,0.07)]" key={post.id}>
                 <div className="relative aspect-square overflow-hidden bg-[#E8E6DD]">
-                  <Image
-                    alt={`Imagen compartida por ${post.author} en una publicación vinculada a ${village.name}`}
+                  <RemoteEntityImage
+                    alt={t("villages.detail.photoAlt", { author: post.author, village: village.name })}
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                     fill
                     sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 320px"
                     src={post.image}
+                    fallback={
+                      <div className="grid h-full place-items-center text-[#687269]">
+                        <Camera aria-hidden="true" className="size-8" strokeWidth={1.5} />
+                      </div>
+                    }
                   />
                 </div>
                 <figcaption className="p-3 sm:p-4">
@@ -342,46 +350,46 @@ export function VillageDetailSections({
             ))}
           </div>
         ) : (
-          <CompactSourceState message="Las publicaciones cargadas todavía no incluyen fotografías válidas." />
+          <CompactSourceState message={t("villages.detail.photosEmptyNoPhotos")} />
         )}
       </section>
 
-      <section aria-label="Información práctica" className={sectionAnchorClass} id="village-info">
+      <section aria-label={t("villages.detail.infoSectionAriaLabel")} className={sectionAnchorClass} id="village-info">
         <SectionHeader
-          eyebrow="Ficha local"
-          title="Información práctica"
-          description="Datos administrativos disponibles en la ficha real del pueblo."
+          eyebrow={t("villages.detail.infoEyebrow")}
+          title={t("villages.detail.infoSectionAriaLabel")}
+          description={t("villages.detail.infoDescription")}
         />
         <Card className="p-5 sm:p-6">
           <div className="flex items-center gap-3">
             <span className="grid size-11 place-items-center rounded-2xl bg-[#78947D1f] text-[#184B34]">
               <Mountain aria-hidden="true" className="size-5" />
             </span>
-            <h3 className="text-xl font-extrabold tracking-[-0.025em] text-[#18231D]">El territorio</h3>
+            <h3 className="text-xl font-extrabold tracking-[-0.025em] text-[#18231D]">{t("villages.detail.territoryTitle")}</h3>
           </div>
           <dl className="mt-5 grid gap-x-8 divide-y divide-[#184B3412] sm:grid-cols-2 sm:divide-y-0">
-            <VillageDetail label="Pueblo" value={village.name} />
-            {hasAdministrativeValue(village.province) ? <VillageDetail label="Provincia" value={village.province} /> : null}
-            {hasAdministrativeValue(village.region) ? <VillageDetail label="Región" value={village.region} /> : null}
-            {village.population > 0 ? <VillageDetail label="Población" value={`${formatPopulation(village.population)} habitantes`} /> : null}
+            <VillageDetail label={t("villages.detail.villageLabel")} value={village.name} />
+            {hasAdministrativeValue(village.province) ? <VillageDetail label={t("villages.detail.provinceLabel")} value={village.province} /> : null}
+            {hasAdministrativeValue(village.region) ? <VillageDetail label={t("villages.detail.regionLabel")} value={village.region} /> : null}
+            {village.population > 0 ? <VillageDetail label={t("villages.detail.populationDetailLabel")} value={t("villages.detail.populationValue", { count: formatPopulation(village.population, locale) })} /> : null}
           </dl>
           <p className="mt-5 flex items-start gap-2 rounded-2xl bg-[#F7F2E8] p-4 text-xs font-medium leading-5 text-[#687269]">
             <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[#60818A]" />
-            Transporte, horarios, enlaces oficiales y accesibilidad física necesitan datos verificados adicionales de BACK-5 y no se muestran todavía.
+            {t("villages.detail.infoNotice")}
           </p>
         </Card>
       </section>
 
-      <section aria-label="Pueblos relacionados" className={sectionAnchorClass} id="village-related">
+      <section aria-label={t("villages.detail.relatedAriaLabel")} className={sectionAnchorClass} id="village-related">
         <SectionHeader
-          eyebrow="Ubicación administrativa"
-          title="Pueblos relacionados por ubicación administrativa"
-          description="Priorizamos coincidencias de provincia y después de región dentro del catálogo cargado. No implica cercanía geográfica."
+          eyebrow={t("villages.detail.relatedEyebrow")}
+          title={t("villages.detail.relatedTitle")}
+          description={t("villages.detail.relatedDescription")}
         />
-        {relatedCatalogLimited ? <CollectionLimitNotice label="pueblos del catálogo" /> : null}
+        {relatedCatalogLimited ? <CollectionLimitNotice label={t("villages.detail.catalogLimitLabel")} t={t} /> : null}
         <div className={relatedCatalogLimited ? "mt-4" : undefined}>
           {relatedCatalogUnavailable ? (
-            <CompactSourceState message="No hemos podido cargar el catálogo necesario para relacionar otros pueblos." />
+            <CompactSourceState message={t("villages.detail.catalogEmptyDescription")} />
           ) : relatedVillages.length ? (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {relatedVillages.map((relatedVillage) => (
@@ -389,7 +397,7 @@ export function VillageDetailSections({
               ))}
             </div>
           ) : (
-            <CompactSourceState message="No se han encontrado otros pueblos con la misma provincia o región en el catálogo disponible." />
+            <CompactSourceState message={t("villages.detail.noRelatedVillages")} />
           )}
         </div>
       </section>
@@ -398,12 +406,12 @@ export function VillageDetailSections({
         <Card className="overflow-hidden p-6 text-text-primary sm:p-8">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
             <div className="max-w-2xl">
-              <p className="eyebrow">Participa</p>
+              <p className="eyebrow">{t("villages.detail.participateEyebrow")}</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-text-primary" id="village-participate-title">
-                Suma vida a {village.name}
+                {t("villages.detail.participateTitle", { name: village.name })}
               </h2>
               <p className="mt-3 text-sm leading-6 text-text-muted">
-                Explora su agenda, busca publicaciones relacionadas o comparte contenido seleccionando este pueblo en el formulario real.
+                {t("villages.detail.participateDescription")}
               </p>
             </div>
             <div className="flex flex-wrap gap-3 lg:max-w-lg lg:justify-end">
@@ -412,30 +420,30 @@ export function VillageDetailSections({
                 href={activityHref}
               >
                 <CalendarDays aria-hidden="true" className="size-4" />
-                Ver actividades
+                {t("villages.detail.viewActivitiesAction")}
               </Link>
               <Link
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-primary/20 bg-white/88 px-5 py-2.5 text-sm font-extrabold text-primary transition-colors hover:border-primary/35 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15"
                 href={communityHref}
               >
                 <MessageSquareText aria-hidden="true" className="size-4" />
-                Buscar en Comunidad
+                {t("villages.detail.searchCommunityAction")}
               </Link>
               <ProtectedLinkButton
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-dashed border-primary/30 bg-surface-muted px-5 py-2.5 text-sm font-extrabold text-primary transition-colors hover:border-primary/45 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 disabled:border-border disabled:bg-surface-muted disabled:text-text-muted disabled:opacity-70"
                 href="/community#publicar"
-                message="Para crear una publicación necesitas iniciar sesión."
+                message={t("villages.detail.createPostAuthRequired")}
               >
                 <PenLine aria-hidden="true" className="size-4" />
-                Crear publicación
+                {t("villages.detail.createPostAction")}
               </ProtectedLinkButton>
               <ProtectedLinkButton
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-dashed border-primary/30 bg-surface-muted px-5 py-2.5 text-sm font-extrabold text-primary transition-colors hover:border-primary/45 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 disabled:border-border disabled:bg-surface-muted disabled:text-text-muted disabled:opacity-70"
                 href="/activities/create"
-                message="Para crear una actividad necesitas iniciar sesión."
+                message={t("villages.detail.createActivityAuthRequired")}
               >
                 <Plus aria-hidden="true" className="size-4" />
-                Crear actividad
+                {t("villages.detail.createActivityAction")}
               </ProtectedLinkButton>
             </div>
           </div>
@@ -445,7 +453,9 @@ export function VillageDetailSections({
   );
 }
 
-export function VillageDetailSectionsLoading() {
+export async function VillageDetailSectionsLoading() {
+  const { t } = await getTranslations();
+
   return (
     <div aria-busy="true" className="grid gap-8 sm:gap-10">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -468,7 +478,7 @@ export function VillageDetailSectionsLoading() {
         <div className="skeleton-shimmer mt-3 h-4 w-5/6 rounded-full" />
         <div className="skeleton-shimmer mt-3 h-4 w-2/3 rounded-full" />
       </Card>
-      <span className="sr-only">Cargando la información vinculada al pueblo</span>
+      <span className="sr-only">{t("villages.detail.loadingSummary")}</span>
     </div>
   );
 }
@@ -550,11 +560,11 @@ function selectRelatedVillages(village: Village, catalog: Village[]) {
   return [...sameProvince, ...sameRegion];
 }
 
-function readableDate(date: string) {
+function readableDate(date: string, t: Translator["t"], locale: Translator["locale"]) {
   try {
-    return formatDate(date);
+    return formatDate(date, locale);
   } catch {
-    return "Fecha no disponible";
+    return t("community.postCard.dateUnavailable");
   }
 }
 
@@ -607,10 +617,10 @@ function LifeSummaryLink({
   );
 }
 
-function CollectionLimitNotice({ label }: { label: string }) {
+function CollectionLimitNotice({ label, t }: { label: string; t: Translator["t"] }) {
   return (
     <Card className="border-[#D7A63C38] bg-[#FFF8E8] px-4 py-3 text-xs font-semibold leading-5 text-[#6C531B]" role="status">
-      Se muestran hasta 100 {label}; esta colección puede estar incompleta y no se presenta como un total histórico.
+      {t("villages.detail.collectionLimitNotice", { label })}
     </Card>
   );
 }

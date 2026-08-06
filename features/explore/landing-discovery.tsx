@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -9,12 +8,20 @@ import {
   UsersRound,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { ActivityCategoryIcon, activityCategoryPill } from "@/features/activities/activity-category-icon";
+import { RemoteEntityImage } from "@/components/ui/remote-entity-image";
+import {
+  ActivityCategoryIcon,
+  activityCategoryLabelKey,
+  activityCategoryPill,
+} from "@/features/activities/activity-category-icon";
 import { ActivityImage } from "@/features/activities/activity-image";
 import { LandingAuthActions } from "@/features/auth/auth-landing-actions";
 import {
   AccessibleCarousel,
 } from "@/features/explore/accessible-carousel";
+import { getTranslations } from "@/lib/i18n/get-translations";
+import type { Translator } from "@/lib/i18n/translate";
+import type { Locale } from "@/lib/i18n/config";
 import { formatDate } from "@/lib/utils";
 import type { Activity, Village } from "@/lib/types";
 
@@ -22,7 +29,7 @@ const LANDING_RESULT_LIMIT = 5;
 const carouselItemClass =
   "flex min-w-0 shrink-0 snap-start basis-[86%] sm:basis-[46%] xl:basis-[calc(33.333%-0.667rem)]";
 
-export function LandingDiscovery({
+export async function LandingDiscovery({
   activities,
   activitiesUnavailable,
   villages,
@@ -33,6 +40,7 @@ export function LandingDiscovery({
   villages: Village[];
   villagesUnavailable: boolean;
 }) {
+  const { t, locale } = await getTranslations();
   const visibleVillages = villages
     .filter(
       (village) =>
@@ -49,37 +57,37 @@ export function LandingDiscovery({
     <div className="grid min-w-0 gap-12 pb-8 sm:gap-16 sm:pb-12">
       <section className="min-w-0" aria-labelledby="landing-villages-title">
         <DiscoveryHeading
-          description="Una selección limitada de pueblos reales del catálogo, sin rankings ni recomendaciones inventadas."
-          eyebrow="Territorio"
+          description={t("landing.discovery.villagesDescription")}
+          eyebrow={t("landing.discovery.villagesEyebrow")}
           id="landing-villages-title"
-          title="Pueblos para descubrir"
+          title={t("community.rightRail.villagesTitle")}
         />
         {villagesUnavailable ? (
           <LandingSourceState
-            description="La landing sigue disponible, pero el catálogo público de pueblos no ha respondido."
-            title="No hemos podido cargar los pueblos"
+            description={t("landing.discovery.villagesUnavailableDescription")}
+            title={t("landing.discovery.villagesUnavailableTitle")}
           />
         ) : visibleVillages.length ? null : (
           <LandingSourceState
-            description="La fuente está disponible, pero no contiene pueblos persistentes con provincia y región entre los resultados recibidos."
+            description={t("landing.discovery.villagesEmptyDescription")}
             icon={MapPin}
-            title="Todavía no hay pueblos para mostrar aquí"
+            title={t("landing.discovery.villagesEmptyTitle")}
           />
         )}
         <AccessibleCarousel
           itemCount={visibleVillages.length + 1}
-          label="Pueblos para descubrir"
+          label={t("community.rightRail.villagesTitle")}
         >
           {visibleVillages.map((village) => (
             <li className={carouselItemClass} key={village.id}>
-              <PublicVillagePreview village={village} />
+              <PublicVillagePreview village={village} t={t} />
             </li>
           ))}
           <li className={carouselItemClass}>
             <DiscoveryAuthCard
-              description="Regístrate o inicia sesión para conocer más pueblos y formar parte de sus comunidades."
-              eyebrow="Tu próximo lugar"
-              title="Sigue descubriendo"
+              description={t("landing.discovery.keepDiscoveringDescription")}
+              eyebrow={t("landing.discovery.keepDiscoveringEyebrow")}
+              title={t("landing.discovery.keepDiscoveringTitle")}
             />
           </li>
         </AccessibleCarousel>
@@ -87,37 +95,37 @@ export function LandingDiscovery({
 
       <section className="min-w-0" aria-labelledby="landing-activities-title">
         <DiscoveryHeading
-          description="Hasta cinco planes futuros publicados en la agenda real, ordenados por la fecha más próxima."
-          eyebrow="Agenda pública"
+          description={t("landing.discovery.activitiesDescription")}
+          eyebrow={t("landing.discovery.activitiesEyebrow")}
           id="landing-activities-title"
-          title="Próximas actividades"
+          title={t("landing.discovery.activitiesTitle")}
         />
         {activitiesUnavailable ? (
           <LandingSourceState
-            description="Los pueblos siguen disponibles, pero no hemos recibido la agenda pública del servidor."
-            title="No hemos podido cargar las actividades"
+            description={t("landing.discovery.activitiesUnavailableDescription")}
+            title={t("landing.discovery.activitiesUnavailableTitle")}
           />
         ) : visibleActivities.length ? null : (
           <LandingSourceState
-            description="La agenda está disponible, pero no contiene actividades futuras persistentes entre los resultados recibidos."
+            description={t("landing.discovery.activitiesEmptyDescription")}
             icon={CalendarDays}
-            title="No hay próximas actividades para mostrar"
+            title={t("landing.discovery.activitiesEmptyTitle")}
           />
         )}
         <AccessibleCarousel
           itemCount={visibleActivities.length + 1}
-          label="Próximas actividades"
+          label={t("landing.discovery.activitiesTitle")}
         >
           {visibleActivities.map((activity) => (
             <li className={carouselItemClass} key={activity.id}>
-              <PublicActivityPreview activity={activity} />
+              <PublicActivityPreview activity={activity} t={t} locale={locale} />
             </li>
           ))}
           <li className={carouselItemClass}>
             <DiscoveryAuthCard
-              description="Crea tu cuenta para consultar todas las actividades y participar."
-              eyebrow="Agenda completa"
-              title="Hay más planes esperándote"
+              description={t("landing.discovery.moreActivitiesDescription")}
+              eyebrow={t("landing.discovery.moreActivitiesEyebrow")}
+              title={t("landing.discovery.moreActivitiesTitle")}
             />
           </li>
         </AccessibleCarousel>
@@ -126,11 +134,14 @@ export function LandingDiscovery({
   );
 }
 
-export function LandingDiscoveryLoading() {
+export async function LandingDiscoveryLoading() {
+  const { t } = await getTranslations();
+  const loadingLabels = [t("landing.discovery.loadingVillages"), t("landing.discovery.loadingActivities")];
+
   return (
     <div aria-busy="true" className="grid min-w-0 gap-12 pb-8 sm:gap-16 sm:pb-12">
-      {["pueblos", "actividades"].map((label) => (
-        <section className="min-w-0" aria-label={`Cargando ${label}`} key={label}>
+      {loadingLabels.map((label) => (
+        <section className="min-w-0" aria-label={label} key={label}>
           <div className="px-2 sm:px-0">
             <div className="skeleton-shimmer h-3 w-24 rounded-full" />
             <div className="skeleton-shimmer mt-3 h-8 w-80 max-w-full rounded-full" />
@@ -151,7 +162,7 @@ export function LandingDiscoveryLoading() {
           </div>
         </section>
       ))}
-      <span className="sr-only">Cargando contenido público de descubrimiento</span>
+      <span className="sr-only">{t("landing.discovery.loadingContentSr")}</span>
     </div>
   );
 }
@@ -183,29 +194,28 @@ function DiscoveryHeading({
   );
 }
 
-function PublicVillagePreview({ village }: { village: Village }) {
+function PublicVillagePreview({ village, t }: { village: Village; t: Translator["t"] }) {
   const image = village.image ?? village.bannerImage;
 
   return (
     <Card className="flex h-full w-full flex-col overflow-hidden rounded-[20px]" data-public-village-preview>
       <Link
-        aria-label={`Conocer ${village.name}`}
+        aria-label={t("landing.discovery.meetVillageAria", { name: village.name })}
         className="relative block aspect-[16/9] overflow-hidden bg-[#D9E0D7]"
         href={`/villages/${village.id}`}
       >
-        {image ? (
-          <Image
-            alt={village.name}
-            className="object-cover transition-transform duration-500 hover:scale-[1.025]"
-            fill
-            sizes="(max-width: 639px) 86vw, (max-width: 1279px) 46vw, 33vw"
-            src={image}
-          />
-        ) : (
-          <span className="topographic-pattern grid h-full place-items-center bg-[linear-gradient(145deg,#184B34,#78947D)] text-white">
-            <Landmark aria-hidden="true" className="size-8" />
-          </span>
-        )}
+        <RemoteEntityImage
+          alt={village.name}
+          className="object-cover transition-transform duration-500 hover:scale-[1.025]"
+          fill
+          sizes="(max-width: 639px) 86vw, (max-width: 1279px) 46vw, 33vw"
+          src={image}
+          fallback={
+            <span className="topographic-pattern grid h-full place-items-center bg-[linear-gradient(145deg,#184B34,#78947D)] text-white">
+              <Landmark aria-hidden="true" className="size-8" />
+            </span>
+          }
+        />
         <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/35 bg-[#FFFCF7]/92 px-3 py-1.5 text-[11px] font-extrabold text-[#184B34] shadow-sm backdrop-blur">
           <MapPin aria-hidden="true" className="size-3.5" />
           {village.region}
@@ -225,7 +235,7 @@ function PublicVillagePreview({ village }: { village: Village }) {
           className="mt-auto inline-flex min-h-11 items-center gap-2 self-start pt-4 text-sm font-extrabold text-primary hover:text-forest-mid"
           href={`/villages/${village.id}`}
         >
-          Conocer el pueblo
+          {t("landing.discovery.meetVillageLink")}
           <ArrowRight aria-hidden="true" className="size-4" />
         </Link>
       </div>
@@ -233,7 +243,15 @@ function PublicVillagePreview({ village }: { village: Village }) {
   );
 }
 
-function PublicActivityPreview({ activity }: { activity: Activity }) {
+function PublicActivityPreview({
+  activity,
+  locale,
+  t,
+}: {
+  activity: Activity;
+  locale: Locale;
+  t: Translator["t"];
+}) {
   const complete = activity.spotsLeft === 0 || ["full", "completo"].includes(activity.status?.toLocaleLowerCase("es") ?? "");
 
   return (
@@ -245,16 +263,16 @@ function PublicActivityPreview({ activity }: { activity: Activity }) {
         />
         <span className={`absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-extrabold shadow-sm backdrop-blur ${complete ? "border-[#C96D4A45] bg-[#FFF7F1]/94 text-[#873E29]" : "border-white/40 bg-[#FFFCF7]/94 text-[#184B34]"}`}>
           <UsersRound aria-hidden="true" className="size-3.5" />
-          {complete ? "Completo" : "Disponible"}
+          {complete ? t("landing.discovery.completeBadge") : t("landing.discovery.availableBadge")}
         </span>
       </div>
       <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-2">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-extrabold ${activityCategoryPill(activity.category)}`}>
             <ActivityCategoryIcon category={activity.category} className="size-3.5" />
-            {activity.category}
+            {t(activityCategoryLabelKey(activity.category))}
           </span>
-          <span className="text-xs font-bold text-text-muted">{formatDate(activity.date)}</span>
+          <span className="text-xs font-bold text-text-muted">{formatDate(activity.date, locale)}</span>
         </div>
         <h3 className="mt-3 line-clamp-2 text-xl font-extrabold leading-tight tracking-[-0.025em] text-text-primary">
           {activity.title}

@@ -18,6 +18,8 @@ import {
   UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/components/i18n/i18n-provider";
+import { activityCategoryLabelKey } from "@/features/activities/activity-category-icon";
 import { isUnauthorizedError } from "@/lib/api/client";
 import {
   createActivity,
@@ -47,6 +49,7 @@ export function CreateActivityForm({
   villages: Village[];
 }) {
   const router = useRouter();
+  const { t } = useTranslations();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,7 +65,7 @@ export function CreateActivityForm({
     const token = getStoredToken();
 
     if (!token) {
-      setError("Inicia sesión para crear una actividad.");
+      setError(t("activities.createForm.errorAuthRequired"));
       return;
     }
 
@@ -80,8 +83,8 @@ export function CreateActivityForm({
     if (!persistentVillages.some((village) => village.id === villageId)) {
       setError(
         demoCatalog
-          ? "El catálogo actual contiene pueblos de demostración que no pueden asociarse a una actividad persistente."
-          : "Selecciona un pueblo persistente válido.",
+          ? t("activities.createForm.errorDemoVillages")
+          : t("activities.createForm.errorVillageInvalid"),
       );
       return;
     }
@@ -96,39 +99,39 @@ export function CreateActivityForm({
       !location ||
       !description
     ) {
-      setError("Completa título, pueblo, categoría, fecha, hora, plazas, lugar y descripción.");
+      setError(t("activities.createForm.errorMissingFields"));
       return;
     }
 
     if (title.length < 2 || title.length > 180) {
-      setError("El título debe tener entre 2 y 180 caracteres.");
+      setError(t("activities.createForm.errorTitleLength"));
       return;
     }
 
     if (description.length < 10) {
-      setError("La descripción debe tener al menos 10 caracteres.");
+      setError(t("activities.createForm.errorDescriptionLength"));
       return;
     }
 
     if (category.length < 2 || category.length > 80) {
-      setError("La categoría no es válida.");
+      setError(t("activities.createForm.errorCategoryInvalid"));
       return;
     }
 
     if (!Number.isInteger(capacity) || capacity < 1) {
-      setError("Las plazas deben ser un número entero mayor que cero.");
+      setError(t("activities.createForm.errorCapacityInvalid"));
       return;
     }
 
     if (location.length < 2 || location.length > 255) {
-      setError("El lugar debe tener entre 2 y 255 caracteres.");
+      setError(t("activities.createForm.errorLocationLength"));
       return;
     }
 
     const startsAt = new Date(`${date}T${time}:00`);
 
     if (Number.isNaN(startsAt.getTime()) || startsAt.getTime() <= new Date().getTime()) {
-      setError("Selecciona una fecha y una hora futuras.");
+      setError(t("activities.createForm.errorDateTimeFuture"));
       return;
     }
 
@@ -137,12 +140,12 @@ export function CreateActivityForm({
         const parsedImageUrl = new URL(imageUrl);
         if (!["http:", "https:"].includes(parsedImageUrl.protocol)) throw new Error();
       } catch {
-        setError("La imagen debe ser una URL válida con http o https.");
+        setError(t("activities.createForm.errorImageUrlInvalid"));
         return;
       }
 
       if (!isRenderableImageUrl(imageUrl)) {
-        setError("El origen de la imagen no está permitido todavía. Usa una URL del servicio de imágenes configurado.");
+        setError(t("activities.createForm.errorImageOriginNotAllowed"));
         return;
       }
     }
@@ -171,23 +174,22 @@ export function CreateActivityForm({
       const id = typeof response.id === "string" ? response.id : payload.slug;
 
       if (demoCatalog) {
-        setSuccess(
-          "La actividad fue creada correctamente, pero el listado actual utiliza datos de demostración. Para verla en la agenda real, la API debe ejecutarse sin modo mock.",
-        );
+        setSuccess(t("activities.createForm.successDemo"));
         form.reset();
       } else {
-        setSuccess("Actividad creada correctamente.");
+        setSuccess(t("activities.createForm.successReal"));
         router.push(`/activities/${id}`);
       }
     } catch (error) {
       if (isUnauthorizedError(error)) {
         clearSession();
-        setError("Debes iniciar sesión para crear una actividad.");
+        setError(t("activities.createForm.errorSessionExpired"));
       } else {
         setError(
           getApiErrorMessage(
             error,
-            "No se pudo crear la actividad. Revisa los datos e inténtalo de nuevo.",
+            t,
+            t("activities.createForm.fallbackError"),
           ),
         );
       }
@@ -203,12 +205,12 @@ export function CreateActivityForm({
           <span className="grid size-10 place-items-center rounded-2xl bg-[#D7A63C24] text-[#7A5B16]">
             <Sparkles aria-hidden="true" className="size-4.5" />
           </span>
-          Lo esencial
+          {t("activities.createForm.sectionEssentials")}
         </legend>
 
         <div>
           <label className="label" htmlFor="title">
-            Título de la actividad
+            {t("activities.createForm.titleLabel")}
           </label>
           <div className="relative">
             <Sparkles
@@ -222,7 +224,7 @@ export function CreateActivityForm({
               maxLength={180}
               minLength={2}
               name="title"
-              placeholder="Paseo botánico al atardecer"
+              placeholder={t("activities.createForm.titlePlaceholder")}
               required
             />
           </div>
@@ -231,7 +233,7 @@ export function CreateActivityForm({
         <div className="grid gap-5 md:grid-cols-2">
           <div>
             <label className="label" htmlFor="village">
-              Pueblo
+              {t("activities.createForm.villageLabel")}
             </label>
             <div className="relative">
               <MapPin
@@ -246,7 +248,7 @@ export function CreateActivityForm({
                 required
               >
                 <option value="" disabled>
-                  Selecciona un pueblo
+                  {t("activities.createForm.villagePlaceholder")}
                 </option>
                 {persistentVillages.map((village) => (
                   <option key={village.id} value={village.id}>
@@ -263,7 +265,7 @@ export function CreateActivityForm({
 
           <div>
             <label className="label" htmlFor="category">
-              Categoría
+              {t("activities.createForm.categoryLabel")}
             </label>
             <div className="relative">
               <Compass
@@ -278,11 +280,11 @@ export function CreateActivityForm({
                 required
               >
                 <option value="" disabled>
-                  Selecciona una categoría
+                  {t("activities.createForm.categoryPlaceholder")}
                 </option>
                 {categories.map((category) => (
                   <option key={category} value={category}>
-                    {category}
+                    {t(activityCategoryLabelKey(category))}
                   </option>
                 ))}
               </select>
@@ -302,13 +304,13 @@ export function CreateActivityForm({
           <span className="grid size-10 place-items-center rounded-2xl bg-[#60818A1f] text-[#355E68]">
             <CalendarDays aria-hidden="true" className="size-4.5" />
           </span>
-          Cuándo y dónde
+          {t("activities.createForm.sectionSchedule")}
         </legend>
 
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           <div>
             <label className="label" htmlFor="date">
-              Fecha
+              {t("activities.createForm.dateLabel")}
             </label>
             <div className="relative">
               <CalendarDays
@@ -327,7 +329,7 @@ export function CreateActivityForm({
 
           <div>
             <label className="label" htmlFor="time">
-              Hora
+              {t("activities.createForm.timeLabel")}
             </label>
             <div className="relative">
               <Clock3
@@ -346,7 +348,7 @@ export function CreateActivityForm({
 
           <div className="sm:col-span-2 xl:col-span-1">
             <label className="label" htmlFor="capacity">
-              Plazas
+              {t("activities.createForm.capacityLabel")}
             </label>
             <div className="relative">
               <UsersRound
@@ -358,7 +360,7 @@ export function CreateActivityForm({
                 id="capacity"
                 min="1"
                 name="capacity"
-                placeholder="24"
+                placeholder={t("activities.createForm.capacityPlaceholder")}
                 required
                 step="1"
                 type="number"
@@ -369,7 +371,7 @@ export function CreateActivityForm({
 
         <div>
           <label className="label" htmlFor="location">
-            Lugar exacto
+            {t("activities.createForm.locationLabel")}
           </label>
           <div className="relative">
             <MapPin
@@ -383,7 +385,7 @@ export function CreateActivityForm({
               maxLength={255}
               minLength={2}
               name="location"
-              placeholder="Plaza mayor"
+              placeholder={t("activities.createForm.locationPlaceholder")}
               required
             />
           </div>
@@ -397,26 +399,29 @@ export function CreateActivityForm({
           <span className="grid size-10 place-items-center rounded-2xl bg-[#78947D1f] text-[#42614A]">
             <AlignLeft aria-hidden="true" className="size-4.5" />
           </span>
-          Cuéntalo a la comunidad
+          {t("activities.createForm.sectionContent")}
         </legend>
         <label className="label" htmlFor="description">
-          Descripción
+          {t("activities.createForm.descriptionLabel")}
         </label>
         <textarea
           className="field min-h-40 resize-y leading-6"
           id="description"
           minLength={10}
           name="description"
-          placeholder="Cuenta qué se hará, para quién es y qué debe traer la gente."
+          placeholder={t("activities.createForm.descriptionPlaceholder")}
           required
         />
         <p className="mt-2 text-xs leading-5 text-[#687269]">
-          Incluye solo información confirmada para que las personas sepan qué esperar.
+          {t("activities.createForm.descriptionHint")}
         </p>
 
         <div className="mt-5">
           <label className="label" htmlFor="activity-image-url">
-            URL de imagen <span className="text-xs font-semibold text-[#687269]">(opcional)</span>
+            {t("activities.createForm.imageUrlLabel")}{" "}
+            <span className="text-xs font-semibold text-[#687269]">
+              {t("activities.createForm.imageUrlOptional")}
+            </span>
           </label>
           <div className="relative">
             <ImageIcon
@@ -428,7 +433,7 @@ export function CreateActivityForm({
               id="activity-image-url"
               inputMode="url"
               name="imageUrl"
-              placeholder="https://…"
+              placeholder={t("activities.createForm.imageUrlPlaceholder")}
               type="url"
             />
           </div>
@@ -451,9 +456,7 @@ export function CreateActivityForm({
           role="status"
         >
           <AlertCircle aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
-          <p>
-            El catálogo visible utiliza datos de demostración. Solo los pueblos persistentes pueden asociarse a una actividad real.
-          </p>
+          <p>{t("activities.createForm.demoCatalogNotice")}</p>
         </div>
       ) : null}
 
@@ -469,7 +472,7 @@ export function CreateActivityForm({
 
       <div className="flex flex-col gap-3 border-t border-[#184B3414] pt-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-md text-xs leading-5 text-[#687269]">
-          La actividad se publicará con los datos introducidos y podrá consultarse desde la agenda.
+          {t("activities.createForm.footerNote")}
         </p>
         <Button className="min-w-48" disabled={isSubmitting || !persistentVillages.length} type="submit">
           {isSubmitting ? (
@@ -477,7 +480,9 @@ export function CreateActivityForm({
           ) : (
             <Plus aria-hidden="true" className="size-4" />
           )}
-          {isSubmitting ? "Publicando..." : "Publicar actividad"}
+          {isSubmitting
+            ? t("activities.createForm.submitting")
+            : t("activities.createForm.submit")}
         </Button>
       </div>
     </form>

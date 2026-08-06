@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,25 +11,26 @@ import {
   UsersRound,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { RemoteEntityImage } from "@/components/ui/remote-entity-image";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { ActivityCardActions } from "@/features/activities/activity-card-actions";
 import {
   ActivityCategoryIcon,
+  activityCategoryLabelKey,
   activityCategoryPill,
 } from "@/features/activities/activity-category-icon";
 import { ActivityImage } from "@/features/activities/activity-image";
 import { ActivityStatusBadges } from "@/features/activities/activity-status-badges";
 import { canJoinActivity } from "@/lib/api/entity-capabilities";
+import { formatDayNumber, formatMonthShort } from "@/lib/i18n/formatters";
+import type { Locale } from "@/lib/i18n/config";
 import { formatDate } from "@/lib/utils";
 import type { Activity } from "@/lib/types";
 
-function activityDateParts(date: string) {
-  const value = new Date(`${date}T12:00:00`);
-
+function activityDateParts(date: string, locale: Locale) {
   return {
-    day: new Intl.DateTimeFormat("es-ES", { day: "2-digit" }).format(value),
-    month: new Intl.DateTimeFormat("es-ES", { month: "short" })
-      .format(value)
-      .replace(".", ""),
+    day: formatDayNumber(date, locale),
+    month: formatMonthShort(date, locale),
   };
 }
 
@@ -44,7 +47,8 @@ export function ActivityCard({
   hydrateFromApi?: boolean;
   villageName?: string;
 }) {
-  const date = activityDateParts(activity.date);
+  const { t, tPlural, locale } = useTranslations();
+  const date = activityDateParts(activity.date, locale);
   const villageName = villageNameOverride ?? activity.villageName;
 
   if (compact) {
@@ -53,27 +57,18 @@ export function ActivityCard({
         <Link href={`/activities/${activity.id}`} className="grid grid-cols-[104px_minmax(0,1fr)]">
           <div className="relative min-h-[116px] overflow-hidden bg-[#D9E0D7]">
             {activity.image ? (
-              <Image
+              <RemoteEntityImage
                 alt={activity.title}
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                 fill
                 sizes="104px"
                 src={activity.image}
+                fallback={
+                  <EditorialCompactImage badgeLabel={t("activities.card.editorialBadge")} />
+                }
               />
             ) : (
-              <>
-                <Image
-                  alt=""
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  fill
-                  sizes="104px"
-                  src="/images/raiz-market.webp"
-                />
-                <span className="absolute bottom-1.5 left-1.5 inline-flex items-center gap-1 rounded-full bg-[#0E3325]/74 px-1.5 py-0.5 text-[0.52rem] font-extrabold text-white backdrop-blur">
-                  <Camera aria-hidden="true" className="size-2.5" />
-                  Editorial
-                </span>
-              </>
+              <EditorialCompactImage badgeLabel={t("activities.card.editorialBadge")} />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#0E3325]/30 to-transparent" />
           </div>
@@ -81,7 +76,7 @@ export function ActivityCard({
             <div className="flex flex-wrap items-start justify-between gap-1.5">
               <span className="flex min-w-0 items-center gap-1.5 text-[0.67rem] font-extrabold uppercase tracking-[0.1em] text-[#347A48]">
                 <ActivityCategoryIcon category={activity.category} className="size-3.5 shrink-0" />
-                <span className="truncate">{activity.category}</span>
+                <span className="truncate">{t(activityCategoryLabelKey(activity.category))}</span>
               </span>
               <ActivityStatusBadges activity={activity} compact />
             </div>
@@ -91,7 +86,7 @@ export function ActivityCard({
             <span className="mt-auto flex items-end justify-between gap-2 pt-2 text-[0.68rem] font-bold text-[#687269]">
               <span className="inline-flex min-w-0 items-center gap-1">
                 <CalendarDays aria-hidden="true" className="size-3.5 shrink-0 text-[#C96D4A]" />
-                <span className="truncate">{formatDate(activity.date)}</span>
+                <span className="truncate">{formatDate(activity.date, locale)}</span>
               </span>
               <ArrowUpRight
                 aria-hidden="true"
@@ -125,7 +120,7 @@ export function ActivityCard({
             className={`absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.65rem] font-extrabold shadow-sm backdrop-blur-md ${activityCategoryPill(activity.category)}`}
           >
             <ActivityCategoryIcon category={activity.category} className="size-3.5" />
-            {activity.category}
+            {t(activityCategoryLabelKey(activity.category))}
           </span>
           <ActivityStatusBadges
             activity={activity}
@@ -150,7 +145,7 @@ export function ActivityCard({
         <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-xs font-bold text-[#687269]">
           <span className="inline-flex items-center gap-1.5">
             <CalendarDays aria-hidden="true" className="size-3.5 text-[#C96D4A]" />
-            {formatDate(activity.date)}
+            {formatDate(activity.date, locale)}
           </span>
           <span className="inline-flex items-center gap-1.5">
             <Clock3 aria-hidden="true" className="size-3.5 text-[#C96D4A]" />
@@ -176,12 +171,12 @@ export function ActivityCard({
             {typeof activity.spotsLeft === "number" ? (
               <span className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#184B34]">
                 <UsersRound aria-hidden="true" className="size-3.5" />
-                {activity.spotsLeft} disponibles
+                {tPlural("activities.card.spotsLeftLabel", activity.spotsLeft)}
               </span>
             ) : activity.capacity > 0 ? (
               <span className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#184B34]">
                 <UsersRound aria-hidden="true" className="size-3.5" />
-                Aforo: {activity.capacity}
+                {t("activities.card.capacityLabel", { count: activity.capacity })}
               </span>
             ) : null}
           </div>
@@ -198,5 +193,23 @@ export function ActivityCard({
         </div>
       </div>
     </Card>
+  );
+}
+
+function EditorialCompactImage({ badgeLabel }: { badgeLabel: string }) {
+  return (
+    <>
+      <Image
+        alt=""
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        fill
+        sizes="104px"
+        src="/images/raiz-market.webp"
+      />
+      <span className="absolute bottom-1.5 left-1.5 inline-flex items-center gap-1 rounded-full bg-[#0E3325]/74 px-1.5 py-0.5 text-[0.52rem] font-extrabold text-white backdrop-blur">
+        <Camera aria-hidden="true" className="size-2.5" />
+        {badgeLabel}
+      </span>
+    </>
   );
 }

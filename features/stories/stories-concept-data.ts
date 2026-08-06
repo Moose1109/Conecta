@@ -1,6 +1,3 @@
-export const STORIES_BACKEND_NOTICE =
-  "Las historias durarán 24 horas cuando exista el backend.";
-
 export type StoriesConceptState =
   | "empty"
   | "error"
@@ -245,10 +242,3 @@ export function getPreviousStoryPosition(
   }
   return undefined;
 }
-
-export const storyOwnerTypeLabels: Record<StoryOwnerType, string> = {
-  activity: "Actividad conceptual",
-  organization: "Organización conceptual",
-  user: "Persona conceptual",
-  village: "Pueblo conceptual",
-};

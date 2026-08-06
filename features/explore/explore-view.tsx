@@ -24,6 +24,8 @@ import { Button, LinkButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SearchInput } from "@/components/ui/search-input";
 import { SocialPostCard } from "@/components/social/social-post-card";
+import { useTranslations } from "@/components/i18n/i18n-provider";
+import type { Translator } from "@/lib/i18n/translate";
 import { ActivityCard } from "@/features/activities/activity-card";
 import { VillageCard } from "@/features/villages/village-card";
 import { cn } from "@/lib/utils";
@@ -36,13 +38,6 @@ type SourceFlags = {
   posts: boolean;
   villages: boolean;
 };
-
-const typeFilters = [
-  { id: "all", icon: Compass, label: "Todo" },
-  { id: "villages", icon: MapPin, label: "Pueblos" },
-  { id: "activities", icon: CalendarDays, label: "Actividades" },
-  { id: "posts", icon: FileText, label: "Publicaciones" },
-] satisfies Array<{ id: ExploreType; icon: LucideIcon; label: string }>;
 
 const ALL_RESULT_LIMIT = 3;
 const FOCUSED_VILLAGE_LIMIT = 9;
@@ -67,6 +62,13 @@ export function ExploreView({
   villages: Village[];
 }) {
   const router = useRouter();
+  const { t, tPlural } = useTranslations();
+  const typeFilters = [
+    { id: "all", icon: Compass, label: t("explore.typeFilterAll") },
+    { id: "villages", icon: MapPin, label: t("navigation.villages.label") },
+    { id: "activities", icon: CalendarDays, label: t("navigation.activities.label") },
+    { id: "posts", icon: FileText, label: t("explore.postsLabel") },
+  ] satisfies Array<{ id: ExploreType; icon: LucideIcon; label: string }>;
   const [draftQuery, setDraftQuery] = useState(query);
   const [isNavigating, startNavigation] = useTransition();
   const villageById = useMemo(
@@ -135,23 +137,23 @@ export function ExploreView({
         <form action="/explore" onSubmit={submitSearch}>
           <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
             <SearchInput
-              label="Buscar en los resultados públicos cargados"
+              label={t("explore.searchLabel")}
               name="q"
               onChange={setDraftQuery}
               onClear={clearSearch}
-              placeholder="Buscar pueblos, actividades o publicaciones..."
+              placeholder={t("explore.searchPlaceholder")}
               value={draftQuery}
             />
             {type !== "all" ? <input name="type" type="hidden" value={type} /> : null}
             <Button className="min-h-12 px-6" disabled={isNavigating} type="submit">
               <Search aria-hidden="true" className="size-4" />
-              {isNavigating ? "Buscando…" : "Buscar"}
+              {isNavigating ? t("explore.searching") : t("common.search")}
             </Button>
           </div>
         </form>
 
         <div
-          aria-label="Filtrar resultados por tipo"
+          aria-label={t("explore.typeFilterAriaLabel")}
           className="mt-4 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="group"
         >
@@ -189,7 +191,7 @@ export function ExploreView({
               }}
             >
               <X aria-hidden="true" className="size-4" />
-              Limpiar
+              {t("explore.clearAction")}
             </button>
           ) : null}
         </div>
@@ -198,21 +200,19 @@ export function ExploreView({
       <div className="mt-4 flex items-start gap-3 rounded-[20px] border border-[#184B3417] bg-[#78947D12] p-4 text-sm leading-6 text-text-muted">
         <Info aria-hidden="true" className="mt-0.5 size-4.5 shrink-0 text-mineral" />
         <p>
-          La búsqueda se aplica únicamente a los catálogos públicos cargados en esta
-          pantalla. Los resultados pueden ser parciales y no sustituyen una búsqueda
-          global con paginación y relevancia.
+          {t("explore.scopeNotice")}
         </p>
       </div>
 
       <div className="mt-5 flex flex-col justify-between gap-2 px-1 text-xs font-semibold text-text-muted sm:flex-row sm:items-center">
         <p aria-live="polite">
           {isNavigating
-            ? "Actualizando resultados…"
-            : `${availableMatches} ${resultCountLabel(availableMatches, Boolean(query))}${query ? ` para “${query}”` : ""}`}
+            ? t("explore.updatingResults")
+            : `${resultCountLabel(availableMatches, Boolean(query), tPlural)}${query ? ` ${t("community.feed.resultsForQuery", { query })}` : ""}`}
         </p>
         {unavailableCount ? (
           <p role="status">
-            {unavailableCount} {unavailableCount === 1 ? "fuente no disponible" : "fuentes no disponibles"}
+            {tPlural("explore.unavailableSourcesCount", unavailableCount)}
           </p>
         ) : null}
       </div>
@@ -221,15 +221,15 @@ export function ExploreView({
         {type === "all" || type === "villages" ? (
           <ResultSection
             catalogHref="/villages"
-            description="Coincidencias por nombre, provincia, región, lema o descripción."
-            emptyDescription={emptyDescription("pueblos", query)}
+            description={t("explore.villagesResultsDescription")}
+            emptyDescription={emptyDescription(t("explore.sourceLabels.villages"), query, t)}
             emptyIcon={MapPin}
-            emptyTitle={emptyTitle("pueblos", query)}
+            emptyTitle={emptyTitle(t("explore.sourceLabels.villages"), query, t)}
             gridClassName="sm:grid-cols-2 xl:grid-cols-3"
             items={results.villages}
             limited={limitedSources.villages}
             moreHref={exploreHref(query, "villages")}
-            moreLabel="Ver más pueblos"
+            moreLabel={t("explore.moreVillages")}
             query={query}
             renderItem={(village) => (
               <VillageCard
@@ -240,8 +240,10 @@ export function ExploreView({
               />
             )}
             renderLimit={focused ? FOCUSED_VILLAGE_LIMIT : ALL_RESULT_LIMIT}
-            sourceLabel="pueblos"
-            title="Pueblos"
+            sourceLabel={t("explore.sourceLabels.villages")}
+            t={t}
+            tPlural={tPlural}
+            title={t("navigation.villages.label")}
             unavailable={unavailableSources.villages}
             onRetry={() => router.refresh()}
           />
@@ -250,15 +252,15 @@ export function ExploreView({
         {type === "all" || type === "activities" ? (
           <ResultSection
             catalogHref={activityCatalogHref(query)}
-            description="Coincidencias por título, descripción, pueblo o categoría publicada."
-            emptyDescription={emptyDescription("actividades", query)}
+            description={t("explore.activitiesResultsDescription")}
+            emptyDescription={emptyDescription(t("explore.sourceLabels.activities"), query, t)}
             emptyIcon={CalendarDays}
-            emptyTitle={emptyTitle("actividades", query)}
+            emptyTitle={emptyTitle(t("explore.sourceLabels.activities"), query, t)}
             gridClassName="sm:grid-cols-2 xl:grid-cols-3"
             items={results.activities}
             limited={limitedSources.activities}
             moreHref={exploreHref(query, "activities")}
-            moreLabel="Ver más actividades"
+            moreLabel={t("explore.moreActivities")}
             query={query}
             renderItem={(activity) => (
               <ActivityCard
@@ -269,8 +271,10 @@ export function ExploreView({
               />
             )}
             renderLimit={focused ? FOCUSED_ACTIVITY_LIMIT : ALL_RESULT_LIMIT}
-            sourceLabel="actividades"
-            title="Actividades"
+            sourceLabel={t("explore.sourceLabels.activities")}
+            t={t}
+            tPlural={tPlural}
+            title={t("navigation.activities.label")}
             unavailable={unavailableSources.activities}
             onRetry={() => router.refresh()}
           />
@@ -279,22 +283,24 @@ export function ExploreView({
         {type === "all" || type === "posts" ? (
           <ResultSection
             catalogHref={postCatalogHref(query)}
-            description="Coincidencias por título, contenido, autor o pueblo asociado."
-            emptyDescription={emptyDescription("publicaciones", query)}
+            description={t("explore.postsResultsDescription")}
+            emptyDescription={emptyDescription(t("explore.sourceLabels.posts"), query, t)}
             emptyIcon={FileText}
-            emptyTitle={emptyTitle("publicaciones", query)}
+            emptyTitle={emptyTitle(t("explore.sourceLabels.posts"), query, t)}
             gridClassName="mx-auto max-w-3xl"
             items={results.posts}
             limited={limitedSources.posts}
             moreHref={exploreHref(query, "posts")}
-            moreLabel="Ver más publicaciones"
+            moreLabel={t("explore.morePosts")}
             query={query}
             renderItem={(post) => (
               <SocialPostCard hydrateFromApi key={post.id} post={post} />
             )}
             renderLimit={focused ? FOCUSED_POST_LIMIT : ALL_RESULT_LIMIT}
-            sourceLabel="publicaciones"
-            title="Publicaciones"
+            sourceLabel={t("explore.sourceLabels.posts")}
+            t={t}
+            tPlural={tPlural}
+            title={t("explore.postsLabel")}
             unavailable={unavailableSources.posts}
             onRetry={() => router.refresh()}
           />
@@ -320,6 +326,8 @@ function ResultSection<T extends { id: string }>({
   renderItem,
   renderLimit,
   sourceLabel,
+  t,
+  tPlural,
   title,
   unavailable,
 }: {
@@ -338,6 +346,8 @@ function ResultSection<T extends { id: string }>({
   renderItem: (item: T) => ReactNode;
   renderLimit: number;
   sourceLabel: string;
+  t: Translator["t"];
+  tPlural: Translator["tPlural"];
   title: string;
   unavailable: boolean;
 }) {
@@ -350,7 +360,7 @@ function ResultSection<T extends { id: string }>({
     <section aria-labelledby={titleId}>
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
         <div>
-          <p className="eyebrow">Resultados cargados</p>
+          <p className="eyebrow">{t("explore.resultsLoadedEyebrow")}</p>
           <h2
             className="mt-1.5 text-2xl font-extrabold tracking-[-0.035em] text-text-primary sm:text-3xl"
             id={titleId}
@@ -361,8 +371,8 @@ function ResultSection<T extends { id: string }>({
         </div>
         <span className="w-fit rounded-full bg-[#78947D17] px-3 py-1.5 text-xs font-extrabold text-primary">
           {unavailable
-            ? "Fuente no disponible"
-            : `${items.length} ${resultCountLabel(items.length, Boolean(query))}`}
+            ? t("explore.sourceUnavailableBadge")
+            : resultCountLabel(items.length, Boolean(query), tPlural)}
         </span>
       </div>
 
@@ -371,17 +381,16 @@ function ResultSection<T extends { id: string }>({
           className="mt-4 rounded-2xl border border-[#D7A63C38] bg-[#FFF8E8] px-4 py-3 text-xs font-semibold leading-5 text-[#6C531B]"
           role="status"
         >
-          Esta fuente alcanzó el límite de 100 resultados. La búsqueda y el recuento
-          describen únicamente el conjunto cargado.
+          {t("explore.sourceLimitNotice")}
         </p>
       ) : null}
 
       {unavailable ? (
         <SourceState
-          action={<Button onClick={onRetry}>Reintentar</Button>}
-          description={`No hemos podido obtener ${sourceLabel} del servidor. Las demás fuentes siguen disponibles.`}
+          action={<Button onClick={onRetry}>{t("common.retry")}</Button>}
+          description={t("explore.sourceErrorDescription", { source: sourceLabel })}
           icon={AlertTriangle}
-          title={`No hemos podido cargar ${sourceLabel}`}
+          title={t("explore.sourceErrorTitle", { source: sourceLabel })}
           tone="error"
         />
       ) : visibleItems.length ? (
@@ -393,15 +402,18 @@ function ResultSection<T extends { id: string }>({
             <div className="mt-5 flex flex-col items-start justify-between gap-3 rounded-[20px] border border-border bg-surface-muted p-4 sm:flex-row sm:items-center">
               <p className="text-xs font-semibold leading-5 text-text-muted">
                 {hasMore
-                  ? `Mostramos ${visibleItems.length} de ${items.length} ${query ? "coincidencias" : "elementos"} dentro del conjunto cargado.`
-                  : "Esta vista no representa un catálogo completo ni añade paginación simulada."}
+                  ? t(
+                      query ? "explore.visibleOfTotalMatches" : "explore.visibleOfTotalItems",
+                      { visible: visibleItems.length, total: items.length },
+                    )
+                  : t("explore.noCompleteCatalogNotice")}
               </p>
               <LinkButton
                 className="shrink-0"
                 href={focused ? catalogHref : moreHref}
                 variant="secondary"
               >
-                {focused ? `Continuar en ${title}` : moreLabel}
+                {focused ? t("explore.continueIn", { title }) : moreLabel}
                 <ArrowRight aria-hidden="true" className="size-4" />
               </LinkButton>
             </div>
@@ -489,19 +501,18 @@ function postCatalogHref(query: string) {
   return `/community${search ? `?${search}` : ""}#community-search`;
 }
 
-function emptyTitle(label: string, query: string) {
+function emptyTitle(label: string, query: string, t: Translator["t"]) {
   return query
-    ? `No hay coincidencias de ${label}`
-    : `No hay ${label} disponibles`;
+    ? t("explore.emptyMatchTitle", { label })
+    : t("explore.emptyNoneTitle", { label });
 }
 
-function emptyDescription(label: string, query: string) {
+function emptyDescription(label: string, query: string, t: Translator["t"]) {
   return query
-    ? `No hay coincidencias de ${label} para “${query}” entre los resultados públicos cargados.`
-    : `La fuente está disponible, pero no contiene ${label} persistentes en el conjunto cargado.`;
+    ? t("explore.emptyMatchDescription", { label, query })
+    : t("explore.emptyNoneDescription", { label });
 }
 
-function resultCountLabel(count: number, hasQuery: boolean) {
-  if (hasQuery) return count === 1 ? "coincidencia cargada" : "coincidencias cargadas";
-  return count === 1 ? "elemento cargado" : "elementos cargados";
+function resultCountLabel(count: number, hasQuery: boolean, tPlural: Translator["tPlural"]) {
+  return tPlural(hasQuery ? "explore.resultsCountQuery" : "explore.resultsCountNoQuery", count);
 }

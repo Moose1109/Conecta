@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LoaderCircle, LockKeyhole, RefreshCw, ShieldAlert, ShieldX } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Card } from "@/components/ui/card";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { isAdminUser } from "@/features/auth/roles";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { getCurrentUser } from "@/lib/api/auth.service";
@@ -20,12 +21,14 @@ type SessionVerification = {
 export function AuthGate({
   adminOnly = false,
   children,
-  message = "Para acceder a tu espacio personal necesitas iniciar sesión.",
+  message,
 }: {
   adminOnly?: boolean;
   children: ReactNode;
   message?: string;
 }) {
+  const { t } = useTranslations();
+  const resolvedMessage = message ?? t("auth.gate.defaultMessage");
   const { token } = useAuthSession();
   const [verificationAttempt, setVerificationAttempt] = useState(0);
   const [sessionVerification, setSessionVerification] = useState<SessionVerification>({
@@ -79,24 +82,24 @@ export function AuthGate({
       <Card className="mx-auto max-w-xl p-7 text-center">
         <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#D7A63C24] text-[#184B34]"><LockKeyhole aria-hidden="true" className="size-6" /></span>
         <p className="eyebrow mt-5">
-          Acceso privado
+          {t("auth.gate.privateAccessEyebrow")}
         </p>
         <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.035em] text-[#18231D]">
-          Necesitas iniciar sesión
+          {t("auth.gate.needsLoginTitle")}
         </h1>
-        <p className="mt-3 text-sm leading-6 text-[#687269]">{message}</p>
+        <p className="mt-3 text-sm leading-6 text-[#687269]">{resolvedMessage}</p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <Link
             href="/login"
             className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]"
           >
-            Entrar
+            {t("auth.signIn")}
           </Link>
           <Link
             href="/register"
             className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#184B3424] bg-white/88 px-5 py-2.5 text-sm font-extrabold text-[#184B34] hover:bg-white"
           >
-            Crear cuenta
+            {t("auth.createAccount")}
           </Link>
         </div>
       </Card>
@@ -118,14 +121,14 @@ export function AuthGate({
         <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#D7A63C24] text-[#184B34]">
           <LoaderCircle aria-hidden="true" className="size-6 animate-spin" />
         </span>
-        <p className="eyebrow mt-5">Comprobando sesión</p>
+        <p className="eyebrow mt-5">{t("auth.gate.checkingSessionEyebrow")}</p>
         <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.035em] text-[#18231D]">
-          {adminOnly ? "Verificando tus permisos" : "Verificando tu cuenta"}
+          {adminOnly ? t("auth.gate.verifyingPermissionsTitle") : t("auth.gate.verifyingAccountTitle")}
         </h1>
         <p className="mt-3 text-sm leading-6 text-[#687269]">
           {adminOnly
-            ? "Estamos confirmando tu cuenta antes de abrir el panel de administración."
-            : "Estamos confirmando que tu sesión sigue activa antes de mostrar este contenido."}
+            ? t("auth.gate.verifyingPermissionsDescription")
+            : t("auth.gate.verifyingAccountDescription")}
         </p>
       </Card>
     );
@@ -140,15 +143,14 @@ export function AuthGate({
         <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#C96D4A1f] text-[#A95539]">
           <ShieldAlert aria-hidden="true" className="size-6" />
         </span>
-        <p className="eyebrow mt-5">Verificación interrumpida</p>
+        <p className="eyebrow mt-5">{t("auth.gate.interruptedEyebrow")}</p>
         <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.035em] text-[#18231D]">
           {adminOnly
-            ? "No hemos podido confirmar tus permisos"
-            : "No hemos podido confirmar tu sesión"}
+            ? t("auth.gate.permissionsErrorTitle")
+            : t("auth.gate.sessionErrorTitle")}
         </h1>
         <p className="mt-3 text-sm leading-6 text-[#687269]">
-          El servicio de autenticación no está disponible ahora mismo. Puedes volver
-          a intentarlo sin cerrar tu sesión.
+          {t("auth.gate.serviceUnavailableDescription")}
         </p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <button
@@ -160,14 +162,14 @@ export function AuthGate({
             }}
           >
             <RefreshCw aria-hidden="true" className="size-4" />
-            Reintentar
+            {t("common.retry")}
           </button>
           <Link
             href="/login"
             className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#184B3424] bg-white/88 px-5 py-2.5 text-sm font-extrabold text-[#184B34] hover:bg-white"
             onClick={clearSession}
           >
-            Volver a iniciar sesión
+            {t("auth.gate.backToLogin")}
           </Link>
         </div>
       </Card>
@@ -179,20 +181,20 @@ export function AuthGate({
       <Card className="mx-auto max-w-xl p-7 text-center">
         <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#C96D4A1f] text-[#A95539]"><ShieldX aria-hidden="true" className="size-6" /></span>
         <p className="eyebrow mt-5">
-          Acceso restringido
+          {t("auth.gate.restrictedAccessEyebrow")}
         </p>
         <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.035em] text-[#18231D]">
-          Panel admin no disponible
+          {t("auth.gate.adminPanelUnavailableTitle")}
         </h1>
         <p className="mt-3 text-sm leading-6 text-[#687269]">
-          Esta sección está reservada para usuarios admin o superadmin.
+          {t("auth.gate.adminPanelUnavailableDescription")}
         </p>
         <div className="mt-6">
           <Link
             href="/community"
             className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]"
           >
-            Ir a comunidad
+            {t("common.backendPending.actionLabel")}
           </Link>
         </div>
       </Card>

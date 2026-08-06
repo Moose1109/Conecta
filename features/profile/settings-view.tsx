@@ -25,6 +25,8 @@ import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { AuthGate } from "@/features/auth/auth-gate";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import {
@@ -54,19 +56,6 @@ type SettingsSectionId =
   | "security"
   | "accessibility";
 
-const settingsNavigation: Array<{
-  icon: LucideIcon;
-  id: SettingsSectionId;
-  label: string;
-}> = [
-  { icon: UserRound, id: "profile", label: "Perfil" },
-  { icon: AtSign, id: "account", label: "Cuenta" },
-  { icon: Eye, id: "privacy", label: "Privacidad" },
-  { icon: Bell, id: "notifications", label: "Notificaciones" },
-  { icon: ShieldCheck, id: "security", label: "Seguridad" },
-  { icon: Accessibility, id: "accessibility", label: "Accesibilidad" },
-];
-
 function formFromUser(user?: AuthUser): ProfileForm {
   return {
     avatarUrl: user?.avatarUrl ?? "",
@@ -80,12 +69,26 @@ function formFromUser(user?: AuthUser): ProfileForm {
 
 export function SettingsView() {
   const router = useRouter();
+  const { t } = useTranslations();
   const { token, user: sessionUser } = useAuthSession();
   const [form, setForm] = useState<ProfileForm>(() => formFromUser(sessionUser));
   const [loadedToken, setLoadedToken] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const settingsNavigation: Array<{
+    icon: LucideIcon;
+    id: SettingsSectionId;
+    label: string;
+  }> = [
+    { icon: UserRound, id: "profile", label: t("settings.nav.profile") },
+    { icon: AtSign, id: "account", label: t("settings.nav.account") },
+    { icon: Eye, id: "privacy", label: t("settings.nav.privacy") },
+    { icon: Bell, id: "notifications", label: t("settings.nav.notifications") },
+    { icon: ShieldCheck, id: "security", label: t("settings.nav.security") },
+    { icon: Accessibility, id: "accessibility", label: t("settings.nav.accessibility") },
+  ];
 
   useEffect(() => {
     if (!token) return;
@@ -109,7 +112,8 @@ export function SettingsView() {
         setError(
           getApiErrorMessage(
             loadError,
-            "No hemos podido actualizar los datos del formulario. Puedes reintentarlo.",
+            t,
+            t("settings.profile.errorLoadFallback"),
           ),
         );
       })
@@ -120,7 +124,7 @@ export function SettingsView() {
     return () => {
       active = false;
     };
-  }, [token]);
+  }, [token, t]);
 
   const isLoading = Boolean(token && loadedToken !== token);
 
@@ -136,7 +140,7 @@ export function SettingsView() {
     setSuccess("");
 
     if (!token) {
-      setError("Tu sesión ha caducado. Vuelve a iniciar sesión.");
+      setError(t("settings.profile.errorSessionExpired"));
       return;
     }
 
@@ -145,12 +149,12 @@ export function SettingsView() {
     const bio = form.bio.trim();
 
     if (name.length < 2 || username.length < 3) {
-      setError("El nombre debe tener al menos 2 caracteres y el usuario al menos 3.");
+      setError(t("settings.profile.errorNameUsernameLength"));
       return;
     }
 
     if (bio.length > 500) {
-      setError("La bio no puede superar los 500 caracteres.");
+      setError(t("settings.profile.errorBioLength"));
       return;
     }
 
@@ -167,13 +171,13 @@ export function SettingsView() {
       const updatedUser = await updateCurrentUser(payload, token);
 
       if (!updatedUser) {
-        setError("El servicio no devolvió un perfil válido. Inténtalo de nuevo.");
+        setError(t("settings.profile.errorInvalidResponse"));
         return;
       }
 
       saveSession({ token, user: updatedUser });
       setForm(formFromUser(updatedUser));
-      setSuccess("Perfil actualizado correctamente.");
+      setSuccess(t("settings.profile.successUpdated"));
       router.refresh();
     } catch (submitError) {
       logApiIssue("Error updating current user", submitError);
@@ -184,7 +188,8 @@ export function SettingsView() {
       setError(
         getApiErrorMessage(
           submitError,
-          "No se pudo guardar el perfil. Revisa los campos e inténtalo de nuevo.",
+          t,
+          t("settings.profile.errorSaveFallback"),
         ),
       );
     } finally {
@@ -195,16 +200,16 @@ export function SettingsView() {
   const hasError = Boolean(error);
 
   return (
-    <AuthGate message="Para editar tu perfil necesitas iniciar sesión.">
+    <AuthGate message={t("settings.authGateMessage")}>
       <PageHeader
-        eyebrow="Tu cuenta"
-        title="Ajustes"
-        description="Gestiona tu identidad y consulta qué preferencias están disponibles en cada área."
+        eyebrow={t("settings.pageEyebrow")}
+        title={t("settings.pageTitle")}
+        description={t("settings.pageDescription")}
       />
 
       <div className="grid items-start gap-5 xl:grid-cols-[240px_minmax(0,1fr)]">
         <Card className="min-w-0 max-w-full p-2 xl:sticky xl:top-[92px]">
-          <nav aria-label="Secciones de Ajustes" className="flex snap-x gap-1 overflow-x-auto [scrollbar-width:none] xl:grid xl:overflow-visible [&::-webkit-scrollbar]:hidden">
+          <nav aria-label={t("settings.nav.sectionsLabel")} className="flex snap-x gap-1 overflow-x-auto [scrollbar-width:none] xl:grid xl:overflow-visible [&::-webkit-scrollbar]:hidden">
             {settingsNavigation.map(({ icon: Icon, id, label }) => (
               <a
                 className="inline-flex min-h-11 shrink-0 snap-start items-center gap-3 rounded-2xl px-3.5 text-sm font-extrabold text-[#526057] transition-colors hover:bg-[#184B340a] hover:text-[#184B34] focus:outline-none focus:ring-4 focus:ring-[#347A4824]"
@@ -222,9 +227,9 @@ export function SettingsView() {
           <section className="scroll-mt-28" id="settings-profile">
             <Card className="overflow-hidden">
               <SettingsHeading
-                description="Estos son los campos que el servicio actual guarda realmente."
+                description={t("settings.profile.headingDescription")}
                 icon={UserRound}
-                title="Perfil"
+                title={t("settings.profile.heading")}
               />
               <div
                 className="relative h-40 bg-[linear-gradient(120deg,#0E3325,#347A48_58%,#D7A63C)] bg-cover bg-center sm:h-52"
@@ -235,7 +240,7 @@ export function SettingsView() {
                   htmlFor="settings-banner"
                 >
                   <Camera aria-hidden="true" className="size-4" />
-                  Editar URL de portada
+                  {t("settings.profile.editCoverLabel")}
                 </label>
               </div>
 
@@ -244,29 +249,29 @@ export function SettingsView() {
                   <UserAvatar
                     className="size-24 border-4 border-[#FFFCF7] text-2xl ring-0 sm:size-28"
                     imageUrl={form.avatarUrl || sessionUser?.avatarUrl}
-                    name={form.name || "Usuario"}
+                    name={form.name || t("settings.profile.defaultUserName")}
                   />
                   <label
                     className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-[#184B3418] bg-white px-4 text-xs font-extrabold text-[#184B34] shadow-sm hover:bg-[#F7F2E8]"
                     htmlFor="settings-avatar"
                   >
                     <UserRound aria-hidden="true" className="size-4" />
-                    Editar URL del avatar
+                    {t("settings.profile.editAvatarLabel")}
                   </label>
                 </div>
 
                 {isLoading ? (
                   <p className="mb-5 flex items-center gap-2 rounded-2xl bg-[#184B340a] p-4 text-sm font-bold text-[#184B34]" role="status">
                     <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
-                    Cargando los datos actuales de tu perfil…
+                    {t("settings.profile.loadingCurrentData")}
                   </p>
                 ) : null}
 
                 <fieldset className="grid gap-5" disabled={isLoading || isSubmitting}>
-                  <legend className="sr-only">Campos editables del perfil</legend>
+                  <legend className="sr-only">{t("settings.profile.fieldsetLegend")}</legend>
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className="label" htmlFor="settings-name">Nombre</label>
+                      <label className="label" htmlFor="settings-name">{t("settings.profile.nameLabel")}</label>
                       <input
                         aria-invalid={hasError || undefined}
                         autoComplete="name"
@@ -280,7 +285,7 @@ export function SettingsView() {
                       />
                     </div>
                     <div>
-                      <label className="label" htmlFor="settings-username">Usuario</label>
+                      <label className="label" htmlFor="settings-username">{t("settings.profile.usernameLabel")}</label>
                       <input
                         aria-invalid={hasError || undefined}
                         autoComplete="username"
@@ -297,7 +302,7 @@ export function SettingsView() {
 
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className="label" htmlFor="settings-avatar">URL del avatar</label>
+                      <label className="label" htmlFor="settings-avatar">{t("settings.profile.avatarUrlLabel")}</label>
                       <div className="relative">
                         <UserRound aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-[#60818A]" />
                         <input
@@ -312,7 +317,7 @@ export function SettingsView() {
                       </div>
                     </div>
                     <div>
-                      <label className="label" htmlFor="settings-banner">URL de la portada</label>
+                      <label className="label" htmlFor="settings-banner">{t("settings.profile.bannerUrlLabel")}</label>
                       <div className="relative">
                         <ImageIcon aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4.5 -translate-y-1/2 text-[#60818A]" />
                         <input
@@ -329,25 +334,27 @@ export function SettingsView() {
                   </div>
 
                   <div>
-                    <label className="label" htmlFor="settings-bio">Biografía</label>
+                    <label className="label" htmlFor="settings-bio">{t("settings.profile.bioLabel")}</label>
                     <textarea
                       aria-describedby="settings-bio-count"
                       className="field min-h-32 resize-y"
                       id="settings-bio"
                       maxLength={500}
-                      placeholder="Cuenta algo sobre tu relación con los pueblos y la comunidad."
+                      placeholder={t("settings.profile.bioPlaceholder")}
                       value={form.bio}
                       onChange={(event) => updateField("bio", event.target.value)}
                     />
-                    <p className="mt-1.5 text-right text-xs text-[#687269]" id="settings-bio-count">{form.bio.length}/500</p>
+                    <p className="mt-1.5 text-right text-xs text-[#687269]" id="settings-bio-count">
+                      {t("settings.profile.bioCount", { count: form.bio.length })}
+                    </p>
                   </div>
                 </fieldset>
 
                 <BackendPendingAlert
                   className="mt-5"
                   compact
-                  description="El contrato anuncia un pueblo favorito, pero el backend actual descarta ese valor y no lo persiste. La edición permanecerá deshabilitada hasta que exista almacenamiento real."
-                  title="Pueblo favorito pendiente de backend"
+                  description={t("settings.profile.favoriteVillagePendingDescription")}
+                  title={t("settings.profile.favoriteVillagePendingTitle")}
                 />
 
                 {error ? <p className="mt-5 rounded-2xl border border-[#C96D4A33] bg-[#C96D4A12] p-4 text-sm font-bold text-[#873E29]" role="alert">{error}</p> : null}
@@ -356,7 +363,7 @@ export function SettingsView() {
                 <div className="mt-6 flex justify-end">
                   <Button className="w-full sm:w-auto" disabled={isLoading || isSubmitting} type="submit">
                     {isSubmitting ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin" /> : <Save aria-hidden="true" className="size-4" />}
-                    {isSubmitting ? "Guardando…" : "Guardar cambios"}
+                    {isSubmitting ? t("settings.profile.saving") : t("settings.profile.save")}
                   </Button>
                 </div>
               </form>
@@ -364,104 +371,129 @@ export function SettingsView() {
           </section>
 
           <SettingsSection
-            description="El email es de solo lectura. Puedes editar tu nombre de usuario en la sección Perfil."
+            description={t("settings.account.description")}
             icon={AtSign}
             id="account"
-            title="Cuenta"
+            title={t("settings.nav.account")}
           >
             <dl className="grid gap-3 sm:grid-cols-2">
-              <ReadOnlyAccountItem icon={Mail} label="Email" value={form.email || "No disponible"} />
-              <ReadOnlyAccountItem icon={AtSign} label="Usuario" value={form.username ? `@${form.username.replace(/^@/, "")}` : "No disponible"} />
+              <ReadOnlyAccountItem
+                icon={Mail}
+                label={t("settings.account.emailLabel")}
+                value={form.email || t("settings.account.notAvailable")}
+              />
+              <ReadOnlyAccountItem
+                icon={AtSign}
+                label={t("settings.account.usernameLabel")}
+                value={
+                  form.username
+                    ? `@${form.username.replace(/^@/, "")}`
+                    : t("settings.account.notAvailable")
+                }
+              />
             </dl>
+            <div className="mt-4 flex items-center justify-between gap-4 rounded-2xl border border-[#184B3414] bg-[#F8F5EE] p-4">
+              <div className="min-w-0">
+                <p className="text-sm font-extrabold text-[#18231D]">{t("settings.account.languageTitle")}</p>
+                <p className="mt-0.5 text-xs font-medium leading-5 text-[#687269]">
+                  {t("settings.account.languageDescription")}
+                </p>
+              </div>
+              <LanguageSwitcher />
+            </div>
             <BackendPendingAlert
               className="mt-4"
               compact
-              description="Cambiar o recuperar la contraseña y gestionar credenciales requiere endpoints de cuenta que todavía no están disponibles. No se enviará ningún correo desde esta pantalla."
-              title="Gestión de credenciales pendiente"
+              description={t("settings.account.credentialsPendingDescription")}
+              title={t("settings.account.credentialsPendingTitle")}
             />
           </SettingsSection>
 
           <SettingsSection
-            description="Estructura prevista para controlar qué datos podrían mostrarse en un futuro perfil público."
+            description={t("settings.privacy.description")}
             icon={Eye}
             id="privacy"
-            title="Privacidad"
+            title={t("settings.nav.privacy")}
           >
             <BackendPendingAlert
               compact
-              description="Estas preferencias se habilitarán cuando el backend pueda aplicar la privacidad en el perfil público."
-              title="Preferencias de privacidad no disponibles"
+              description={t("settings.privacy.pendingDescription")}
+              title={t("settings.privacy.pendingTitle")}
             />
             <div className="mt-4 grid gap-2">
               {[
-                "Mostrar pueblo de origen",
-                "Mostrar residencia",
-                "Mostrar intereses",
-                "Mostrar actividades organizadas",
-                "Mostrar pueblos seguidos",
-              ].map((label) => <DisabledPreference key={label} label={label} />)}
+                t("settings.privacy.showOrigin"),
+                t("settings.privacy.showResidence"),
+                t("settings.privacy.showInterests"),
+                t("settings.privacy.showOrganizedActivities"),
+                t("settings.privacy.showFollowedVillages"),
+              ].map((label) => (
+                <DisabledPreference key={label} label={label} />
+              ))}
             </div>
           </SettingsSection>
 
           <SettingsSection
-            description="Preferencias futuras para avisos dentro de la comunidad."
+            description={t("settings.notifications.description")}
             icon={Bell}
             id="notifications"
-            title="Notificaciones"
+            title={t("settings.nav.notifications")}
           >
             <BackendPendingAlert
               compact
-              description="El backend de notificaciones todavía no existe. Estos controles están deshabilitados y no guardan valores ni simulan envíos por email o push."
-              title="Preferencias de notificación pendientes"
+              description={t("settings.notifications.pendingDescription")}
+              title={t("settings.notifications.pendingTitle")}
             />
             <div className="mt-4 grid gap-2">
               {[
-                "Novedades de pueblos seguidos",
-                "Recordatorios de actividades",
-                "Interacciones en publicaciones",
-              ].map((label) => <DisabledPreference key={label} label={label} />)}
+                t("settings.notifications.followedVillagesNews"),
+                t("settings.notifications.activityReminders"),
+                t("settings.notifications.postInteractions"),
+              ].map((label) => (
+                <DisabledPreference key={label} label={label} />
+              ))}
             </div>
           </SettingsSection>
 
           <SettingsSection
-            description="Capacidades de protección que necesitan soporte específico del servicio."
+            description={t("settings.security.description")}
             icon={ShieldCheck}
             id="security"
-            title="Seguridad"
+            title={t("settings.nav.security")}
           >
             <BackendPendingAlert
               compact
-              description="Cambio de contraseña, sesiones activas, autenticación de dos factores, recuperación, exportación y eliminación de cuenta no tienen endpoints disponibles. No se exponen tokens ni datos técnicos."
-              title="Herramientas de seguridad pendientes"
+              description={t("settings.security.pendingDescription")}
+              title={t("settings.security.pendingTitle")}
             />
           </SettingsSection>
 
           <SettingsSection
-            description="Compatibilidad frontend disponible sin crear preferencias remotas ficticias."
+            description={t("settings.accessibility.description")}
             icon={Accessibility}
             id="accessibility"
-            title="Accesibilidad"
+            title={t("settings.nav.accessibility")}
           >
             <div className="grid gap-3 sm:grid-cols-2">
               <AccessibilityItem
-                description="Las animaciones y transiciones se reducen cuando así lo indica tu sistema."
+                description={t("settings.accessibility.reducedMotionDescription")}
                 icon={Move}
-                title="Movimiento reducido"
+                title={t("settings.accessibility.reducedMotionTitle")}
               />
               <AccessibilityItem
-                description="Los controles y secciones principales se pueden recorrer y activar con teclado."
+                description={t("settings.accessibility.keyboardNavDescription")}
                 icon={Keyboard}
-                title="Navegación por teclado"
+                title={t("settings.accessibility.keyboardNavTitle")}
               />
               <AccessibilityItem
-                description="Puedes usar el zoom y el tamaño de texto de tu navegador; no guardamos una escala paralela."
+                description={t("settings.accessibility.textSizeDescription")}
                 icon={Type}
-                title="Tamaño de texto"
+                title={t("settings.accessibility.textSizeTitle")}
               />
               <AccessibilityItem
-                description="Los estados incluyen texto e iconos para no depender únicamente del color."
+                description={t("settings.accessibility.stateReadingDescription")}
                 icon={Eye}
-                title="Lectura de estados"
+                title={t("settings.accessibility.stateReadingTitle")}
               />
             </div>
           </SettingsSection>
@@ -537,14 +569,16 @@ function ReadOnlyAccountItem({
 }
 
 function DisabledPreference({ label }: { label: string }) {
+  const { t } = useTranslations();
+
   return (
     <div aria-disabled="true" className="flex min-h-16 items-center justify-between gap-4 rounded-2xl border border-[#184B3412] bg-[#F8F5EE] px-4 py-3 opacity-75">
       <div className="min-w-0">
         <p className="text-sm font-extrabold text-[#39483E]">{label}</p>
-        <p className="mt-0.5 text-xs font-medium text-[#687269]">Pendiente de soporte en backend</p>
+        <p className="mt-0.5 text-xs font-medium text-[#687269]">{t("settings.preferencePendingBackend")}</p>
       </div>
       <button
-        aria-label={`${label}: deshabilitado, pendiente de backend`}
+        aria-label={t("settings.preferenceDisabledAriaLabel", { label })}
         className="relative h-7 w-12 shrink-0 cursor-not-allowed rounded-full bg-[#CFCFC7]"
         disabled
         type="button"

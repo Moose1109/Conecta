@@ -5,6 +5,8 @@ import { PencilLine } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { UserAvatar } from "@/components/social/user-avatar";
+import { useTranslations } from "@/components/i18n/i18n-provider";
+import type { Translator } from "@/lib/i18n/translate";
 import type { AuthUser } from "@/lib/types";
 
 type ProfileStats = {
@@ -13,13 +15,14 @@ type ProfileStats = {
   followedVillages?: number;
 };
 
-function profileHandle(user?: AuthUser) {
+function profileHandle(user: AuthUser | undefined, t: Translator["t"]) {
   if (user?.username) return `@${user.username.replace(/^@/, "")}`;
-  return "Tu identidad en ConectaPueblos";
+  return t("profile.header.defaultIdentity");
 }
 
 export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: ProfileStats }) {
-  const name = user?.name ?? "Tu perfil";
+  const { t } = useTranslations();
+  const name = user?.name ?? t("profile.header.defaultName");
   const customBannerUrl = user?.bannerUrl?.trim();
 
   return (
@@ -27,7 +30,7 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
       <div className="relative h-44 bg-[#0E3325] sm:h-52 lg:h-60">
         {customBannerUrl ? (
           <>
-            <span className="sr-only">Portada de {name}</span>
+            <span className="sr-only">{t("profile.header.coverAlt", { name })}</span>
             <span
               aria-hidden="true"
               className="absolute inset-0 bg-cover bg-center"
@@ -36,7 +39,7 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
           </>
         ) : (
           <Image
-            alt="Paisaje rural de ConectaPueblos"
+            alt={t("profile.header.defaultCoverAlt")}
             className="object-cover"
             fill
             sizes="(max-width: 1024px) 100vw, 1100px"
@@ -58,26 +61,26 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="break-words text-3xl font-extrabold tracking-[-0.04em] text-[#0E3325] sm:text-4xl">{name}</h1>
               </div>
-              <p className="mt-1 truncate text-sm font-extrabold text-[#347A48]">{profileHandle(user)}</p>
+              <p className="mt-1 truncate text-sm font-extrabold text-[#347A48]">{profileHandle(user, t)}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2 sm:mt-4">
             <LinkButton className="gap-2" href="/settings" variant="secondary">
               <PencilLine aria-hidden="true" className="size-4" />
-              Editar perfil
+              {t("userMenu.editProfile.label")}
             </LinkButton>
           </div>
         </div>
 
         <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
           <p className="max-w-2xl text-sm leading-6 text-[#687269]">
-            {user?.bio ?? "Añade una bio para contar quién eres, qué lugares te inspiran y cómo participas en tu comunidad."}
+            {user?.bio ?? t("profile.header.defaultBio")}
           </p>
           <dl className="grid grid-cols-2 gap-4 rounded-2xl border border-[#184B3412] bg-[#F8F5EE] px-4 py-3 text-center min-[430px]:grid-cols-3 sm:gap-8 sm:px-6">
-            <Metric label="Publicaciones" value={stats.posts} />
-            <Metric label="Inscripciones" value={stats.activities} />
-            <Metric className="col-span-2 min-[430px]:col-span-1" label="Pueblos seguidos" value={stats.followedVillages} />
+            <Metric label={t("explore.postsLabel")} t={t} value={stats.posts} />
+            <Metric label={t("profile.header.activitiesMetricLabel")} t={t} value={stats.activities} />
+            <Metric className="col-span-2 min-[430px]:col-span-1" label={t("profile.header.followedVillagesLabel")} t={t} value={stats.followedVillages} />
           </dl>
         </div>
       </div>
@@ -85,12 +88,12 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
   );
 }
 
-function Metric({ className = "", label, value }: { className?: string; label: string; value?: number }) {
+function Metric({ className = "", label, t, value }: { className?: string; label: string; t: Translator["t"]; value?: number }) {
   return (
     <div className={`flex flex-col ${className}`}>
       <dt className="text-[10px] font-bold text-[#687269] sm:text-xs">{label}</dt>
       <dd
-        aria-label={value === undefined ? `${label}: dato no disponible` : undefined}
+        aria-label={value === undefined ? t("profile.header.metricUnavailable", { label }) : undefined}
         className="order-first mb-0.5 text-lg font-extrabold text-[#0E3325] sm:text-xl"
       >
         {value ?? "—"}

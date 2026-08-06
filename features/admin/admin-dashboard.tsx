@@ -12,13 +12,16 @@ import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Button } from "@/components/ui/button";
 import { Card, SectionHeader } from "@/components/ui/card";
 import { LoadingState } from "@/components/ui/loading-state";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { getActivitiesStrict } from "@/lib/api/activities.service";
 import { isUnauthorizedError } from "@/lib/api/client";
 import { logApiIssue } from "@/lib/api/error-message";
+import { formatPopulation } from "@/lib/utils";
 import { clearSession } from "@/lib/api/session";
 import { getVillagesStrict } from "@/lib/api/villages.service";
 import type { Activity, Village } from "@/lib/types";
+import type { Translator } from "@/lib/i18n/translate";
 
 type DashboardState =
   | { status: "loading" }
@@ -26,6 +29,7 @@ type DashboardState =
   | { status: "ready"; activities: Activity[]; villages: Village[] };
 
 export function AdminDashboard() {
+  const { t, tPlural, locale } = useTranslations();
   const { token } = useAuthSession();
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<DashboardState>({ status: "loading" });
@@ -65,9 +69,9 @@ export function AdminDashboard() {
     return (
       <section aria-labelledby="admin-loading-title">
         <span className="sr-only" id="admin-loading-title">
-          Cargando panel operativo
+          {t("admin.loadingTitleSr")}
         </span>
-        <LoadingState label="Cargando datos del panel de administración" variant="grid" />
+        <LoadingState label={t("admin.loadingLabel")} variant="grid" />
       </section>
     );
   }
@@ -79,10 +83,10 @@ export function AdminDashboard() {
           <ShieldCheck aria-hidden="true" className="size-6" />
         </span>
         <h1 className="mt-5 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">
-          No hemos podido cargar el panel
+          {t("admin.loadErrorTitle")}
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#687269]">
-          Tus permisos ya están confirmados, pero los catálogos no están disponibles ahora mismo.
+          {t("admin.loadErrorDescription")}
         </p>
         <Button
           className="mt-6"
@@ -93,7 +97,7 @@ export function AdminDashboard() {
           type="button"
         >
           <RefreshCw aria-hidden="true" className="size-4" />
-          Reintentar
+          {t("common.retry")}
         </Button>
       </Card>
     );
@@ -104,31 +108,31 @@ export function AdminDashboard() {
   return (
     <div>
       <SectionHeader
-        eyebrow="Administración"
-        title="Panel operativo"
-        description="Consulta los catálogos disponibles después de validar tus permisos de administración."
+        eyebrow={t("admin.eyebrow")}
+        title={t("admin.title")}
+        description={t("admin.description")}
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Metric icon={MapPinned} label="Pueblos cargados" value={villages.length} />
-        <Metric icon={CalendarDays} label="Actividades cargadas" value={activities.length} />
-        <PendingMetric label="Usuarios" />
-        <PendingMetric label="Inscripciones" />
+        <Metric icon={MapPinned} label={t("admin.villagesLoadedLabel")} value={villages.length} />
+        <Metric icon={CalendarDays} label={t("admin.activitiesLoadedLabel")} value={activities.length} />
+        <PendingMetric label={t("admin.usersLabel")} t={t} />
+        <PendingMetric label={t("admin.enrollmentsLabel")} t={t} />
       </div>
 
       <BackendPendingAlert
         actionHref="/community"
-        actionLabel="Ir a comunidad"
+        actionLabel={t("common.backendPending.actionLabel")}
         compact
         className="mt-5"
-        description="El catálogo de usuarios, los totales globales y las métricas de inscripciones necesitan endpoints administrativos. Los valores visibles corresponden solo a la página cargada (máximo 100 registros)."
+        description={t("admin.pendingDescription")}
       />
 
       <div className="mt-8 grid gap-6 xl:grid-cols-2">
         <AdminList
           actionHref="/villages"
-          emptyDescription="Todavía no hay pueblos disponibles en el catálogo."
-          emptyTitle="No hay pueblos"
+          emptyDescription={t("admin.noVillagesDescription")}
+          emptyTitle={t("admin.noVillagesTitle")}
           icon={MapPinned}
           rows={villages.map((village) => ({
             id: village.id,
@@ -136,26 +140,28 @@ export function AdminDashboard() {
             meta: [
               village.province,
               village.population > 0
-                ? `${new Intl.NumberFormat("es-ES").format(village.population)} hab.`
-                : "Población no disponible",
+                ? t("community.rightRail.populationLabel", { population: formatPopulation(village.population, locale) })
+                : t("admin.populationUnavailable"),
             ].join(" · "),
           }))}
-          title="Pueblos"
+          t={t}
+          title={t("navigation.villages.label")}
         />
         <AdminList
           actionHref="/activities"
-          emptyDescription="Todavía no hay actividades disponibles en el catálogo."
-          emptyTitle="No hay actividades"
+          emptyDescription={t("admin.noActivitiesDescription")}
+          emptyTitle={t("admin.noActivitiesTitle")}
           icon={CalendarDays}
           rows={activities.map((activity) => ({
             id: activity.id,
             main: activity.title,
             meta: [
               activity.category,
-              activity.capacity > 0 ? `${activity.capacity} plazas` : "Aforo no indicado",
+              activity.capacity > 0 ? tPlural("admin.capacitySpots", activity.capacity) : t("admin.capacityUnavailable"),
             ].join(" · "),
           }))}
-          title="Actividades"
+          t={t}
+          title={t("navigation.activities.label")}
         />
       </div>
     </div>
@@ -184,11 +190,11 @@ function Metric({
   );
 }
 
-function PendingMetric({ label }: { label: string }) {
+function PendingMetric({ label, t }: { label: string; t: Translator["t"] }) {
   return (
     <Card className="p-5">
       <p className="text-sm font-bold text-[#687269]">{label}</p>
-      <p className="mt-2 text-sm font-extrabold text-[#A95539]">Sin endpoint disponible</p>
+      <p className="mt-2 text-sm font-extrabold text-[#A95539]">{t("admin.noEndpointLabel")}</p>
     </Card>
   );
 }
@@ -199,6 +205,7 @@ function AdminList({
   emptyTitle,
   icon,
   rows,
+  t,
   title,
 }: {
   actionHref: string;
@@ -206,13 +213,14 @@ function AdminList({
   emptyTitle: string;
   icon: typeof MapPinned;
   rows: Array<{ id: string; main: string; meta: string }>;
+  t: Translator["t"];
   title: string;
 }) {
   if (rows.length === 0) {
     return (
       <EmptyState
         actionHref={actionHref}
-        actionLabel="Abrir catálogo"
+        actionLabel={t("admin.openCatalogAction")}
         description={emptyDescription}
         icon={icon}
         title={emptyTitle}

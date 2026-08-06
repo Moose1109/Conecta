@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, LoaderCircle, Plus } from "lucide-react";
 import { useKeyedOptimisticBoolean } from "@/components/social/use-keyed-optimistic-boolean";
 import { AppToast } from "@/components/ui/app-toast";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useAuthGuard } from "@/features/auth/use-auth-guard";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { requestCommunityDataRefresh } from "@/features/community/community-events";
@@ -18,8 +19,8 @@ import { clearSession, getStoredToken } from "@/lib/api/session";
 import { cn } from "@/lib/utils";
 
 export function FollowButton({
-  label = "Seguir pueblo",
-  followedLabel = "Siguiendo",
+  label,
+  followedLabel,
   className,
   initialFollowing = false,
   hydrateFromApi = false,
@@ -37,6 +38,9 @@ export function FollowButton({
   demo?: boolean;
 }) {
   const { user } = useAuthSession();
+  const { t } = useTranslations();
+  const resolvedLabel = label ?? t("social.follow.label");
+  const resolvedFollowedLabel = followedLabel ?? t("social.follow.followedLabel");
   const localKey = storageKey && user?.id
     ? `cp:user:${user.id}:village:${storageKey}:following`
     : undefined;
@@ -78,22 +82,20 @@ export function FollowButton({
     setMessageTone("error");
 
     if (!storageKey) {
-      setErrorMessage("No se pudo identificar el pueblo.");
+      setErrorMessage(t("social.follow.missingVillage"));
       return;
     }
 
     if (!interactionSupported) {
       setMessageTone("info");
       setErrorMessage(
-        demo
-          ? "Este pueblo forma parte de los datos de demostración y todavía no admite seguimiento persistente."
-          : "Este pueblo no está disponible para seguimiento persistente.",
+        demo ? t("social.follow.demoUnsupported") : t("social.follow.unsupported"),
       );
       return;
     }
 
     if (!token) {
-      requireAuth("Para seguir pueblos necesitas iniciar sesión.", () => undefined);
+      requireAuth(t("social.follow.authRequired"), () => undefined);
       return;
     }
 
@@ -115,12 +117,12 @@ export function FollowButton({
       setFollowing(!next);
       if (isUnauthorizedError(error)) {
         clearSession();
-        setErrorMessage("Tu sesión ha caducado. Inicia sesión nuevamente para continuar.");
+        setErrorMessage(t("social.sessionExpired"));
       } else if (isNotFoundError(error)) {
-        setErrorMessage("No encontramos este pueblo. Actualiza el contenido e inténtalo nuevamente.");
+        setErrorMessage(t("social.follow.villageNotFound"));
       } else {
         setErrorMessage(
-          getApiErrorMessage(error, "No se pudo actualizar el seguimiento."),
+          getApiErrorMessage(error, t, t("social.follow.genericError")),
         );
       }
     } finally {
@@ -149,7 +151,7 @@ export function FollowButton({
           }}
         >
           {isSubmitting ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin" /> : following ? <Check aria-hidden="true" className="size-4" /> : <Plus aria-hidden="true" className="size-4" />}
-          {following ? followedLabel : label}
+          {following ? resolvedFollowedLabel : resolvedLabel}
         </button>
       </span>
       <AppToast

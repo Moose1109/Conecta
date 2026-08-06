@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { CalendarCheck2, LoaderCircle, Plus } from "lucide-react";
 import { useKeyedOptimisticBoolean } from "@/components/social/use-keyed-optimistic-boolean";
 import { AppToast } from "@/components/ui/app-toast";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useAuthGuard } from "@/features/auth/use-auth-guard";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { requestCommunityDataRefresh } from "@/features/community/community-events";
@@ -37,6 +38,7 @@ export function JoinActivityButton({
   onInteractionStart?: () => void;
 }) {
   const { user } = useAuthSession();
+  const { t } = useTranslations();
   const localKey = storageKey && user?.id
     ? `cp:user:${user.id}:activity:${storageKey}:joined`
     : undefined;
@@ -78,22 +80,20 @@ export function JoinActivityButton({
     setMessageTone("error");
 
     if (!storageKey) {
-      setErrorMessage("No se pudo identificar la actividad.");
+      setErrorMessage(t("social.missingActivity"));
       return;
     }
 
     if (!interactionSupported) {
       setMessageTone("info");
       setErrorMessage(
-        demo
-          ? "Esta actividad forma parte de los datos de demostración y todavía no admite inscripciones persistentes."
-          : "Esta actividad no está disponible para inscripciones persistentes.",
+        demo ? t("social.join.demoUnsupported") : t("social.join.unsupported"),
       );
       return;
     }
 
     if (!token) {
-      requireAuth("Para apuntarte a una actividad necesitas iniciar sesión.", () => undefined);
+      requireAuth(t("social.join.authRequired"), () => undefined);
       return;
     }
 
@@ -116,12 +116,12 @@ export function JoinActivityButton({
       setJoined(!next);
       if (isUnauthorizedError(error)) {
         clearSession();
-        setErrorMessage("Tu sesión ha caducado. Inicia sesión nuevamente para continuar.");
+        setErrorMessage(t("social.sessionExpired"));
       } else if (isNotFoundError(error)) {
-        setErrorMessage("No encontramos esta actividad. Actualiza el contenido e inténtalo nuevamente.");
+        setErrorMessage(t("social.activityNotFound"));
       } else {
         setErrorMessage(
-          getApiErrorMessage(error, "No se pudo actualizar la inscripción."),
+          getApiErrorMessage(error, t, t("social.join.genericError")),
         );
       }
     } finally {
@@ -151,7 +151,7 @@ export function JoinActivityButton({
           }}
         >
           {isSubmitting ? <LoaderCircle aria-hidden="true" className="size-4 animate-spin" /> : joined ? <CalendarCheck2 aria-hidden="true" className="size-4" /> : <Plus aria-hidden="true" className="size-4" />}
-          {joined ? "Apuntado" : "Apuntarme"}
+          {joined ? t("social.join.joinedLabel") : t("social.join.joinCta")}
         </button>
       </span>
       <AppToast

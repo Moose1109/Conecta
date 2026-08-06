@@ -1,8 +1,11 @@
 import { Card } from "@/components/ui/card";
+import { getTranslations } from "@/lib/i18n/get-translations";
 
-export function ActivitiesPageSkeleton() {
+export async function ActivitiesPageSkeleton() {
+  const { t } = await getTranslations();
+
   return (
-    <div aria-busy="true" aria-label="Cargando actividades">
+    <div aria-busy="true" aria-label={t("activities.loadingAgendaAria")}>
       <div className="grid min-h-[310px] overflow-hidden rounded-[28px] bg-[#0E3325] lg:grid-cols-[0.86fr_1.14fr]">
         <div className="p-8 lg:p-10">
           <div className="skeleton-shimmer h-7 w-32 rounded-full bg-white/12" />
@@ -49,7 +52,7 @@ export function ActivitiesPageSkeleton() {
           </Card>
         ))}
       </div>
-      <span className="sr-only">Cargando la agenda local</span>
+      <span className="sr-only">{t("activities.loadingAgendaSr")}</span>
     </div>
   );
 }

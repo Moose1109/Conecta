@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 
 const COLLAPSIBLE_DESCRIPTION_LENGTH = 520;
 
 export function VillageDescription({ description }: { description: string }) {
+  const { t } = useTranslations();
   const [expanded, setExpanded] = useState(false);
   const paragraphs = description
     .split(/\n+/)
@@ -45,7 +47,7 @@ export function VillageDescription({ description }: { description: string }) {
           ) : (
             <ChevronDown aria-hidden="true" className="size-4" />
           )}
-          {expanded ? "Mostrar menos" : "Leer más"}
+          {expanded ? t("villages.detail.showLess") : t("villages.detail.showMore")}
         </button>
       ) : null}
     </div>

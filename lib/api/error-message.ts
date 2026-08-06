@@ -1,48 +1,52 @@
 import { ApiError } from "@/lib/api/client";
+import type { Translator } from "@/lib/i18n/translate";
+import type { TranslationKey } from "@/lib/i18n/types";
 
-const knownBackendMessages: Record<string, string> = {
-  "Activity is full": "La actividad ya no tiene plazas disponibles.",
-  "Activity slug already exists": "Ya existe una actividad con un identificador equivalente.",
-  "Email already registered": "Ya existe una cuenta con este correo electrónico.",
-  "Invalid email or password": "El email o la contraseña no son correctos.",
-  "Username already taken": "Ese nombre de usuario ya está en uso.",
-  "Village slug already exists": "Ya existe un pueblo con ese identificador.",
+const knownBackendDetailKeys: Record<string, TranslationKey> = {
+  "Activity is full": "errors.backend.activityFull",
+  "Activity slug already exists": "errors.backend.activitySlugTaken",
+  "Email already registered": "errors.backend.emailTaken",
+  "Invalid email or password": "errors.backend.invalidCredentials",
+  "Username already taken": "errors.backend.usernameTaken",
+  "Village slug already exists": "errors.backend.villageSlugTaken",
 };
 
-function knownBackendDetail(error: ApiError) {
-  return typeof error.detail === "string"
-    ? knownBackendMessages[error.detail]
-    : undefined;
+function knownBackendDetail(error: ApiError, t: Translator["t"]) {
+  const key = typeof error.detail === "string" ? knownBackendDetailKeys[error.detail] : undefined;
+  return key ? t(key) : undefined;
 }
 
+/**
+ * Maps known backend error shapes to a localized interface message. Free
+ * text returned by the backend is never translated or shown verbatim — only
+ * codes/details we explicitly recognize are mapped, everything else falls
+ * back to a generic localized message while the technical detail stays
+ * available to `logApiIssue` for diagnostics.
+ */
 export function getApiErrorMessage(
   error: unknown,
-  fallback = "Ha ocurrido un problema inesperado. Inténtalo de nuevo.",
-) {
-  if (!(error instanceof ApiError)) return fallback;
+  t: Translator["t"],
+  fallback?: string,
+): string {
+  const resolvedFallback = fallback ?? t("errors.generic");
+  if (!(error instanceof ApiError)) return resolvedFallback;
 
-  const knownMessage = knownBackendDetail(error);
+  const knownMessage = knownBackendDetail(error, t);
   if (knownMessage) return knownMessage;
 
-  if (error.type === "configuration") {
-    return "La URL de la API no está configurada.";
-  }
-  if (error.type === "timeout") {
-    return "La solicitud tardó demasiado.";
-  }
-  if (error.isNetworkError || error.type === "network") {
-    return "No pudimos conectar con la API.";
-  }
-  if (error.status === 400) return "No se pudo completar la solicitud. Revisa los datos enviados.";
-  if (error.status === 401) return "Las credenciales no son correctas o tu sesión ha caducado.";
-  if (error.status === 403) return "No tienes permiso para realizar esta acción.";
-  if (error.status === 404) return "No encontramos el contenido solicitado.";
-  if (error.status === 409) return "Esta acción ya fue realizada o entra en conflicto con el estado actual.";
-  if (error.status === 422) return "Revisa los campos indicados.";
-  if (error.status === 429) return "Has realizado demasiadas solicitudes. Inténtalo más tarde.";
-  if (error.status >= 500) return "Ha ocurrido un problema en el servidor.";
+  if (error.type === "configuration") return t("errors.configuration");
+  if (error.type === "timeout") return t("errors.timeout");
+  if (error.isNetworkError || error.type === "network") return t("errors.network");
+  if (error.status === 400) return t("errors.status400");
+  if (error.status === 401) return t("errors.status401");
+  if (error.status === 403) return t("errors.status403");
+  if (error.status === 404) return t("errors.status404");
+  if (error.status === 409) return t("errors.status409");
+  if (error.status === 422) return t("errors.status422");
+  if (error.status === 429) return t("errors.status429");
+  if (error.status >= 500) return t("errors.status5xx");
 
-  return fallback;
+  return resolvedFallback;
 }
 
 export function logApiIssue(context: string, error: unknown) {
@@ -51,7 +55,7 @@ export function logApiIssue(context: string, error: unknown) {
   if (error instanceof ApiError) {
     console.warn(context, {
       code: error.code,
-      message: getApiErrorMessage(error),
+      detail: error.detail,
       path: error.path,
       status: error.status,
       type: error.type,

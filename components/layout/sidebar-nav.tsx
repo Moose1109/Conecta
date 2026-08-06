@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PenLine } from "lucide-react";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import {
   primaryNavigationItems,
   secondaryNavigationItems,
@@ -16,12 +17,13 @@ import { cn } from "@/lib/utils";
 export function SidebarNav() {
   const pathname = usePathname();
   const { token } = useAuthSession();
+  const { t } = useTranslations();
 
   return (
     <div className="grid gap-4 lg:sticky lg:top-[92px]">
       <Card className="overflow-hidden p-3">
-        <p className="eyebrow px-2 pb-2 pt-1">Explorar</p>
-        <nav aria-label="Navegación social" className="grid gap-1.5">
+        <p className="eyebrow px-2 pb-2 pt-1">{t("navigation.exploreSection")}</p>
+        <nav aria-label={t("navigation.socialNavLabel")} className="grid gap-1.5">
           {primaryNavigationItems.map((link) => {
             const active = isNavigationRoute(pathname, link.href);
             const Icon = link.icon;
@@ -40,8 +42,8 @@ export function SidebarNav() {
                   <Icon aria-hidden="true" className="size-5" strokeWidth={1.8} />
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-extrabold">{link.label}</span>
-                  <span className={cn("mt-0.5 block text-[11px] font-semibold leading-4 text-[#687269]", active && "text-white/72")}>{link.meta}</span>
+                  <span className="block font-extrabold">{t(link.labelKey)}</span>
+                  <span className={cn("mt-0.5 block text-[11px] font-semibold leading-4 text-[#687269]", active && "text-white/72")}>{t(link.metaKey)}</span>
                 </span>
               </Link>
             );
@@ -51,8 +53,8 @@ export function SidebarNav() {
         {token ? (
           <>
             <div className="mx-2 my-3 h-px bg-[#184B3414]" />
-            <p className="eyebrow px-2 pb-2">Mi espacio</p>
-            <nav aria-label="Accesos personales" className="grid gap-1">
+            <p className="eyebrow px-2 pb-2">{t("navigation.mySpaceSection")}</p>
+            <nav aria-label={t("navigation.personalNavLabel")} className="grid gap-1">
               {secondaryNavigationItems.map((link) => {
                 const active = isNavigationRoute(pathname, link.href);
                 const Icon = link.icon;
@@ -68,7 +70,7 @@ export function SidebarNav() {
                     )}
                   >
                     <Icon aria-hidden="true" className="size-[18px]" strokeWidth={1.8} />
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 );
               })}
@@ -89,14 +91,14 @@ export function SidebarNav() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0E3325]/70 via-[#0E3325]/88 to-[#0E3325]" />
         <div className="relative">
-          <p className="font-editorial text-2xl font-semibold leading-7">Aporta vida<br />a tu pueblo</p>
-          <p className="mt-3 text-xs font-medium leading-5 text-white/72">Publica, organiza o recomienda algo que sume a tu comunidad.</p>
+          <p className="font-editorial text-2xl font-semibold leading-7">{t("navigation.sidebarPromo.title")}</p>
+          <p className="mt-3 text-xs font-medium leading-5 text-white/72">{t("navigation.sidebarPromo.description")}</p>
           <Link
             className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-extrabold text-[#184B34] transition-transform hover:-translate-y-0.5"
             href="/community#publicar"
           >
             <PenLine aria-hidden="true" className="size-4" />
-            Crear publicación
+            {t("navigation.sidebarPromo.cta")}
           </Link>
         </div>
       </Card>

@@ -320,13 +320,6 @@ export const messagesConceptConversations: ConceptConversation[] = [
   },
 ];
 
-export const conceptFilterLabels: Record<ConceptConversationFilter, string> = {
-  activities: "Actividades",
-  all: "Todas",
-  unread: "No leídas",
-  villages: "Pueblos",
-};
-
 export const conceptFilters = [
   "all",
   "unread",

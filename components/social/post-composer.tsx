@@ -18,6 +18,7 @@ import { SocialActionButton } from "@/components/social/social-action-button";
 import { UserAvatar } from "@/components/social/user-avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useAuthGuard } from "@/features/auth/use-auth-guard";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { requestCommunityDataRefresh } from "@/features/community/community-events";
@@ -43,15 +44,6 @@ type ComposerMessage = {
 
 type PendingComposerAction = "foto" | "aviso" | "encuesta";
 
-const pendingMessages: Record<PendingComposerAction, string> = {
-  foto:
-    "Fotos y vídeo estarán disponibles cuando el servicio permita subir archivos. Puedes publicar el texto ahora.",
-  aviso:
-    "Los avisos con formato propio están preparados en el frontend y necesitan soporte del servicio para publicarse.",
-  encuesta:
-    "Las encuestas estarán disponibles cuando el servicio incorpore preguntas y opciones de respuesta.",
-};
-
 export function PostComposer({
   user,
   villages = [],
@@ -62,6 +54,7 @@ export function PostComposer({
   demoFeed?: boolean;
 }) {
   const router = useRouter();
+  const { t } = useTranslations();
   const { user: sessionUser } = useAuthSession();
   const displayUser = sessionUser ?? user;
   const [content, setContent] = useState("");
@@ -69,6 +62,12 @@ export function PostComposer({
   const [message, setMessage] = useState<ComposerMessage | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { authModal, requireAuth } = useAuthGuard();
+
+  const pendingMessages: Record<PendingComposerAction, string> = {
+    foto: t("community.composer.pendingPhoto"),
+    aviso: t("community.composer.pendingNotice"),
+    encuesta: t("community.composer.pendingPoll"),
+  };
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -78,7 +77,7 @@ export function PostComposer({
     const token = getStoredToken();
 
     if (!token) {
-      requireAuth("Para publicar en la comunidad necesitas iniciar sesión.", () => undefined);
+      requireAuth(t("community.composer.authRequiredPublish"), () => undefined);
       return;
     }
 
@@ -90,19 +89,19 @@ export function PostComposer({
     const selectedVillage = villages.find((village) => village.id === villageId);
 
     if (cleanContent.length < 2) {
-      setMessage({ kind: "error", text: "La publicación debe tener al menos 2 caracteres." });
+      setMessage({ kind: "error", text: t("community.composer.errorMinLength") });
       setExpanded(true);
       return;
     }
 
     if (title && title.length < 2) {
-      setMessage({ kind: "error", text: "El título debe tener al menos 2 caracteres o quedar vacío." });
+      setMessage({ kind: "error", text: t("community.composer.errorTitleMinLength") });
       setExpanded(true);
       return;
     }
 
     if (title.length > 180) {
-      setMessage({ kind: "error", text: "El título no puede superar 180 caracteres." });
+      setMessage({ kind: "error", text: t("community.composer.errorTitleMaxLength") });
       setExpanded(true);
       return;
     }
@@ -110,7 +109,7 @@ export function PostComposer({
     if (imageUrl && !isRenderableImageUrl(imageUrl)) {
       setMessage({
         kind: "error",
-        text: "La imagen debe usar una URL http(s) de un origen configurado.",
+        text: t("community.composer.errorImageUrl"),
       });
       setExpanded(true);
       return;
@@ -119,7 +118,7 @@ export function PostComposer({
     if (selectedVillage && !isPersistedVillage(selectedVillage)) {
       setMessage({
         kind: "pending",
-        text: "Este pueblo pertenece a los datos de demostración y no puede asociarse a una publicación persistente.",
+        text: t("community.composer.pendingVillageDemo"),
       });
       setExpanded(true);
       return;
@@ -139,8 +138,8 @@ export function PostComposer({
       setMessage({
         kind: "success",
         text: demoFeed
-          ? "La publicación fue creada correctamente, pero el listado actual utiliza datos de demostración. Para verla en el feed real, la API debe ejecutarse sin modo mock."
-          : "Publicación creada y enviada a la comunidad.",
+          ? t("community.composer.successDemo")
+          : t("community.composer.successReal"),
       });
       setContent("");
       setExpanded(false);
@@ -152,14 +151,15 @@ export function PostComposer({
         clearSession();
         setMessage({
           kind: "error",
-          text: "Tu sesión ha caducado. Vuelve a iniciar sesión para publicar.",
+          text: t("community.composer.sessionExpiredToPublish"),
         });
       } else {
         setMessage({
           kind: "error",
           text: getApiErrorMessage(
             error,
-            "No se pudo publicar. Comprueba los datos e inténtalo de nuevo.",
+            t,
+            t("community.composer.publishFallbackError"),
           ),
         });
       }
@@ -171,10 +171,10 @@ export function PostComposer({
   function showPendingComposerAction(action: PendingComposerAction) {
     const authMessage =
       action === "foto"
-        ? "Para subir fotos necesitas iniciar sesión."
+        ? t("community.composer.authRequiredPhoto")
         : action === "aviso"
-          ? "Para crear avisos necesitas iniciar sesión."
-          : "Para crear encuestas necesitas iniciar sesión.";
+          ? t("community.composer.authRequiredNotice")
+          : t("community.composer.authRequiredPoll");
 
     requireAuth(authMessage, () => {
       setMessage({ kind: "pending", text: pendingMessages[action] });
@@ -202,7 +202,7 @@ export function PostComposer({
                 className="mt-0.5 size-12 ring-2 ring-white sm:size-[52px]"
               />
               <label className="min-w-0 flex-1">
-                <span className="sr-only">Contenido de la publicación</span>
+                <span className="sr-only">{t("community.composer.contentLabel")}</span>
                 <textarea
                   className={cn(
                     "block min-h-14 w-full resize-none rounded-[22px] border border-[#184B3412] bg-[#F3F0E9] px-5 py-4 text-sm font-medium leading-6 text-[#18231D] outline-none transition-all duration-200 placeholder:text-[#687269]/82 hover:bg-[#F0EDE5] focus:border-[#347A4830] focus:bg-white focus:ring-4 focus:ring-[#347A4816] sm:text-[15px]",
@@ -216,7 +216,7 @@ export function PostComposer({
                     }
                   }}
                   onFocus={() => setExpanded(true)}
-                  placeholder="¿Qué está pasando en tu pueblo?"
+                  placeholder={t("community.composer.placeholder")}
                   value={content}
                 />
               </label>
@@ -226,42 +226,45 @@ export function PostComposer({
               <div className="mt-3 grid gap-3">
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_210px]">
                   <label>
-                    <span className="sr-only">Título opcional</span>
+                    <span className="sr-only">{t("community.composer.titleLabel")}</span>
                     <input
                       className="field min-h-11 rounded-[14px] py-2.5 text-sm"
                       maxLength={180}
                       minLength={2}
                       name="title"
-                      placeholder="Añade un título (opcional)"
+                      placeholder={t("community.composer.titlePlaceholder")}
                     />
                   </label>
                   <label>
-                    <span className="sr-only">Pueblo relacionado</span>
+                    <span className="sr-only">{t("community.composer.villageLabel")}</span>
                     <select
                       className="field min-h-11 rounded-[14px] py-2.5 text-sm"
                       defaultValue=""
                       name="villageId"
                     >
-                      <option value="">Sin pueblo asociado</option>
+                      <option value="">{t("community.composer.villageNone")}</option>
                       {villages.map((village) => (
                         <option
                           disabled={!isPersistedVillage(village)}
                           key={village.id}
                           value={village.id}
                         >
-                          {village.name}{village.dataSource === "demo" ? " (demostración)" : ""}
+                          {village.name}
+                          {village.dataSource === "demo"
+                            ? t("community.composer.villageDemoSuffix")
+                            : ""}
                         </option>
                       ))}
                     </select>
                   </label>
                 </div>
                 <label>
-                  <span className="sr-only">URL de imagen opcional</span>
+                  <span className="sr-only">{t("community.composer.imageLabel")}</span>
                   <input
                     className="field min-h-11 rounded-[14px] py-2.5 text-sm"
                     inputMode="url"
                     name="imageUrl"
-                    placeholder="URL de imagen (opcional)"
+                    placeholder={t("community.composer.imagePlaceholder")}
                     type="url"
                   />
                 </label>
@@ -277,14 +280,14 @@ export function PostComposer({
                 type="button"
               >
                 <ImagePlus aria-hidden="true" className="size-[18px] text-[#347A48]" />
-                Foto/vídeo
+                {t("community.composer.photoAction")}
               </SocialActionButton>
               <Link
                 className="inline-flex min-h-11 items-center justify-start gap-2 rounded-xl px-3 text-xs font-extrabold text-[#435048] transition-colors hover:bg-[#184B3409] hover:text-[#184B34] sm:text-[13px]"
                 href="/activities/create"
               >
                 <CalendarDays aria-hidden="true" className="size-[18px] text-[#D7A63C]" />
-                Actividad
+                {t("community.composer.activityAction")}
               </Link>
               <SocialActionButton
                 className="justify-start text-[#435048]"
@@ -292,7 +295,7 @@ export function PostComposer({
                 type="button"
               >
                 <Megaphone aria-hidden="true" className="size-[18px] text-[#C96D4A]" />
-                Aviso
+                {t("community.composer.noticeAction")}
               </SocialActionButton>
               <SocialActionButton
                 className="justify-start text-[#435048]"
@@ -300,7 +303,7 @@ export function PostComposer({
                 type="button"
               >
                 <BarChart3 aria-hidden="true" className="size-[18px] text-[#60818A]" />
-                Encuesta
+                {t("community.composer.pollAction")}
               </SocialActionButton>
             </div>
             <Button
@@ -308,7 +311,7 @@ export function PostComposer({
               disabled={isSubmitting}
               type="submit"
             >
-              {isSubmitting ? "Publicando..." : "Publicar"}
+              {isSubmitting ? t("community.composer.submitting") : t("community.composer.submit")}
               <Send aria-hidden="true" className="size-4" />
             </Button>
           </div>
@@ -325,7 +328,7 @@ export function PostComposer({
                 <MessageIcon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
                 <p className="min-w-0 flex-1">{message.text}</p>
                 <button
-                  aria-label="Cerrar mensaje"
+                  aria-label={t("common.dismissMessage")}
                   className="grid size-11 shrink-0 place-items-center rounded-full hover:bg-black/5"
                   onClick={() => setMessage(null)}
                   type="button"

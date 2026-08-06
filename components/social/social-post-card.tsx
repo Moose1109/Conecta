@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
@@ -5,21 +7,23 @@ import { SocialPostActions } from "@/components/social/social-post-actions";
 import { PostTrustMenu } from "@/components/social/post-trust-menu";
 import { UserAvatar } from "@/components/social/user-avatar";
 import { Card } from "@/components/ui/card";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { isOwnPost } from "@/features/trust/ownership";
 import { getPostCapabilities } from "@/lib/api/entity-capabilities";
 import type { CommunityPost } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
+import type { Translator } from "@/lib/i18n/translate";
 
-function readableDate(value: string) {
+function readableDate(value: string, t: Translator["t"], locale: Translator["locale"]) {
   if (!value) {
-    return "Fecha no disponible";
+    return t("community.postCard.dateUnavailable");
   }
 
   try {
-    return formatDate(value);
+    return formatDate(value, locale);
   } catch {
-    return "Fecha no disponible";
+    return t("community.postCard.dateUnavailable");
   }
 }
 
@@ -30,7 +34,8 @@ export function SocialPostCard({
   hydrateFromApi?: boolean;
   post: CommunityPost;
 }) {
-  const villageName = post.villageName ?? "Sin pueblo asociado";
+  const { t, locale } = useTranslations();
+  const villageName = post.villageName ?? t("community.composer.villageNone");
   const comments = post.commentsCount ?? post.comments;
   const showTitle = Boolean(post.title.trim() && post.title.trim().toLowerCase() !== "publicación");
   const capabilities = getPostCapabilities(post);
@@ -69,7 +74,7 @@ export function SocialPostCard({
                   <span>{villageName}</span>
                 )}
                 <span aria-hidden="true" className="size-1 rounded-full bg-[#78947D]/55" />
-                <time dateTime={post.date}>{readableDate(post.date)}</time>
+                <time dateTime={post.date}>{readableDate(post.date, t, locale)}</time>
               </div>
             </div>
             {ownPost ? null : <PostTrustMenu />}
@@ -88,7 +93,7 @@ export function SocialPostCard({
         {post.image ? (
           <div className="relative aspect-[4/3] overflow-hidden bg-[#E9E9E1] sm:mx-4 sm:mb-4 sm:aspect-[16/8] sm:rounded-[18px]">
             <Image
-              alt={showTitle ? post.title : `Publicación de ${post.author}`}
+              alt={showTitle ? post.title : t("community.postCard.imageAlt", { author: post.author })}
               className="object-cover transition-transform duration-300 hover:scale-[1.015]"
               fill
               sizes="(max-width: 767px) 100vw, (max-width: 1279px) 720px, 650px"

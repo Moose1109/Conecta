@@ -24,36 +24,16 @@ import {
 import { UserAvatar } from "@/components/social/user-avatar";
 import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import {
   type ConceptConversation,
   type ConceptMessage,
   type ConceptSharedResource,
 } from "@/features/messages/messages-concept-data";
+import type { Translator } from "@/lib/i18n/translate";
 import { cn } from "@/lib/utils";
 
 export type ThreadPendingAction = "attachment" | "more" | "send";
-
-const pendingContent: Record<ThreadPendingAction, { description: string; title: string }> = {
-  attachment: {
-    description: "Adjuntar archivos requiere validación, límites de tamaño y almacenamiento backend. No se ha abierto ningún selector ni subido ningún archivo.",
-    title: "Adjuntos no disponibles",
-  },
-  more: {
-    description: "Bloqueo, reportes y moderación necesitan autorización real en el backend. Ninguna acción se ha ejecutado.",
-    title: "Acciones de confianza pendientes",
-  },
-  send: {
-    description: "El borrador permanece en el compositor porque no existe un endpoint de mensajes. No se ha enviado, guardado ni añadido nada al historial.",
-    title: "Envío no disponible",
-  },
-};
-
-const kindLabels: Record<ConceptConversation["kind"], string> = {
-  activity: "Actividad conceptual",
-  community: "Grupo comunitario conceptual",
-  individual: "Conversación individual conceptual",
-  village: "Pueblo conceptual",
-};
 
 export function ConversationThread({
   conversation,
@@ -74,6 +54,27 @@ export function ConversationThread({
   onToggleDetails: () => void;
   pendingAction?: ThreadPendingAction;
 }) {
+  const { t } = useTranslations();
+  const pendingContent: Record<ThreadPendingAction, { description: string; title: string }> = {
+    attachment: {
+      description: t("messages.thread.pendingAttachmentDescription"),
+      title: t("messages.thread.pendingAttachmentTitle"),
+    },
+    more: {
+      description: t("messages.thread.pendingMoreDescription"),
+      title: t("messages.thread.pendingMoreTitle"),
+    },
+    send: {
+      description: t("messages.thread.pendingSendDescription"),
+      title: t("messages.thread.pendingSendTitle"),
+    },
+  };
+  const kindLabels: Record<ConceptConversation["kind"], string> = {
+    activity: t("messages.thread.kindActivity"),
+    community: t("messages.thread.kindCommunity"),
+    individual: t("messages.thread.kindIndividual"),
+    village: t("messages.thread.kindVillage"),
+  };
   const [draft, setDraft] = useState("");
   const historyRef = useRef<HTMLDivElement>(null);
 
@@ -95,7 +96,7 @@ export function ConversationThread({
     >
       <header className="flex min-w-0 shrink-0 items-center gap-2 border-b border-border bg-white px-3 py-3 sm:px-4">
         <button
-          aria-label="Volver a la lista de conversaciones"
+          aria-label={t("messages.thread.backAria")}
           className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-white text-primary shadow-sm md:hidden"
           type="button"
           onClick={onBack}
@@ -105,7 +106,7 @@ export function ConversationThread({
         <UserAvatar
           className="size-11 ring-2 ring-white sm:size-12"
           initials={conversation.initials}
-          name={`${conversation.name}, identidad conceptual`}
+          name={`${conversation.name}${t("messages.panel.identityConceptSuffix")}`}
         />
         <div className="min-w-0 flex-1">
           <h2
@@ -123,7 +124,7 @@ export function ConversationThread({
         <button
           aria-controls="conversation-concept-details"
           aria-expanded={detailsOpen}
-          aria-label={detailsOpen ? "Ocultar información conceptual" : "Mostrar información conceptual"}
+          aria-label={detailsOpen ? t("messages.thread.hideInfoAria") : t("messages.thread.showInfoAria")}
           className={cn(
             "grid size-11 shrink-0 place-items-center rounded-full border border-border bg-white text-primary transition-colors hover:bg-[#F5F6F1]",
             detailsOpen && "bg-[#EEF3EC]",
@@ -134,18 +135,18 @@ export function ConversationThread({
           <Info aria-hidden="true" className="size-5" />
         </button>
         <button
-          aria-label="Mostrar dependencia de acciones de confianza"
+          aria-label={t("messages.thread.trustActionsAria")}
           className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-white text-primary transition-colors hover:bg-[#F5F6F1]"
-          title="Reportar o bloquear · requiere backend"
+          title={t("messages.thread.trustActionsTitle")}
           type="button"
           onClick={() => onPendingAction("more")}
         >
           <MoreHorizontal aria-hidden="true" className="size-5" />
         </button>
         <button
-          aria-label="Cerrar conversación seleccionada"
+          aria-label={t("messages.thread.closeConversationAria")}
           className="hidden size-11 shrink-0 place-items-center rounded-full border border-border bg-white text-text-muted transition-colors hover:text-primary md:grid"
-          title="Cerrar conversación"
+          title={t("messages.thread.closeConversationTitle")}
           type="button"
           onClick={onClearSelection}
         >
@@ -173,7 +174,7 @@ export function ConversationThread({
               <p className="mt-1 text-xs leading-5 text-text-muted">{conversation.about}</p>
             </div>
             <button
-              aria-label="Cerrar información conceptual"
+              aria-label={t("messages.thread.closeInfoAria")}
               className="grid size-11 shrink-0 place-items-center rounded-full text-text-muted hover:bg-white hover:text-primary"
               type="button"
               onClick={onToggleDetails}
@@ -189,7 +190,7 @@ export function ConversationThread({
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5 sm:py-5"
         tabIndex={0}
       >
-        <ol aria-label={`Historial conceptual de ${conversation.name}`} className="mx-auto grid w-full max-w-3xl gap-5">
+        <ol aria-label={t("messages.thread.historyAriaLabel", { name: conversation.name })} className="mx-auto grid w-full max-w-3xl gap-5">
           {conversation.days.map((day) => (
             <li key={day.label}>
               <div className="mb-4 flex items-center gap-3" role="separator">
@@ -202,7 +203,7 @@ export function ConversationThread({
               <ul className="grid gap-3">
                 {day.messages.map((message) => (
                   <li className="min-w-0" key={message.id}>
-                    <MessageBubble message={message} />
+                    <MessageBubble message={message} t={t} />
                   </li>
                 ))}
               </ul>
@@ -222,48 +223,51 @@ export function ConversationThread({
         ) : null}
         <form className="mx-auto flex max-w-3xl items-end gap-2" onSubmit={handleSubmit}>
           <button
-            aria-label="Mostrar dependencia para adjuntar un archivo"
+            aria-label={t("messages.thread.attachmentAria")}
             className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-[#FBFAF7] text-primary transition-colors hover:bg-[#F4F6F1]"
-            title="Adjuntar · requiere backend"
+            title={t("messages.thread.attachmentTitle")}
             type="button"
             onClick={() => onPendingAction("attachment")}
           >
             <Paperclip aria-hidden="true" className="size-5" />
           </button>
           <label className="min-w-0 flex-1">
-            <span className="sr-only">Borrador conceptual del mensaje</span>
+            <span className="sr-only">{t("messages.thread.draftLabel")}</span>
             <textarea
               className="min-h-11 max-h-28 w-full resize-none rounded-[22px] border border-border bg-[#FBFAF7] px-4 py-2.5 text-sm leading-6 text-text-primary outline-none transition focus:border-forest-mid focus:bg-white focus:ring-4 focus:ring-[#347A4818]"
-              placeholder="Escribe un mensaje de ejemplo..."
+              placeholder={t("messages.thread.draftPlaceholder")}
               rows={1}
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
             />
           </label>
           <button
-            aria-label="Intentar enviar el borrador conceptual"
+            aria-label={t("messages.thread.sendAria")}
             className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-[0_8px_22px_rgba(24,75,52,0.2)] transition-colors hover:bg-forest-deep disabled:bg-[#78947D]"
             disabled={!draft.trim()}
-            title={draft.trim() ? "Mostrar dependencia de envío" : "Escribe un borrador para probar el estado pendiente"}
+            title={draft.trim() ? t("messages.thread.sendTitleReady") : t("messages.thread.sendTitleEmpty")}
             type="submit"
           >
             <Send aria-hidden="true" className="size-5" />
           </button>
         </form>
         <p className="mx-auto mt-2 max-w-3xl text-center text-[10px] font-semibold text-text-muted">
-          Vista conceptual: escribir no guarda ni envía contenido.
+          {t("messages.thread.composerDisclaimer")}
         </p>
       </div>
     </section>
   );
 }
 
-function MessageBubble({ message }: { message: ConceptMessage }) {
+function MessageBubble({ message, t }: { message: ConceptMessage; t: Translator["t"] }) {
   const outgoing = message.direction === "outgoing";
 
   return (
     <article
-      aria-label={`${outgoing ? "Mensaje saliente" : "Mensaje entrante"} conceptual a las ${message.time}`}
+      aria-label={t("messages.thread.messageAriaLabel", {
+        direction: outgoing ? t("messages.thread.outgoingMessageLabel") : t("messages.thread.incomingMessageLabel"),
+        time: message.time,
+      })}
       className={cn(
         "w-fit min-w-0 max-w-[88%] rounded-[20px] border px-4 py-3 shadow-[0_8px_22px_rgba(43,55,38,0.045)] sm:max-w-[78%]",
         outgoing
@@ -280,7 +284,7 @@ function MessageBubble({ message }: { message: ConceptMessage }) {
           {message.content}
         </p>
       ) : null}
-      {message.sharedResource ? <SharedContentCard resource={message.sharedResource} /> : null}
+      {message.sharedResource ? <SharedContentCard resource={message.sharedResource} t={t} /> : null}
       <div className={cn("mt-1.5 flex items-center justify-end gap-1.5 text-[10px] font-semibold text-text-muted", message.sharedResource && "px-2") }>
         <span>{message.time}</span>
         {message.readState ? (
@@ -294,13 +298,13 @@ function MessageBubble({ message }: { message: ConceptMessage }) {
   );
 }
 
-function SharedContentCard({ resource }: { resource: ConceptSharedResource }) {
+function SharedContentCard({ resource, t }: { resource: ConceptSharedResource; t: Translator["t"] }) {
   return (
     <div className="overflow-hidden rounded-[16px] border border-border bg-[#FFFCF7]">
       <div className="grid min-w-0 grid-cols-[88px_minmax(0,1fr)] sm:grid-cols-[116px_minmax(0,1fr)]">
         <div className="relative min-h-28 bg-[#E7E5DE]">
           <Image
-            alt={`Imagen local de ejemplo para ${resource.title}`}
+            alt={t("messages.thread.sharedImageAlt", { title: resource.title })}
             className="object-cover"
             fill
             loading="eager"
@@ -308,7 +312,7 @@ function SharedContentCard({ resource }: { resource: ConceptSharedResource }) {
             src={resource.image}
           />
           <span className="absolute left-2 top-2 rounded-full bg-white/92 px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-primary shadow-sm">
-            Ejemplo
+            {t("messages.thread.sharedExampleBadge")}
           </span>
         </div>
         <div className="min-w-0 p-3">
@@ -318,7 +322,7 @@ function SharedContentCard({ resource }: { resource: ConceptSharedResource }) {
             ) : (
               <Landmark aria-hidden="true" className="size-3.5" />
             )}
-            {resource.type === "activity" ? "Actividad conceptual" : "Pueblo conceptual"}
+            {resource.type === "activity" ? t("stories.ownerType.activity") : t("stories.ownerType.village")}
           </p>
           <p className="mt-1 line-clamp-2 text-xs font-extrabold leading-5 text-text-primary sm:text-sm">
             {resource.title}
@@ -343,8 +347,10 @@ function SharedContentCard({ resource }: { resource: ConceptSharedResource }) {
           type="button"
           variant="secondary"
         >
-          Ver {resource.type === "activity" ? "actividad" : "pueblo"}
-          <span className="sr-only">, recurso conceptual sin identificador ni ruta persistente</span>
+          {t("messages.thread.viewResourceLabel", {
+            type: resource.type === "activity" ? t("messages.thread.viewActivityLabel") : t("messages.thread.viewVillageLabel"),
+          })}
+          <span className="sr-only">{t("messages.thread.viewResourceSrSuffix")}</span>
         </Button>
       </div>
     </div>

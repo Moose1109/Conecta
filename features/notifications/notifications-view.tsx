@@ -6,11 +6,13 @@ import { Bell, CheckCheck } from "lucide-react";
 import { BackendPendingAlert } from "@/components/ui/backend-pending-alert";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { cn } from "@/lib/utils";
 
 type Filter = "all" | "unread";
 
 export function NotificationsView() {
+  const { t } = useTranslations();
   const [filter, setFilter] = useState<Filter>("all");
   const tabRefs = useRef<Record<Filter, HTMLButtonElement | null>>({
     all: null,
@@ -33,11 +35,11 @@ export function NotificationsView() {
 
   return (
     <>
-      <PageHeader eyebrow="Centro social" title="Notificaciones" description="Novedades de publicaciones, actividades y pueblos seguidos en un solo espacio." />
-      <BackendPendingAlert actionHref="/community" actionLabel="Ir a comunidad" compact className="mb-5" description="El backend todavía no expone un endpoint real de notificaciones. La vista permanece vacía para no inventar avisos." />
+      <PageHeader eyebrow={t("notifications.bell.eyebrow")} title={t("navigation.notifications.label")} description={t("notifications.page.description")} />
+      <BackendPendingAlert actionHref="/community" actionLabel={t("common.backendPending.actionLabel")} compact className="mb-5" description={t("notifications.page.pendingDescription")} />
       <Card className="overflow-hidden">
         <div className="border-b border-[#184B3414] p-4 sm:p-5">
-          <div aria-label="Filtros de notificaciones" className="grid max-w-md grid-cols-2 gap-1 rounded-[15px] bg-[#F1EFE8] p-1" role="tablist">
+          <div aria-label={t("notifications.filters.label")} className="grid max-w-md grid-cols-2 gap-1 rounded-[15px] bg-[#F1EFE8] p-1" role="tablist">
             {(["all", "unread"] as const).map((id) => (
               <button
                 key={id}
@@ -54,7 +56,7 @@ export function NotificationsView() {
                 onClick={() => setFilter(id)}
                 onKeyDown={handleTabKeyDown}
               >
-                {id === "all" ? "Todas" : "No leídas"}
+                {id === "all" ? t("notifications.filters.all") : t("notifications.filters.unread")}
               </button>
             ))}
           </div>
@@ -70,9 +72,9 @@ export function NotificationsView() {
             <span className="mx-auto grid size-16 place-items-center rounded-[22px] bg-[#78947D1f] text-[#184B34]">
               {filter === "unread" ? <CheckCheck aria-hidden="true" className="size-7" /> : <Bell aria-hidden="true" className="size-7" />}
             </span>
-            <h2 className="mt-5 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">{filter === "unread" ? "No tienes avisos pendientes" : "Aún no tienes notificaciones"}</h2>
-            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#687269]">Cuando exista la integración, aquí verás únicamente actividad real de tu cuenta.</p>
-            <Link className="mt-5 inline-flex min-h-11 items-center rounded-full bg-[#184B34] px-5 text-sm font-extrabold text-white hover:bg-[#0E3325]" href="/community">Ir a comunidad</Link>
+            <h2 className="mt-5 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">{filter === "unread" ? t("notifications.page.unreadEmptyTitle") : t("notifications.empty.allTitle")}</h2>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#687269]">{t("notifications.page.emptyDescription")}</p>
+            <Link className="mt-5 inline-flex min-h-11 items-center rounded-full bg-[#184B34] px-5 text-sm font-extrabold text-white hover:bg-[#0E3325]" href="/community">{t("common.backendPending.actionLabel")}</Link>
           </div>
         </div>
       </Card>

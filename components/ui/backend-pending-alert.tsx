@@ -1,13 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, Blocks, Info } from "lucide-react";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { cn } from "@/lib/utils";
 
 export function BackendPendingAlert({
   compact = false,
-  title = "Función pendiente de backend",
-  description = "Esta sección ya está preparada en el frontend, pero necesita que el backend exponga la funcionalidad correspondiente.",
+  title,
+  description,
   actionHref,
-  actionLabel = "Ir a comunidad",
+  actionLabel,
   className,
 }: {
   compact?: boolean;
@@ -17,6 +20,11 @@ export function BackendPendingAlert({
   actionLabel?: string;
   className?: string;
 }) {
+  const { t } = useTranslations();
+  const resolvedTitle = title ?? t("common.backendPending.title");
+  const resolvedDescription = description ?? t("common.backendPending.description");
+  const resolvedActionLabel = actionLabel ?? t("common.backendPending.actionLabel");
+
   return (
     <div
       className={cn(
@@ -31,14 +39,14 @@ export function BackendPendingAlert({
           {compact ? <Info aria-hidden="true" className="size-5" /> : <Blocks aria-hidden="true" className="size-5" />}
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className={cn("font-extrabold tracking-[-0.015em]", compact ? "text-sm" : "text-lg")}>{title}</h2>
-          <p className={cn("mt-1.5 leading-6 text-[#687269]", compact ? "text-xs" : "text-sm")}>{description}</p>
+          <h2 className={cn("font-extrabold tracking-[-0.015em]", compact ? "text-sm" : "text-lg")}>{resolvedTitle}</h2>
+          <p className={cn("mt-1.5 leading-6 text-[#687269]", compact ? "text-xs" : "text-sm")}>{resolvedDescription}</p>
           {actionHref ? (
             <Link
               className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#184B34] px-4 py-2 text-sm font-extrabold text-white transition-colors hover:bg-[#0E3325]"
               href={actionHref}
             >
-              {actionLabel}
+              {resolvedActionLabel}
               <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
           ) : null}

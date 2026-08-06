@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import { SocialActionButton } from "@/components/social/social-action-button";
 import { useKeyedOptimisticBoolean } from "@/components/social/use-keyed-optimistic-boolean";
 import { AppToast } from "@/components/ui/app-toast";
+import { useTranslations } from "@/components/i18n/i18n-provider";
 import { useAuthGuard } from "@/features/auth/use-auth-guard";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { requestCommunityDataRefresh } from "@/features/community/community-events";
@@ -53,6 +54,7 @@ export function SocialPostActions({
   demo?: boolean;
 }) {
   const { user } = useAuthSession();
+  const { t, tPlural } = useTranslations();
   const likeKey = storageKey && user?.id
     ? `cp:user:${user.id}:post:${storageKey}:liked`
     : undefined;
@@ -112,12 +114,12 @@ export function SocialPostActions({
           clearSession();
           setMessage({
             kind: "error",
-            text: "Tu sesión ha caducado. Inicia sesión nuevamente para continuar.",
+            text: t("social.sessionExpired"),
           });
         } else {
           setMessage({
             kind: "error",
-            text: "No hemos podido confirmar tu reacción y guardado en esta publicación.",
+            text: t("community.postActions.hydrateError"),
           });
         }
       });
@@ -133,6 +135,7 @@ export function SocialPostActions({
     setIsLiked,
     setIsSaved,
     storageKey,
+    t,
   ]);
 
   async function toggleLiked() {
@@ -144,7 +147,7 @@ export function SocialPostActions({
     setMessage(null);
 
     if (!storageKey) {
-      setMessage({ kind: "error", text: "No se pudo identificar la publicación." });
+      setMessage({ kind: "error", text: t("community.postActions.missingPost") });
       return;
     }
 
@@ -152,14 +155,14 @@ export function SocialPostActions({
       setMessage({
         kind: "pending",
         text: demo
-          ? "Esta publicación forma parte de los datos de demostración y todavía no admite interacciones persistentes."
-          : "Esta publicación no está disponible para interacciones persistentes.",
+          ? t("community.postActions.demoUnsupported")
+          : t("community.postActions.unsupported"),
       });
       return;
     }
 
     if (!token) {
-      requireAuth("Para indicar que te gusta una publicación necesitas iniciar sesión.", () => undefined);
+      requireAuth(t("community.postActions.authRequiredLike"), () => undefined);
       return;
     }
 
@@ -204,20 +207,20 @@ export function SocialPostActions({
         clearSession();
         setMessage({
           kind: "error",
-          text: "Tu sesión ha caducado. Inicia sesión nuevamente para continuar.",
+          text: t("social.sessionExpired"),
         });
       } else if (isNotFoundError(error)) {
         logPostNotFound(error, storageKey, demo ? "demo" : "persistent");
         setMessage({
           kind: "error",
-          text: "No encontramos esta publicación. Actualiza el contenido e inténtalo nuevamente.",
+          text: t("community.postActions.postNotFound"),
         });
       } else if (error instanceof ApiError && error.isNetworkError && !error.isTimeout) {
-        setMessage({ kind: "error", text: "No pudimos conectar con el servidor." });
+        setMessage({ kind: "error", text: t("community.postActions.connectionError") });
       } else {
         setMessage({
           kind: "error",
-          text: getApiErrorMessage(error, "No se pudo actualizar la reacción."),
+          text: getApiErrorMessage(error, t, t("community.postActions.likeGenericError")),
         });
       }
     } finally {
@@ -235,7 +238,7 @@ export function SocialPostActions({
     setMessage(null);
 
     if (!storageKey) {
-      setMessage({ kind: "error", text: "No se pudo identificar la publicación." });
+      setMessage({ kind: "error", text: t("community.postActions.missingPost") });
       return;
     }
 
@@ -243,14 +246,14 @@ export function SocialPostActions({
       setMessage({
         kind: "pending",
         text: demo
-          ? "Esta publicación forma parte de los datos de demostración y todavía no admite interacciones persistentes."
-          : "Esta publicación no está disponible para interacciones persistentes.",
+          ? t("community.postActions.demoUnsupported")
+          : t("community.postActions.unsupported"),
       });
       return;
     }
 
     if (!token) {
-      requireAuth("Para guardar publicaciones necesitas iniciar sesión.", () => undefined);
+      requireAuth(t("community.postActions.authRequiredSave"), () => undefined);
       return;
     }
 
@@ -274,20 +277,20 @@ export function SocialPostActions({
         clearSession();
         setMessage({
           kind: "error",
-          text: "Tu sesión ha caducado. Inicia sesión nuevamente para continuar.",
+          text: t("social.sessionExpired"),
         });
       } else if (isNotFoundError(error)) {
         logPostNotFound(error, storageKey, demo ? "demo" : "persistent");
         setMessage({
           kind: "error",
-          text: "No encontramos esta publicación. Actualiza el contenido e inténtalo nuevamente.",
+          text: t("community.postActions.postNotFound"),
         });
       } else if (error instanceof ApiError && error.isNetworkError && !error.isTimeout) {
-        setMessage({ kind: "error", text: "No pudimos conectar con el servidor." });
+        setMessage({ kind: "error", text: t("community.postActions.connectionError") });
       } else {
         setMessage({
           kind: "error",
-          text: getApiErrorMessage(error, "No se pudo actualizar el guardado."),
+          text: getApiErrorMessage(error, t, t("community.postActions.saveGenericError")),
         });
       }
     } finally {
@@ -299,12 +302,12 @@ export function SocialPostActions({
   function showPendingAction(action: "comentar" | "compartir") {
     requireAuth(
       action === "comentar"
-        ? "Para comentar necesitas iniciar sesión."
-        : "Para compartir publicaciones necesitas iniciar sesión.",
+        ? t("community.postActions.authRequiredComment")
+        : t("community.postActions.authRequiredShare"),
       () => {
         setMessage({
           kind: "pending",
-          text: "Esta función todavía necesita soporte del servidor.",
+          text: t("community.postActions.pendingBackendFeature"),
         });
       },
     );
@@ -321,15 +324,19 @@ export function SocialPostActions({
             {displayedLikes}
           </span>
           <span className="flex items-center gap-4">
-            {comments > 0 ? <span>{comments} comentarios</span> : null}
-            {shares > 0 ? <span>{shares} compartidos</span> : null}
+            {comments > 0 ? (
+              <span>{tPlural("community.postActions.commentsCount", comments)}</span>
+            ) : null}
+            {shares > 0 ? (
+              <span>{tPlural("community.postActions.sharesCount", shares)}</span>
+            ) : null}
           </span>
         </div>
       ) : null}
 
       <div className="grid grid-cols-4 gap-1 border-t border-[#184B3412] px-2 py-2 sm:px-3">
         <SocialActionButton
-          aria-label={isLiked ? `Quitar Me gusta. ${displayedLikes} reacciones` : `Me gusta. ${displayedLikes} reacciones`}
+          aria-label={`${isLiked ? t("community.postActions.unlikeAction") : t("community.postActions.likeAction")}. ${tPlural("community.postActions.reactionsCount", displayedLikes)}`}
           aria-pressed={isLiked}
           className={cn(isLiked && "bg-[#C96D4A12] text-[#A95539]")}
           disabled={isSubmittingLike}
@@ -345,24 +352,24 @@ export function SocialPostActions({
               strokeWidth={1.8}
             />
           )}
-          <span className="hidden sm:inline">Me gusta</span>
+          <span className="hidden sm:inline">{t("community.postActions.likeAction")}</span>
         </SocialActionButton>
         <SocialActionButton
-          aria-label={`Comentar. ${comments} comentarios`}
+          aria-label={`${t("community.postActions.commentAction")}. ${tPlural("community.postActions.commentsCount", comments)}`}
           onClick={() => showPendingAction("comentar")}
         >
           <MessageCircle aria-hidden="true" className="size-[18px]" strokeWidth={1.8} />
-          <span className="hidden sm:inline">Comentar</span>
+          <span className="hidden sm:inline">{t("community.postActions.commentAction")}</span>
         </SocialActionButton>
         <SocialActionButton
-          aria-label={`Compartir. ${shares} veces compartida`}
+          aria-label={`${t("community.postActions.shareAction")}. ${tPlural("community.postActions.sharesCount", shares)}`}
           onClick={() => showPendingAction("compartir")}
         >
           <Share2 aria-hidden="true" className="size-[18px]" strokeWidth={1.8} />
-          <span className="hidden sm:inline">Compartir</span>
+          <span className="hidden sm:inline">{t("community.postActions.shareAction")}</span>
         </SocialActionButton>
         <SocialActionButton
-          aria-label={isSaved ? "Quitar de guardados" : "Guardar publicación"}
+          aria-label={isSaved ? t("community.postActions.unsaveAction") : t("community.postActions.saveAction")}
           aria-pressed={isSaved}
           className={cn(isSaved && "bg-[#184B3410] text-[#184B34]")}
           disabled={isSubmittingSave}
@@ -378,7 +385,9 @@ export function SocialPostActions({
               strokeWidth={1.8}
             />
           )}
-          <span className="hidden sm:inline">{isSaved ? "Guardado" : "Guardar"}</span>
+          <span className="hidden sm:inline">
+            {isSaved ? t("social.save.savedLabel") : t("social.save.saveCta")}
+          </span>
         </SocialActionButton>
       </div>
 
