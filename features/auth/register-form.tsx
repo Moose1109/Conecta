@@ -8,13 +8,14 @@ import { InlineFieldError } from "@/components/ui/inline-field-error";
 import { useTranslations } from "@/components/i18n/i18n-provider";
 import { registerUser, type RegisterPayload } from "@/lib/api/auth.service";
 import { ApiError } from "@/lib/api/client";
+import { buildAuthHref } from "@/features/auth/next-path";
 import { getApiErrorMessage } from "@/lib/api/error-message";
 import { saveSession } from "@/lib/api/session";
 
 type RegisterField = "confirmPassword" | "email" | "name" | "password" | "username";
 type RegisterFieldErrors = Partial<Record<RegisterField, string>>;
 
-export function RegisterForm() {
+export function RegisterForm({ nextPath = "/community" }: { nextPath?: string }) {
   const router = useRouter();
   const { t } = useTranslations();
   const [error, setError] = useState("");
@@ -70,12 +71,12 @@ export function RegisterForm() {
 
       if (token) {
         router.refresh();
-        router.push("/community");
+        router.push(nextPath);
         return;
       }
 
       setSuccess(t("auth.register.successNoToken"));
-      window.setTimeout(() => router.push("/login"), 900);
+      window.setTimeout(() => router.push(buildAuthHref("/login", nextPath)), 900);
     } catch (error) {
       if (error instanceof ApiError) {
         const detail = error.detail;

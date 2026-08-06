@@ -10,6 +10,7 @@ import {
   AuthProviderButtons,
 } from "@/features/auth/auth-landing-actions";
 import { LoginForm } from "@/features/auth/login-form";
+import { resolveNextPath } from "@/features/auth/next-path";
 import { PublicAuthShell } from "@/features/auth/public-auth-shell";
 import { RegisterForm } from "@/features/auth/register-form";
 import { useAuthSession } from "@/features/auth/use-auth-session";
@@ -34,6 +35,9 @@ export function AuthLanding({
   const router = useRouter();
   const { t } = useTranslations();
   const { token } = useAuthSession();
+  const nextPath = resolveNextPath(
+    typeof window === "undefined" ? undefined : new URLSearchParams(window.location.search).get("next"),
+  );
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [failedSessionCheck, setFailedSessionCheck] = useState<string>();
   const [sessionCheckAttempt, setSessionCheckAttempt] = useState(0);
@@ -76,7 +80,7 @@ export function AuthLanding({
         }
 
         saveSession({ token, user: currentUser });
-        router.replace("/community");
+        router.replace(nextPath);
       })
       .catch((error) => {
         logApiIssue("Unable to validate the stored session", error);
@@ -92,7 +96,7 @@ export function AuthLanding({
     return () => {
       active = false;
     };
-  }, [router, sessionCheckAttempt, token]);
+  }, [nextPath, router, sessionCheckAttempt, token]);
 
   function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
@@ -211,10 +215,10 @@ export function AuthLanding({
         </div>
 
         <div aria-labelledby="auth-tab-login" hidden={mode !== "login"} id="auth-panel-login" role="tabpanel" tabIndex={0}>
-          <LoginForm />
+          <LoginForm nextPath={nextPath} />
         </div>
         <div aria-labelledby="auth-tab-register" hidden={mode !== "register"} id="auth-panel-register" role="tabpanel" tabIndex={0}>
-          <RegisterForm />
+          <RegisterForm nextPath={nextPath} />
         </div>
 
         <AuthProviderButtons mode={mode} />

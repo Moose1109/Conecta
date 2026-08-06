@@ -23,7 +23,9 @@ import { ErrorState } from "@/components/ui/error-state";
 import { RemoteEntityImage } from "@/components/ui/remote-entity-image";
 import { ActivityCard } from "@/features/activities/activity-card";
 import { activityDisplayState } from "@/features/activities/activity-status";
+import { AuthVariant } from "@/features/auth/auth-variant";
 import { ProtectedLinkButton } from "@/features/auth/protected-link-button";
+import { SpectatorCtaCard } from "@/features/auth/spectator-cta-card";
 import { VillageCard } from "@/features/villages/village-card";
 import { VillageDescription } from "@/features/villages/village-description";
 import { getTranslations } from "@/lib/i18n/get-translations";
@@ -32,6 +34,7 @@ import { formatDate, formatPopulation } from "@/lib/utils";
 import type { Activity, CommunityPost, Village } from "@/lib/types";
 
 const VISIBLE_ACTIVITIES = 6;
+const VISIBLE_ACTIVITIES_GUEST = 3;
 const VISIBLE_POSTS = 4;
 const VISIBLE_VOICES = 3;
 const VISIBLE_PHOTOS = 6;
@@ -165,11 +168,23 @@ export async function VillageDetailSections({
               label={t("villages.detail.upcomingDetectedLabel")}
               value={activitiesUnavailable ? "—" : upcomingActivities.length}
             />
-            <LifeSummaryLink
-              href="#village-wall"
-              icon={MessageSquareText}
-              label={t("villages.detail.postsLoadedLabel")}
-              value={postsUnavailable ? "—" : posts.length}
+            <AuthVariant
+              authenticated={
+                <LifeSummaryLink
+                  href="#village-wall"
+                  icon={MessageSquareText}
+                  label={t("villages.detail.postsLoadedLabel")}
+                  value={postsUnavailable ? "—" : posts.length}
+                />
+              }
+              guest={
+                <LifeSummaryLink
+                  href="#village-participate"
+                  icon={MessageSquareText}
+                  label={t("villages.detail.postsLoadedLabel")}
+                  value={postsUnavailable ? "—" : posts.length}
+                />
+              }
             />
             {upcomingActivities[0] ? (
               <LifeSummaryLink
@@ -208,110 +223,140 @@ export async function VillageDetailSections({
               network
               title={t("villages.detail.activitiesErrorTitle")}
             />
-          ) : orderedActivities.length ? (
-            <>
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {orderedActivities.slice(0, VISIBLE_ACTIVITIES).map((activity) => (
-                  <ActivityCard hydrateFromApi key={activity.id} activity={activity} />
-                ))}
-              </div>
-              {orderedActivities.length > VISIBLE_ACTIVITIES ? (
-                <div className="mt-6 flex justify-center">
-                  <LinkButton href={activityHref} variant="secondary">
-                    {t("villages.detail.exploreFilteredAgenda")}
-                    <ArrowRight aria-hidden="true" className="size-4" />
-                  </LinkButton>
-                </div>
-              ) : null}
-            </>
           ) : (
-            <EmptyState
-              actionHref="/activities"
-              actionLabel={t("villages.detail.exploreActivitiesEmptyAction")}
-              description={t("villages.detail.activitiesEmptyDescription")}
-              icon={CalendarDays}
-              title={t("villages.detail.activitiesEmptyTitle")}
-            />
-          )}
-        </div>
-      </section>
-
-      <section aria-label={t("villages.detail.wallAriaLabel", { name: village.name })} className={sectionAnchorClass} id="village-wall">
-        <SectionHeader
-          eyebrow={t("villages.detail.postsEyebrow")}
-          title={t("villages.detail.wallTitle")}
-          description={t("villages.detail.postsSectionDescription")}
-        />
-        {postsLimited ? <CollectionLimitNotice label={t("villages.detail.postsLimitLabel")} t={t} /> : null}
-        <div className={postsLimited ? "mt-4" : undefined}>
-          {postsUnavailable ? (
-            <ErrorState
-              actionHref="/community"
-              actionLabel={t("common.backendPending.actionLabel")}
-              description={t("villages.detail.postsErrorDescription")}
-              network
-              title={t("villages.detail.postsErrorTitle")}
-            />
-          ) : posts.length ? (
-            <>
-              <div className="mx-auto grid max-w-3xl gap-5">
-                {posts.slice(0, VISIBLE_POSTS).map((post) => (
-                  <SocialPostCard hydrateFromApi key={post.id} post={post} />
-                ))}
-              </div>
-              {posts.length > VISIBLE_POSTS ? (
-                <div className="mt-6 flex justify-center">
-                  <LinkButton href={communityHref} variant="secondary">
-                    {t("villages.detail.searchMoreCommunity")}
-                    <ArrowRight aria-hidden="true" className="size-4" />
-                  </LinkButton>
-                </div>
-              ) : null}
-            </>
-          ) : (
-            <EmptyState
-              actionHref="/community"
-              actionLabel={t("common.backendPending.actionLabel")}
-              description={t("villages.detail.postsEmptyDescription")}
-              icon={MessageSquareText}
-              title={t("villages.detail.postsEmptyTitle")}
-            />
-          )}
-        </div>
-      </section>
-
-      <section aria-label={t("villages.detail.voicesAriaLabel")} className={sectionAnchorClass} id="village-voices">
-        <SectionHeader
-          eyebrow={t("villages.detail.voicesEyebrow")}
-          title={t("villages.detail.voicesAriaLabel")}
-          description={t("villages.detail.voicesDescription", { name: village.name })}
-        />
-        {postsUnavailable ? (
-          <CompactSourceState message={t("villages.detail.voicesEmptyUnavailable")} />
-        ) : voices.length ? (
-          <div className="grid gap-4 lg:grid-cols-3">
-            {voices.map((post) => (
-              <article className="h-full" key={post.id}>
-                <Card className="flex h-full flex-col p-5 sm:p-6">
-                  <span className="font-editorial text-4xl leading-none text-[#D7A63C]" aria-hidden="true">“</span>
-                  <blockquote className="mt-2 flex-1">
-                    <p className="whitespace-pre-line text-sm font-medium leading-7 text-[#435048]">{post.content}</p>
-                  </blockquote>
-                  <footer className="mt-5 flex items-center gap-3 border-t border-[#184B3414] pt-4">
-                    <UserAvatar className="size-10 ring-2 ring-white" imageUrl={post.authorAvatar} name={post.author} />
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-extrabold text-[#18231D]">{post.author}</p>
-                      <p className="mt-0.5 text-xs font-medium text-[#687269]">{t("villages.detail.linkedPostLabel")} · {readableDate(post.date, t, locale)}</p>
+            <AuthVariant
+              authenticated={
+                orderedActivities.length ? (
+                  <>
+                    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                      {orderedActivities.slice(0, VISIBLE_ACTIVITIES).map((activity) => (
+                        <ActivityCard hydrateFromApi key={activity.id} activity={activity} />
+                      ))}
                     </div>
-                  </footer>
-                </Card>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <CompactSourceState message={t("villages.detail.voicesEmptyNoVoices")} />
-        )}
+                    {orderedActivities.length > VISIBLE_ACTIVITIES ? (
+                      <div className="mt-6 flex justify-center">
+                        <LinkButton href={activityHref} variant="secondary">
+                          {t("villages.detail.exploreFilteredAgenda")}
+                          <ArrowRight aria-hidden="true" className="size-4" />
+                        </LinkButton>
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <EmptyState
+                    actionHref="/activities"
+                    actionLabel={t("villages.detail.exploreActivitiesEmptyAction")}
+                    description={t("villages.detail.activitiesEmptyDescription")}
+                    icon={CalendarDays}
+                    title={t("villages.detail.activitiesEmptyTitle")}
+                  />
+                )
+              }
+              guest={
+                upcomingActivities.length ? (
+                  <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                    {upcomingActivities.slice(0, VISIBLE_ACTIVITIES_GUEST).map((activity) => (
+                      <ActivityCard hydrateFromApi key={activity.id} activity={activity} />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState
+                    actionHref="/activities"
+                    actionLabel={t("villages.detail.exploreActivitiesEmptyAction")}
+                    description={t("villages.detail.activitiesEmptyDescription")}
+                    icon={CalendarDays}
+                    title={t("villages.detail.activitiesEmptyTitle")}
+                  />
+                )
+              }
+            />
+          )}
+        </div>
       </section>
+
+      <AuthVariant
+        authenticated={
+          <>
+            <section aria-label={t("villages.detail.wallAriaLabel", { name: village.name })} className={sectionAnchorClass} id="village-wall">
+              <SectionHeader
+                eyebrow={t("villages.detail.postsEyebrow")}
+                title={t("villages.detail.wallTitle")}
+                description={t("villages.detail.postsSectionDescription")}
+              />
+              {postsLimited ? <CollectionLimitNotice label={t("villages.detail.postsLimitLabel")} t={t} /> : null}
+              <div className={postsLimited ? "mt-4" : undefined}>
+                {postsUnavailable ? (
+                  <ErrorState
+                    actionHref="/community"
+                    actionLabel={t("common.backendPending.actionLabel")}
+                    description={t("villages.detail.postsErrorDescription")}
+                    network
+                    title={t("villages.detail.postsErrorTitle")}
+                  />
+                ) : posts.length ? (
+                  <>
+                    <div className="mx-auto grid max-w-3xl gap-5">
+                      {posts.slice(0, VISIBLE_POSTS).map((post) => (
+                        <SocialPostCard hydrateFromApi key={post.id} post={post} />
+                      ))}
+                    </div>
+                    {posts.length > VISIBLE_POSTS ? (
+                      <div className="mt-6 flex justify-center">
+                        <LinkButton href={communityHref} variant="secondary">
+                          {t("villages.detail.searchMoreCommunity")}
+                          <ArrowRight aria-hidden="true" className="size-4" />
+                        </LinkButton>
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <EmptyState
+                    actionHref="/community"
+                    actionLabel={t("common.backendPending.actionLabel")}
+                    description={t("villages.detail.postsEmptyDescription")}
+                    icon={MessageSquareText}
+                    title={t("villages.detail.postsEmptyTitle")}
+                  />
+                )}
+              </div>
+            </section>
+
+            <section aria-label={t("villages.detail.voicesAriaLabel")} className={sectionAnchorClass} id="village-voices">
+              <SectionHeader
+                eyebrow={t("villages.detail.voicesEyebrow")}
+                title={t("villages.detail.voicesAriaLabel")}
+                description={t("villages.detail.voicesDescription", { name: village.name })}
+              />
+              {postsUnavailable ? (
+                <CompactSourceState message={t("villages.detail.voicesEmptyUnavailable")} />
+              ) : voices.length ? (
+                <div className="grid gap-4 lg:grid-cols-3">
+                  {voices.map((post) => (
+                    <article className="h-full" key={post.id}>
+                      <Card className="flex h-full flex-col p-5 sm:p-6">
+                        <span className="font-editorial text-4xl leading-none text-[#D7A63C]" aria-hidden="true">“</span>
+                        <blockquote className="mt-2 flex-1">
+                          <p className="whitespace-pre-line text-sm font-medium leading-7 text-[#435048]">{post.content}</p>
+                        </blockquote>
+                        <footer className="mt-5 flex items-center gap-3 border-t border-[#184B3414] pt-4">
+                          <UserAvatar className="size-10 ring-2 ring-white" imageUrl={post.authorAvatar} name={post.author} />
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-extrabold text-[#18231D]">{post.author}</p>
+                            <p className="mt-0.5 text-xs font-medium text-[#687269]">{t("villages.detail.linkedPostLabel")} · {readableDate(post.date, t, locale)}</p>
+                          </div>
+                        </footer>
+                      </Card>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <CompactSourceState message={t("villages.detail.voicesEmptyNoVoices")} />
+              )}
+            </section>
+          </>
+        }
+        guest={null}
+      />
 
       <section aria-label={t("villages.detail.photosSectionAriaLabel")} className={sectionAnchorClass} id="village-photos">
         <SectionHeader
@@ -402,52 +447,63 @@ export async function VillageDetailSections({
         </div>
       </section>
 
-      <section aria-labelledby="village-participate-title" className={sectionAnchorClass} id="village-participate">
-        <Card className="overflow-hidden p-6 text-text-primary sm:p-8">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-            <div className="max-w-2xl">
-              <p className="eyebrow">{t("villages.detail.participateEyebrow")}</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-text-primary" id="village-participate-title">
-                {t("villages.detail.participateTitle", { name: village.name })}
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-text-muted">
-                {t("villages.detail.participateDescription")}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3 lg:max-w-lg lg:justify-end">
-              <Link
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-highlight px-5 py-2.5 text-sm font-extrabold text-text-primary transition-colors hover:bg-[#C8952D] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
-                href={activityHref}
-              >
-                <CalendarDays aria-hidden="true" className="size-4" />
-                {t("villages.detail.viewActivitiesAction")}
-              </Link>
-              <Link
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-primary/20 bg-white/88 px-5 py-2.5 text-sm font-extrabold text-primary transition-colors hover:border-primary/35 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15"
-                href={communityHref}
-              >
-                <MessageSquareText aria-hidden="true" className="size-4" />
-                {t("villages.detail.searchCommunityAction")}
-              </Link>
-              <ProtectedLinkButton
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-dashed border-primary/30 bg-surface-muted px-5 py-2.5 text-sm font-extrabold text-primary transition-colors hover:border-primary/45 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 disabled:border-border disabled:bg-surface-muted disabled:text-text-muted disabled:opacity-70"
-                href="/community#publicar"
-                message={t("villages.detail.createPostAuthRequired")}
-              >
-                <PenLine aria-hidden="true" className="size-4" />
-                {t("villages.detail.createPostAction")}
-              </ProtectedLinkButton>
-              <ProtectedLinkButton
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-dashed border-primary/30 bg-surface-muted px-5 py-2.5 text-sm font-extrabold text-primary transition-colors hover:border-primary/45 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 disabled:border-border disabled:bg-surface-muted disabled:text-text-muted disabled:opacity-70"
-                href="/activities/create"
-                message={t("villages.detail.createActivityAuthRequired")}
-              >
-                <Plus aria-hidden="true" className="size-4" />
-                {t("villages.detail.createActivityAction")}
-              </ProtectedLinkButton>
-            </div>
-          </div>
-        </Card>
+      <section aria-label={t("villages.detail.participateEyebrow")} className={sectionAnchorClass} id="village-participate">
+        <AuthVariant
+          authenticated={
+            <Card className="overflow-hidden p-6 text-text-primary sm:p-8">
+              <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+                <div className="max-w-2xl">
+                  <p className="eyebrow">{t("villages.detail.participateEyebrow")}</p>
+                  <h2 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-text-primary" id="village-participate-title">
+                    {t("villages.detail.participateTitle", { name: village.name })}
+                  </h2>
+                  <p className="mt-3 text-sm leading-6 text-text-muted">
+                    {t("villages.detail.participateDescription")}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3 lg:max-w-lg lg:justify-end">
+                  <Link
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-highlight px-5 py-2.5 text-sm font-extrabold text-text-primary transition-colors hover:bg-[#C8952D] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
+                    href={activityHref}
+                  >
+                    <CalendarDays aria-hidden="true" className="size-4" />
+                    {t("villages.detail.viewActivitiesAction")}
+                  </Link>
+                  <Link
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-primary/20 bg-white/88 px-5 py-2.5 text-sm font-extrabold text-primary transition-colors hover:border-primary/35 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15"
+                    href={communityHref}
+                  >
+                    <MessageSquareText aria-hidden="true" className="size-4" />
+                    {t("villages.detail.searchCommunityAction")}
+                  </Link>
+                  <ProtectedLinkButton
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-dashed border-primary/30 bg-surface-muted px-5 py-2.5 text-sm font-extrabold text-primary transition-colors hover:border-primary/45 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 disabled:border-border disabled:bg-surface-muted disabled:text-text-muted disabled:opacity-70"
+                    href="/community#publicar"
+                    message={t("villages.detail.createPostAuthRequired")}
+                  >
+                    <PenLine aria-hidden="true" className="size-4" />
+                    {t("villages.detail.createPostAction")}
+                  </ProtectedLinkButton>
+                  <ProtectedLinkButton
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-dashed border-primary/30 bg-surface-muted px-5 py-2.5 text-sm font-extrabold text-primary transition-colors hover:border-primary/45 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15 disabled:border-border disabled:bg-surface-muted disabled:text-text-muted disabled:opacity-70"
+                    href="/activities/create"
+                    message={t("villages.detail.createActivityAuthRequired")}
+                  >
+                    <Plus aria-hidden="true" className="size-4" />
+                    {t("villages.detail.createActivityAction")}
+                  </ProtectedLinkButton>
+                </div>
+              </div>
+            </Card>
+          }
+          guest={
+            <SpectatorCtaCard
+              description={t("villages.detail.spectatorCtaDescription")}
+              returnTo={`/villages/${village.id}`}
+              title={t("villages.detail.spectatorCtaTitle")}
+            />
+          }
+        />
       </section>
     </div>
   );

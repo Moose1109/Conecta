@@ -12,6 +12,7 @@ import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { FollowButton } from "@/components/social/follow-button";
 import { Badge } from "@/components/ui/card";
 import { RemoteEntityImage } from "@/components/ui/remote-entity-image";
+import { AuthVariant } from "@/features/auth/auth-variant";
 import {
   VillageDetailSections,
   VillageDetailSectionsLoading,
@@ -101,13 +102,18 @@ export default async function VillageDetailPage({
                 </p>
               ) : null}
               <div className="mt-6">
-                <FollowButton
-                  className="min-h-11 border border-white/28 px-5 shadow-[0_10px_28px_rgba(0,0,0,0.14)]"
-                  demo={village.dataSource === "demo"}
-                  hydrateFromApi
-                  initialFollowing={village.isFollowing}
-                  interactionSupported={canFollowVillage(village)}
-                  storageKey={village.id}
+                <AuthVariant
+                  authenticated={
+                    <FollowButton
+                      className="min-h-11 border border-white/28 px-5 shadow-[0_10px_28px_rgba(0,0,0,0.14)]"
+                      demo={village.dataSource === "demo"}
+                      hydrateFromApi
+                      initialFollowing={village.isFollowing}
+                      interactionSupported={canFollowVillage(village)}
+                      storageKey={village.id}
+                    />
+                  }
+                  guest={null}
                 />
               </div>
             </div>

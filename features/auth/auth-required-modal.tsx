@@ -6,15 +6,19 @@ import { useRef } from "react";
 import { createPortal } from "react-dom";
 import { useModalDialog } from "@/components/ui/use-modal-dialog";
 import { useTranslations } from "@/components/i18n/i18n-provider";
+import { buildAuthHref } from "@/features/auth/next-path";
 
 export function AuthRequiredModal({
   message,
   onClose,
   open,
+  returnTo,
 }: {
   message?: string;
   onClose: () => void;
   open: boolean;
+  /** Current location (pathname + query + hash) to return to after authenticating. */
+  returnTo?: string;
 }) {
   const { t } = useTranslations();
   const resolvedMessage = message ?? t("auth.requiredModal.defaultMessage");
@@ -50,8 +54,8 @@ export function AuthRequiredModal({
         <h2 id="auth-required-title" className="mt-5 pr-10 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">{t("auth.gate.needsLoginTitle")}</h2>
         <p id="auth-required-description" className="mt-3 text-sm leading-6 text-[#687269]">{resolvedMessage}</p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <Link href="/login" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]">{t("auth.signIn")}</Link>
-          <Link href="/register" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[#184B3424] bg-white px-5 py-2.5 text-sm font-extrabold text-[#184B34] hover:bg-[#F7F2E8]">{t("auth.createAccount")}</Link>
+          <Link href={buildAuthHref("/login", returnTo)} className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]">{t("auth.signIn")}</Link>
+          <Link href={buildAuthHref("/register", returnTo)} className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[#184B3424] bg-white px-5 py-2.5 text-sm font-extrabold text-[#184B34] hover:bg-[#F7F2E8]">{t("auth.createAccount")}</Link>
         </div>
       </div>
     </div>,

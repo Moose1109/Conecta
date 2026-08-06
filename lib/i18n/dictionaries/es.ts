@@ -516,6 +516,8 @@ export const es = {
       recommendationsPendingTitle: "Recomendaciones pendientes de backend",
       sessionLinkNotice:
         "El guardado y la inscripción se vinculan a tu cuenta cuando has iniciado sesión.",
+      spectatorCtaDescription: "Crea una cuenta para guardar actividades y apuntarte.",
+      spectatorCtaTitle: "Inicia sesión para participar en esta actividad.",
     },
     createForm: {
       capacityLabel: "Plazas",
@@ -569,6 +571,7 @@ export const es = {
     },
   },
   community: {
+    authGateMessage: "Para ver la comunidad necesitas iniciar sesión.",
     dashboardHeader: {
       defaultUserName: "Usuario",
       description:
@@ -867,6 +870,8 @@ export const es = {
       loadingSummary: "Cargando la información vinculada al pueblo",
       nextDateLabel: "Próxima fecha detectada",
       noDescription: "Este pueblo todavía no tiene una descripción publicada.",
+      spectatorCtaDescription: "Crea una cuenta para seguir pueblos y participar en actividades.",
+      spectatorCtaTitle: "Inicia sesión para descubrir más sobre este pueblo.",
       noRelatedVillages:
         "No se han encontrado otros pueblos con la misma provincia o región en el catálogo disponible.",
       participateDescription:
@@ -1200,6 +1205,9 @@ export const es = {
     mySpaceSection: "Mi espacio",
     personalNavLabel: "Accesos personales",
     socialNavLabel: "Navegación social",
+    public: {
+      backAriaLabel: "Volver al inicio",
+    },
     sidebarPromo: {
       cta: "Crear publicación",
       description: "Publica, organiza o recomienda algo que sume a tu comunidad.",

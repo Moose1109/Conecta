@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LoaderCircle, LockKeyhole, RefreshCw, ShieldAlert, ShieldX } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 import { useTranslations } from "@/components/i18n/i18n-provider";
+import { buildAuthHref } from "@/features/auth/next-path";
 import { isAdminUser } from "@/features/auth/roles";
 import { useAuthSession } from "@/features/auth/use-auth-session";
 import { getCurrentUser } from "@/lib/api/auth.service";
@@ -30,6 +32,10 @@ export function AuthGate({
   const { t } = useTranslations();
   const resolvedMessage = message ?? t("auth.gate.defaultMessage");
   const { token } = useAuthSession();
+  const pathname = usePathname();
+  const returnTo = `${pathname}${
+    typeof window !== "undefined" ? `${window.location.search}${window.location.hash}` : ""
+  }`;
   const [verificationAttempt, setVerificationAttempt] = useState(0);
   const [sessionVerification, setSessionVerification] = useState<SessionVerification>({
     status: "checking",
@@ -90,13 +96,13 @@ export function AuthGate({
         <p className="mt-3 text-sm leading-6 text-[#687269]">{resolvedMessage}</p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <Link
-            href="/login"
+            href={buildAuthHref("/login", returnTo)}
             className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]"
           >
             {t("auth.signIn")}
           </Link>
           <Link
-            href="/register"
+            href={buildAuthHref("/register", returnTo)}
             className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#184B3424] bg-white/88 px-5 py-2.5 text-sm font-extrabold text-[#184B34] hover:bg-white"
           >
             {t("auth.createAccount")}

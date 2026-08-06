@@ -23,6 +23,8 @@ import {
   activityCategoryPill,
 } from "@/features/activities/activity-category-icon";
 import { ActivityImage } from "@/features/activities/activity-image";
+import { AuthVariant } from "@/features/auth/auth-variant";
+import { SpectatorCtaCard } from "@/features/auth/spectator-cta-card";
 import { getActivityByIdStrict } from "@/lib/api/activities.service";
 import { isNotFoundError } from "@/lib/api/client";
 import { canJoinActivity } from "@/lib/api/entity-capabilities";
@@ -236,34 +238,49 @@ export default async function ActivityDetailPage({
                   </p>
                 ) : null}
 
-                <div className="mt-5 grid gap-2.5">
-                  <div className="[&>span]:w-full [&>span>button]:w-full">
-                    <JoinActivityButton
-                      demo={activity.dataSource === "demo"}
-                      hydrateFromApi
-                      initialJoined={activity.isJoined}
-                      interactionSupported={canJoinActivity(activity)}
-                      storageKey={activity.id}
-                    />
-                  </div>
-                  <div className="[&>span]:w-full [&>span>button]:w-full">
-                    <SaveButton
-                      demo={activity.dataSource === "demo"}
-                      hydrateFromApi
-                      initialSaved={activity.isSaved}
-                      interactionSupported={canJoinActivity(activity)}
-                      storageKey={`activity:${activity.id}`}
-                    />
-                  </div>
-                </div>
+                <AuthVariant
+                  authenticated={
+                    <>
+                      <div className="mt-5 grid gap-2.5">
+                        <div className="[&>span]:w-full [&>span>button]:w-full">
+                          <JoinActivityButton
+                            demo={activity.dataSource === "demo"}
+                            hydrateFromApi
+                            initialJoined={activity.isJoined}
+                            interactionSupported={canJoinActivity(activity)}
+                            storageKey={activity.id}
+                          />
+                        </div>
+                        <div className="[&>span]:w-full [&>span>button]:w-full">
+                          <SaveButton
+                            demo={activity.dataSource === "demo"}
+                            hydrateFromApi
+                            initialSaved={activity.isSaved}
+                            interactionSupported={canJoinActivity(activity)}
+                            storageKey={`activity:${activity.id}`}
+                          />
+                        </div>
+                      </div>
 
-                <div className="mt-5 flex items-start gap-2.5 rounded-2xl bg-[#78947D17] p-3.5 text-xs leading-5 text-[#526158]">
-                  <ShieldCheck
-                    aria-hidden="true"
-                    className="mt-0.5 size-4 shrink-0 text-[#184B34]"
-                  />
-                  {t("activities.detail.sessionLinkNotice")}
-                </div>
+                      <div className="mt-5 flex items-start gap-2.5 rounded-2xl bg-[#78947D17] p-3.5 text-xs leading-5 text-[#526158]">
+                        <ShieldCheck
+                          aria-hidden="true"
+                          className="mt-0.5 size-4 shrink-0 text-[#184B34]"
+                        />
+                        {t("activities.detail.sessionLinkNotice")}
+                      </div>
+                    </>
+                  }
+                  guest={
+                    <div className="mt-5">
+                      <SpectatorCtaCard
+                        description={t("activities.detail.spectatorCtaDescription")}
+                        returnTo={`/activities/${activity.id}`}
+                        title={t("activities.detail.spectatorCtaTitle")}
+                      />
+                    </div>
+                  }
+                />
               </div>
             </Card>
           </aside>

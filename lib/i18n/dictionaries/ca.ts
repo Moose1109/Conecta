@@ -516,6 +516,8 @@ export const ca: Dictionary = {
       recommendationsPendingTitle: "Recomanacions pendents de backend",
       sessionLinkNotice:
         "El desament i la inscripció es vinculen al teu compte quan has iniciat sessió.",
+      spectatorCtaDescription: "Crea un compte per desar activitats i apuntar-t'hi.",
+      spectatorCtaTitle: "Inicia sessió per participar en aquesta activitat.",
     },
     createForm: {
       capacityLabel: "Places",
@@ -568,6 +570,7 @@ export const ca: Dictionary = {
     },
   },
   community: {
+    authGateMessage: "Per veure la comunitat necessites iniciar sessió.",
     dashboardHeader: {
       defaultUserName: "Usuari",
       description:
@@ -865,6 +868,8 @@ export const ca: Dictionary = {
       loadingSummary: "Carregant la informació vinculada al poble",
       nextDateLabel: "Propera data detectada",
       noDescription: "Aquest poble encara no té una descripció publicada.",
+      spectatorCtaDescription: "Crea un compte per seguir pobles i participar en activitats.",
+      spectatorCtaTitle: "Inicia sessió per descobrir més sobre aquest poble.",
       noRelatedVillages:
         "No s'han trobat altres pobles amb la mateixa província o regió al catàleg disponible.",
       participateDescription:
@@ -1198,6 +1203,9 @@ export const ca: Dictionary = {
     mySpaceSection: "El meu espai",
     personalNavLabel: "Accessos personals",
     socialNavLabel: "Navegació social",
+    public: {
+      backAriaLabel: "Torna a l'inici",
+    },
     sidebarPromo: {
       cta: "Crea una publicació",
       description: "Publica, organitza o recomana alguna cosa que sumi a la teva comunitat.",

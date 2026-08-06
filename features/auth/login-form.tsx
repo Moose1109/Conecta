@@ -11,7 +11,7 @@ import { isUnauthorizedError } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/error-message";
 import { saveSession } from "@/lib/api/session";
 
-export function LoginForm() {
+export function LoginForm({ nextPath = "/community" }: { nextPath?: string }) {
   const router = useRouter();
   const { t } = useTranslations();
   const [error, setError] = useState("");
@@ -51,7 +51,7 @@ export function LoginForm() {
       saveSession({ token, user: response.user });
 
       router.refresh();
-      router.push("/community");
+      router.push(nextPath);
     } catch (error) {
       setError(
         isUnauthorizedError(error)

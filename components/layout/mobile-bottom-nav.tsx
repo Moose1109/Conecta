@@ -8,14 +8,18 @@ import {
   profileNavigationItem,
 } from "@/components/layout/navigation-items";
 import { isNavigationRoute, isSocialRoute } from "@/components/layout/social-routes";
+import { useAuthSession } from "@/features/auth/use-auth-session";
 import { cn } from "@/lib/utils";
 
 export function MobileBottomNav() {
   const pathname = usePathname();
   const { t } = useTranslations();
-  const socialRoute = isSocialRoute(pathname);
+  const { token } = useAuthSession();
 
-  if (!socialRoute) {
+  // Private navigation: only for authenticated users, and only within the
+  // app's social sections — never shown to a spectator, even on routes
+  // (like /villages or /activities) that also offer public content.
+  if (!token || !isSocialRoute(pathname)) {
     return null;
   }
 

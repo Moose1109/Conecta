@@ -2,6 +2,7 @@ import { connection } from "next/server";
 import type { Metadata } from "next";
 import { AuthenticatedShell } from "@/components/layout/authenticated-shell";
 import { RightRail } from "@/components/layout/right-rail";
+import { AuthGate } from "@/features/auth/auth-gate";
 import { CommunityHeader } from "@/features/community/community-header";
 import { CommunityDataProvider } from "@/features/community/community-data-provider";
 import { CommunityFeed } from "@/features/community/community-feed";
@@ -78,16 +79,18 @@ export default async function CommunityPage({
       initialUnavailable={initialUnavailable}
     >
       <AuthenticatedShell right={<RightRail />} variant="three-column">
-        <CommunityHeader />
-        <StoriesStrip
-          initialState={initialStoriesState}
-          initialViewerPosition={initialViewerPosition}
-        />
-        <CommunityFeed
-          key={`community-feed-${initialQuery}`}
-          initialQuery={initialQuery}
-          user={{ name: t("userMenu.defaultName"), avatar: "CP" }}
-        />
+        <AuthGate message={t("community.authGateMessage")}>
+          <CommunityHeader />
+          <StoriesStrip
+            initialState={initialStoriesState}
+            initialViewerPosition={initialViewerPosition}
+          />
+          <CommunityFeed
+            key={`community-feed-${initialQuery}`}
+            initialQuery={initialQuery}
+            user={{ name: t("userMenu.defaultName"), avatar: "CP" }}
+          />
+        </AuthGate>
       </AuthenticatedShell>
     </CommunityDataProvider>
   );
