@@ -57,12 +57,12 @@ export function SocialPostCard({
               <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                 <p className="font-extrabold tracking-[-0.01em] text-[#18231D]">{post.author}</p>
                 {post.authorHandle ? (
-                  <span className="truncate text-xs font-semibold text-[#687269] sm:text-sm">
+                  <span className="truncate text-xs font-semibold text-[#677168] sm:text-sm">
                     {post.authorHandle}
                   </span>
                 ) : null}
               </div>
-              <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs font-semibold text-[#687269]">
+              <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs font-semibold text-[#677168]">
                 {post.villageId ? (
                   <Link
                     className="font-bold text-[#347A48] transition-colors hover:text-[#184B34] hover:underline"

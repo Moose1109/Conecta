@@ -258,7 +258,7 @@ export function CreateActivityForm({
               </select>
               <ChevronDown
                 aria-hidden="true"
-                className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-[#687269]"
+                className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-[#677168]"
               />
             </div>
           </div>
@@ -290,7 +290,7 @@ export function CreateActivityForm({
               </select>
               <ChevronDown
                 aria-hidden="true"
-                className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-[#687269]"
+                className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-[#677168]"
               />
             </div>
           </div>
@@ -412,14 +412,14 @@ export function CreateActivityForm({
           placeholder={t("activities.createForm.descriptionPlaceholder")}
           required
         />
-        <p className="mt-2 text-xs leading-5 text-[#687269]">
+        <p className="mt-2 text-xs leading-5 text-[#677168]">
           {t("activities.createForm.descriptionHint")}
         </p>
 
         <div className="mt-5">
           <label className="label" htmlFor="activity-image-url">
             {t("activities.createForm.imageUrlLabel")}{" "}
-            <span className="text-xs font-semibold text-[#687269]">
+            <span className="text-xs font-semibold text-[#677168]">
               {t("activities.createForm.imageUrlOptional")}
             </span>
           </label>
@@ -471,7 +471,7 @@ export function CreateActivityForm({
       ) : null}
 
       <div className="flex flex-col gap-3 border-t border-[#184B3414] pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="max-w-md text-xs leading-5 text-[#687269]">
+        <p className="max-w-md text-xs leading-5 text-[#677168]">
           {t("activities.createForm.footerNote")}
         </p>
         <Button className="min-w-48" disabled={isSubmitting || !persistentVillages.length} type="submit">

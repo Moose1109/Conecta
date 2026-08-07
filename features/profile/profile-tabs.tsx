@@ -115,7 +115,7 @@ export function ProfileTabs({
   }
 
   return (
-    <section>
+    <section className="min-w-0">
       <Card aria-label={t("profile.tabs.contentAriaLabel")} aria-orientation="horizontal" className="mb-5 flex max-w-full snap-x gap-1 overflow-x-auto rounded-[18px] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist">
         {tabs.map(({ count, icon: Icon, id, label }) => (
           <button
@@ -127,7 +127,7 @@ export function ProfileTabs({
             aria-selected={activeTab === id}
             className={cn(
               "relative inline-flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-xl px-3.5 text-sm font-bold transition-colors",
-              activeTab === id ? "bg-[#184B340a] text-[#184B34]" : "text-[#687269] hover:bg-[#184B3408] hover:text-[#184B34]",
+              activeTab === id ? "bg-[#184B340a] text-[#184B34]" : "text-[#677168] hover:bg-[#184B3408] hover:text-[#184B34]",
             )}
             id={`profile-tab-${id}`}
             role="tab"
@@ -273,11 +273,11 @@ function UnavailableProfileData({ label, t }: { label: string; t: Translator["t"
           <WifiOff aria-hidden="true" className="size-5" />
         </span>
         <h2 className="mt-4 text-lg font-extrabold text-[#18231D]">{t("profile.tabs.unavailableTitle", { label })}</h2>
-        <p className="mt-2 text-sm font-medium leading-6 text-[#687269]">
+        <p className="mt-2 text-sm font-medium leading-6 text-[#677168]">
           {t("profile.tabs.unavailableDescription")}
         </p>
         <button
-          className="mx-auto mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#184B34] px-5 text-sm font-extrabold text-white transition-colors hover:bg-[#0E3325] focus:outline-none focus:ring-4 focus:ring-[#347A4830]"
+          className="mx-auto mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#184B34] px-5 text-sm font-extrabold text-white transition-colors hover:bg-[#0E3325] focus:outline-none focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
           onClick={() => window.location.reload()}
           type="button"
         >

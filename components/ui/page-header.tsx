@@ -23,7 +23,7 @@ export function PageHeader({
           {title}
         </h1>
         {description ? (
-          <p className="mt-3 text-base leading-7 text-[#687269]">{description}</p>
+          <p className="mt-3 text-base leading-7 text-[#677168]">{description}</p>
         ) : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}

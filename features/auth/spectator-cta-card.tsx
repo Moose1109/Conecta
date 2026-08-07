@@ -22,7 +22,7 @@ export async function SpectatorCtaCard({
   return (
     <Card className="p-6 text-center sm:p-8">
       <p className="text-lg font-extrabold leading-7 text-[#18231D]">{title}</p>
-      <p className="mt-2 text-sm leading-6 text-[#687269]">{description}</p>
+      <p className="mt-2 text-sm leading-6 text-[#677168]">{description}</p>
       <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
         <Link
           className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]"

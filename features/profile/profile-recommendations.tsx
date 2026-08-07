@@ -20,7 +20,7 @@ export function ProfileRecommendationsRail({ activities, villages }: { activitie
           <h2 className="font-extrabold text-[#0E3325]">{t("profile.recommendations.followedVillagesTitle")}</h2>
           <Link className="text-xs font-extrabold text-[#347A48]" href="/villages">{t("navigation.explore.label")}</Link>
         </div>
-        <p className="mt-1 text-[11px] font-medium text-[#687269]">{t("profile.recommendations.followedVillagesDescription")}</p>
+        <p className="mt-1 text-[11px] font-medium text-[#677168]">{t("profile.recommendations.followedVillagesDescription")}</p>
         {followed.length ? (
           <div className="mt-4 grid gap-3">
             {followed.map((village) => (
@@ -30,7 +30,7 @@ export function ProfileRecommendationsRail({ activities, villages }: { activitie
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-extrabold text-[#18231D]">{village.name}</span>
-                  <span className="mt-0.5 block truncate text-xs font-medium text-[#687269]">{village.province}</span>
+                  <span className="mt-0.5 block truncate text-xs font-medium text-[#677168]">{village.province}</span>
                 </span>
                 <ArrowRight aria-hidden="true" className="size-4 text-[#78947D]" />
               </Link>
@@ -39,7 +39,7 @@ export function ProfileRecommendationsRail({ activities, villages }: { activitie
         ) : (
           <div className="mt-4 rounded-2xl bg-[#F7F2E8] p-4 text-center">
             <MapPin aria-hidden="true" className="mx-auto size-5 text-[#347A48]" />
-            <p className="mt-2 text-xs font-semibold leading-5 text-[#687269]">{t("profile.recommendations.emptyFollowedVillages")}</p>
+            <p className="mt-2 text-xs font-semibold leading-5 text-[#677168]">{t("profile.recommendations.emptyFollowedVillages")}</p>
           </div>
         )}
       </Card>
@@ -58,7 +58,7 @@ export function ProfileRecommendationsRail({ activities, villages }: { activitie
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block line-clamp-1 text-sm font-extrabold text-[#18231D]">{activity.title}</span>
-                  <span className="mt-0.5 block truncate text-[11px] font-medium text-[#687269]">{formatDate(activity.date, locale)} · {activity.time}</span>
+                  <span className="mt-0.5 block truncate text-[11px] font-medium text-[#677168]">{formatDate(activity.date, locale)} · {activity.time}</span>
                 </span>
               </Link>
             ))}
@@ -66,7 +66,7 @@ export function ProfileRecommendationsRail({ activities, villages }: { activitie
         ) : (
           <div className="mt-4 rounded-2xl bg-[#FFF7E5] p-4 text-center">
             <CalendarDays aria-hidden="true" className="mx-auto size-5 text-[#B77F14]" />
-            <p className="mt-2 text-xs font-semibold leading-5 text-[#687269]">{t("profile.recommendations.emptyRecommendedActivities")}</p>
+            <p className="mt-2 text-xs font-semibold leading-5 text-[#677168]">{t("profile.recommendations.emptyRecommendedActivities")}</p>
           </div>
         )}
       </Card>

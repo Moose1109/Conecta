@@ -85,7 +85,7 @@ export function AdminDashboard() {
         <h1 className="mt-5 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">
           {t("admin.loadErrorTitle")}
         </h1>
-        <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#687269]">
+        <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#677168]">
           {t("admin.loadErrorDescription")}
         </p>
         <Button
@@ -183,7 +183,7 @@ function Metric({
         <Icon aria-hidden="true" className="size-5" />
       </span>
       <div>
-        <p className="text-sm font-bold text-[#687269]">{label}</p>
+        <p className="text-sm font-bold text-[#677168]">{label}</p>
         <p className="mt-1 text-3xl font-black text-[#184B34]">{value}</p>
       </div>
     </Card>
@@ -193,7 +193,7 @@ function Metric({
 function PendingMetric({ label, t }: { label: string; t: Translator["t"] }) {
   return (
     <Card className="p-5">
-      <p className="text-sm font-bold text-[#687269]">{label}</p>
+      <p className="text-sm font-bold text-[#677168]">{label}</p>
       <p className="mt-2 text-sm font-extrabold text-[#A95539]">{t("admin.noEndpointLabel")}</p>
     </Card>
   );
@@ -237,7 +237,7 @@ function AdminList({
         {rows.map((row) => (
           <div className="p-5" key={row.id}>
             <p className="font-black text-[#18231D]">{row.main}</p>
-            <p className="mt-1 text-sm text-[#687269]">{row.meta}</p>
+            <p className="mt-1 text-sm text-[#677168]">{row.meta}</p>
           </div>
         ))}
       </div>

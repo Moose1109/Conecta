@@ -187,7 +187,7 @@ export function CommunityFeed({
                 key={filter.id}
                 aria-pressed={isActive}
                 className={cn(
-                  "relative inline-flex min-h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-t-xl px-3.5 text-xs font-extrabold text-[#687269] transition-colors hover:bg-[#184B3408] hover:text-[#184B34] sm:text-sm",
+                  "relative inline-flex min-h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-t-xl px-3.5 text-xs font-extrabold text-[#677168] transition-colors hover:bg-[#184B3408] hover:text-[#184B34] sm:text-sm",
                   isActive && "text-[#184B34]",
                 )}
                 onClick={() => setActiveFilter(filter.id)}
@@ -204,7 +204,7 @@ export function CommunityFeed({
         </div>
 
         <div className="flex min-h-12 items-center justify-between gap-3 px-4 py-2">
-          <p aria-live="polite" className="text-xs font-semibold text-[#687269]">
+          <p aria-live="polite" className="text-xs font-semibold text-[#677168]">
             {tPlural("villages.card.postsCount", visiblePosts.length)}
             {query ? ` ${t("community.feed.resultsForQuery", { query: query.trim() })}` : ""}
           </p>
@@ -212,7 +212,7 @@ export function CommunityFeed({
             <span className="sr-only">{t("community.feed.sortLabel")}</span>
             <select
               aria-label={t("community.feed.sortLabel")}
-              className="min-h-11 appearance-none rounded-full border-0 bg-transparent py-2 pl-3 pr-8 text-xs font-extrabold text-[#435048] outline-none transition-colors hover:bg-[#184B3408] focus:ring-4 focus:ring-[#347A4818]"
+              className="min-h-11 appearance-none rounded-full border-0 bg-transparent py-2 pl-3 pr-8 text-xs font-extrabold text-[#435048] outline-none transition-colors hover:bg-[#184B3408] focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
               onChange={(event) => setSortMode(event.target.value as SortMode)}
               value={sortMode}
             >
@@ -221,7 +221,7 @@ export function CommunityFeed({
             </select>
             <ChevronDown
               aria-hidden="true"
-              className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[#687269]"
+              className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[#677168]"
             />
           </label>
         </div>

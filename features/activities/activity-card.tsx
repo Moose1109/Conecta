@@ -83,7 +83,7 @@ export function ActivityCard({
             <h3 className="mt-1.5 line-clamp-2 text-sm font-extrabold leading-[1.35] tracking-[-0.015em] text-[#18231D]">
               {activity.title}
             </h3>
-            <span className="mt-auto flex items-end justify-between gap-2 pt-2 text-[0.68rem] font-bold text-[#687269]">
+            <span className="mt-auto flex items-end justify-between gap-2 pt-2 text-[0.68rem] font-bold text-[#677168]">
               <span className="inline-flex min-w-0 items-center gap-1">
                 <CalendarDays aria-hidden="true" className="size-3.5 shrink-0 text-[#C96D4A]" />
                 <span className="truncate">{formatDate(activity.date, locale)}</span>
@@ -142,7 +142,7 @@ export function ActivityCard({
           </h3>
         </Link>
 
-        <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-xs font-bold text-[#687269]">
+        <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-xs font-bold text-[#677168]">
           <span className="inline-flex items-center gap-1.5">
             <CalendarDays aria-hidden="true" className="size-3.5 text-[#C96D4A]" />
             {formatDate(activity.date, locale)}
@@ -154,7 +154,7 @@ export function ActivityCard({
         </div>
 
         {activity.description ? (
-          <p className="mt-3 line-clamp-2 text-sm leading-5 text-[#687269]">
+          <p className="mt-3 line-clamp-2 text-sm leading-5 text-[#677168]">
             {activity.description}
           </p>
         ) : null}

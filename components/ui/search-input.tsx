@@ -43,7 +43,7 @@ export function SearchInput({
       <input
         aria-label={label}
         className={cn(
-          "min-h-12 w-full py-2 pl-11 text-sm font-semibold text-text-primary outline-none transition placeholder:text-text-muted/80 focus:border-forest-mid focus:ring-4 focus:ring-[#347A481c]",
+          "min-h-12 w-full py-2 pl-11 text-sm font-semibold text-text-primary outline-none transition placeholder:text-text-muted/80 focus:border-forest-mid focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]",
           appearance === "embedded"
             ? "rounded-[17px] border-0 bg-transparent pr-12 focus:bg-white sm:min-h-14 sm:text-[15px]"
             : "rounded-full border border-[#184B341c] bg-white/90 pr-12 shadow-[0_8px_24px_rgba(43,55,38,0.05)]",

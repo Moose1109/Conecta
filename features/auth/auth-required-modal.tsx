@@ -52,7 +52,7 @@ export function AuthRequiredModal({
           <LockKeyhole aria-hidden="true" className="size-5" />
         </span>
         <h2 id="auth-required-title" className="mt-5 pr-10 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">{t("auth.gate.needsLoginTitle")}</h2>
-        <p id="auth-required-description" className="mt-3 text-sm leading-6 text-[#687269]">{resolvedMessage}</p>
+        <p id="auth-required-description" className="mt-3 text-sm leading-6 text-[#677168]">{resolvedMessage}</p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Link href={buildAuthHref("/login", returnTo)} className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]">{t("auth.signIn")}</Link>
           <Link href={buildAuthHref("/register", returnTo)} className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-[#184B3424] bg-white px-5 py-2.5 text-sm font-extrabold text-[#184B34] hover:bg-[#F7F2E8]">{t("auth.createAccount")}</Link>

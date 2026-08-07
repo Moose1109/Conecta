@@ -277,7 +277,7 @@ export function ProfileView() {
           </Card>
         ) : null}
         {isLoading && !profileUser ? <LoadingState variant="profile" label={t("profile.loadingLabel")} /> : <ProfileHeader stats={stats} user={profileUser} />}
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
           <ProfileTabs
             activities={joinedActivities}
             isLoading={isLoading}

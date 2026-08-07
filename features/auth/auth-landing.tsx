@@ -120,7 +120,7 @@ export function AuthLanding({
         <Card className="w-full max-w-sm p-7 text-center">
           <p className="eyebrow">ConectaPueblos</p>
           <h1 className="mt-3 text-2xl font-extrabold text-[#18231D]">{t("auth.landing.openingCommunity")}</h1>
-          <p className="mt-2 text-sm leading-6 text-[#687269]">{t("auth.landing.alreadySignedIn")}</p>
+          <p className="mt-2 text-sm leading-6 text-[#677168]">{t("auth.landing.alreadySignedIn")}</p>
         </Card>
       </main>
     );
@@ -169,7 +169,7 @@ export function AuthLanding({
         <h1 className="mt-1 text-2xl font-extrabold leading-[1.08] tracking-[-0.04em] text-[#0E3325] sm:text-4xl">
           ConectaPueblos
         </h1>
-        <p className="mt-3 max-w-md text-sm font-medium leading-6 text-[#687269] sm:mt-4">
+        <p className="mt-3 max-w-md text-sm font-medium leading-6 text-[#677168] sm:mt-4">
           {mode === "login"
             ? t("auth.landing.loginDescription")
             : t("auth.landing.registerDescription")}
@@ -182,7 +182,7 @@ export function AuthLanding({
             aria-selected={mode === "login"}
             className={cn(
               "inline-flex min-h-12 items-center justify-center gap-2 rounded-[12px] px-2 text-xs font-extrabold transition-all sm:text-sm",
-              mode === "login" ? "bg-white text-[#184B34] shadow-sm ring-1 ring-[#184B3410]" : "text-[#687269] hover:text-[#184B34]",
+              mode === "login" ? "bg-white text-[#184B34] shadow-sm ring-1 ring-[#184B3410]" : "text-[#677168] hover:text-[#184B34]",
             )}
             id="auth-tab-login"
             role="tab"
@@ -200,7 +200,7 @@ export function AuthLanding({
             aria-selected={mode === "register"}
             className={cn(
               "inline-flex min-h-12 items-center justify-center gap-2 rounded-[12px] px-2 text-xs font-extrabold transition-all sm:text-sm",
-              mode === "register" ? "bg-white text-[#184B34] shadow-sm ring-1 ring-[#184B3410]" : "text-[#687269] hover:text-[#184B34]",
+              mode === "register" ? "bg-white text-[#184B34] shadow-sm ring-1 ring-[#184B3410]" : "text-[#677168] hover:text-[#184B34]",
             )}
             id="auth-tab-register"
             role="tab"
@@ -223,7 +223,7 @@ export function AuthLanding({
 
         <AuthProviderButtons mode={mode} />
 
-        <p className="mt-3 text-center text-sm font-medium text-[#687269] sm:mt-5">
+        <p className="mt-3 text-center text-sm font-medium text-[#677168] sm:mt-5">
           {mode === "login" ? t("auth.landing.noAccountYet") : t("auth.landing.alreadyHaveAccount")}
           <button className="inline-flex min-h-11 items-center font-extrabold text-[#347A48] hover:text-[#184B34]" type="button" onClick={() => selectModeAndFocus(mode === "login" ? "register" : "login")}>
             {mode === "login" ? t("auth.createAccount") : t("auth.landing.signInLabel")}

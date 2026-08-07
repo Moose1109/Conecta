@@ -250,7 +250,7 @@ export function ActivityExplorer({
             <MapPin aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 size-4.5 -translate-y-1/2 text-mineral" />
             <select
               aria-label={t("activities.explorer.villageFilterAriaLabel")}
-              className="min-h-12 w-full appearance-none rounded-full border border-[#184B3420] bg-white/90 py-3 pl-11 pr-10 text-sm font-bold text-text-primary outline-none transition hover:bg-white focus:border-forest-mid focus:ring-4 focus:ring-[#347A481f]"
+              className="min-h-12 w-full appearance-none rounded-full border border-[#184B3420] bg-white/90 py-3 pl-11 pr-10 text-sm font-bold text-text-primary outline-none transition hover:bg-white focus:border-forest-mid focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
               name="village_id"
               onChange={(event) => setVillageId(event.target.value)}
               value={villageId}
@@ -268,7 +268,7 @@ export function ActivityExplorer({
             <CalendarDays aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 size-4 -translate-y-1/2 text-mineral" />
             <input
               aria-label={t("activities.explorer.dateFromSrLabel")}
-              className="min-h-12 w-full rounded-full border border-[#184B3420] bg-white/90 py-2 pl-11 pr-3 text-sm font-bold text-text-primary outline-none focus:border-forest-mid focus:ring-4 focus:ring-[#347A481f]"
+              className="min-h-12 w-full rounded-full border border-[#184B3420] bg-white/90 py-2 pl-11 pr-3 text-sm font-bold text-text-primary outline-none focus:border-forest-mid focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
               max={dateTo || undefined}
               name="date_from"
               onChange={(event) => setDateFrom(event.target.value)}
@@ -284,7 +284,7 @@ export function ActivityExplorer({
               aria-describedby={dateRangeInvalid ? "activity-date-error" : undefined}
               aria-invalid={dateRangeInvalid || undefined}
               aria-label={t("activities.explorer.dateToSrLabel")}
-              className="min-h-12 w-full rounded-full border border-[#184B3420] bg-white/90 py-2 pl-11 pr-3 text-sm font-bold text-text-primary outline-none focus:border-forest-mid focus:ring-4 focus:ring-[#347A481f]"
+              className="min-h-12 w-full rounded-full border border-[#184B3420] bg-white/90 py-2 pl-11 pr-3 text-sm font-bold text-text-primary outline-none focus:border-forest-mid focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
               min={dateFrom || undefined}
               name="date_to"
               onChange={(event) => setDateTo(event.target.value)}

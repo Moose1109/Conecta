@@ -93,7 +93,7 @@ export function AuthGate({
         <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.035em] text-[#18231D]">
           {t("auth.gate.needsLoginTitle")}
         </h1>
-        <p className="mt-3 text-sm leading-6 text-[#687269]">{resolvedMessage}</p>
+        <p className="mt-3 text-sm leading-6 text-[#677168]">{resolvedMessage}</p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <Link
             href={buildAuthHref("/login", returnTo)}
@@ -131,7 +131,7 @@ export function AuthGate({
         <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.035em] text-[#18231D]">
           {adminOnly ? t("auth.gate.verifyingPermissionsTitle") : t("auth.gate.verifyingAccountTitle")}
         </h1>
-        <p className="mt-3 text-sm leading-6 text-[#687269]">
+        <p className="mt-3 text-sm leading-6 text-[#677168]">
           {adminOnly
             ? t("auth.gate.verifyingPermissionsDescription")
             : t("auth.gate.verifyingAccountDescription")}
@@ -155,7 +155,7 @@ export function AuthGate({
             ? t("auth.gate.permissionsErrorTitle")
             : t("auth.gate.sessionErrorTitle")}
         </h1>
-        <p className="mt-3 text-sm leading-6 text-[#687269]">
+        <p className="mt-3 text-sm leading-6 text-[#677168]">
           {t("auth.gate.serviceUnavailableDescription")}
         </p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
@@ -192,7 +192,7 @@ export function AuthGate({
         <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.035em] text-[#18231D]">
           {t("auth.gate.adminPanelUnavailableTitle")}
         </h1>
-        <p className="mt-3 text-sm leading-6 text-[#687269]">
+        <p className="mt-3 text-sm leading-6 text-[#677168]">
           {t("auth.gate.adminPanelUnavailableDescription")}
         </p>
         <div className="mt-6">

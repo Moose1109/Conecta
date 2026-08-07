@@ -212,7 +212,7 @@ export function SettingsView() {
           <nav aria-label={t("settings.nav.sectionsLabel")} className="flex snap-x gap-1 overflow-x-auto [scrollbar-width:none] xl:grid xl:overflow-visible [&::-webkit-scrollbar]:hidden">
             {settingsNavigation.map(({ icon: Icon, id, label }) => (
               <a
-                className="inline-flex min-h-11 shrink-0 snap-start items-center gap-3 rounded-2xl px-3.5 text-sm font-extrabold text-[#526057] transition-colors hover:bg-[#184B340a] hover:text-[#184B34] focus:outline-none focus:ring-4 focus:ring-[#347A4824]"
+                className="inline-flex min-h-11 shrink-0 snap-start items-center gap-3 rounded-2xl px-3.5 text-sm font-extrabold text-[#526057] transition-colors hover:bg-[#184B340a] hover:text-[#184B34] focus:outline-none focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
                 href={`#settings-${id}`}
                 key={id}
               >
@@ -224,7 +224,7 @@ export function SettingsView() {
         </Card>
 
         <div className="grid min-w-0 gap-5">
-          <section className="scroll-mt-28" id="settings-profile">
+          <section className="min-w-0 scroll-mt-28" id="settings-profile">
             <Card className="overflow-hidden">
               <SettingsHeading
                 description={t("settings.profile.headingDescription")}
@@ -344,7 +344,7 @@ export function SettingsView() {
                       value={form.bio}
                       onChange={(event) => updateField("bio", event.target.value)}
                     />
-                    <p className="mt-1.5 text-right text-xs text-[#687269]" id="settings-bio-count">
+                    <p className="mt-1.5 text-right text-xs text-[#677168]" id="settings-bio-count">
                       {t("settings.profile.bioCount", { count: form.bio.length })}
                     </p>
                   </div>
@@ -395,7 +395,7 @@ export function SettingsView() {
             <div className="mt-4 flex items-center justify-between gap-4 rounded-2xl border border-[#184B3414] bg-[#F8F5EE] p-4">
               <div className="min-w-0">
                 <p className="text-sm font-extrabold text-[#18231D]">{t("settings.account.languageTitle")}</p>
-                <p className="mt-0.5 text-xs font-medium leading-5 text-[#687269]">
+                <p className="mt-0.5 text-xs font-medium leading-5 text-[#677168]">
                   {t("settings.account.languageDescription")}
                 </p>
               </div>
@@ -519,7 +519,7 @@ function SettingsHeading({
       </span>
       <div>
         <h2 className="text-xl font-extrabold text-[#0E3325]">{title}</h2>
-        <p className="mt-1 text-sm leading-6 text-[#687269]">{description}</p>
+        <p className="mt-1 text-sm leading-6 text-[#677168]">{description}</p>
       </div>
     </div>
   );
@@ -539,7 +539,7 @@ function SettingsSection({
   title: string;
 }) {
   return (
-    <section className="scroll-mt-28" id={`settings-${id}`}>
+    <section className="min-w-0 scroll-mt-28" id={`settings-${id}`}>
       <Card className="overflow-hidden">
         <SettingsHeading description={description} icon={icon} title={title} />
         <div className="p-5 sm:p-6">{children}</div>
@@ -559,7 +559,7 @@ function ReadOnlyAccountItem({
 }) {
   return (
     <div className="rounded-2xl border border-[#184B3414] bg-[#F8F5EE] p-4">
-      <dt className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.08em] text-[#687269]">
+      <dt className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.08em] text-[#677168]">
         <Icon aria-hidden="true" className="size-4" />
         {label}
       </dt>
@@ -575,7 +575,7 @@ function DisabledPreference({ label }: { label: string }) {
     <div aria-disabled="true" className="flex min-h-16 items-center justify-between gap-4 rounded-2xl border border-[#184B3412] bg-[#F8F5EE] px-4 py-3 opacity-75">
       <div className="min-w-0">
         <p className="text-sm font-extrabold text-[#39483E]">{label}</p>
-        <p className="mt-0.5 text-xs font-medium text-[#687269]">{t("settings.preferencePendingBackend")}</p>
+        <p className="mt-0.5 text-xs font-medium text-[#677168]">{t("settings.preferencePendingBackend")}</p>
       </div>
       <button
         aria-label={t("settings.preferenceDisabledAriaLabel", { label })}
@@ -605,7 +605,7 @@ function AccessibilityItem({
       </span>
       <div>
         <h3 className="text-sm font-extrabold text-[#18231D]">{title}</h3>
-        <p className="mt-1 text-xs font-medium leading-5 text-[#687269]">{description}</p>
+        <p className="mt-1 text-xs font-medium leading-5 text-[#677168]">{description}</p>
       </div>
     </div>
   );

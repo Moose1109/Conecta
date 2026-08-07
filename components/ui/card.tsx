@@ -43,7 +43,7 @@ export function SectionHeader({
       ) : null}
       <h2 className="text-2xl font-extrabold tracking-[-0.025em] text-[#18231D] sm:text-3xl md:text-4xl">{title}</h2>
       {description ? (
-        <p className="mt-3 text-base leading-7 text-[#687269]">{description}</p>
+        <p className="mt-3 text-base leading-7 text-[#677168]">{description}</p>
       ) : null}
     </div>
   );

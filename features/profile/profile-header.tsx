@@ -74,7 +74,7 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
         </div>
 
         <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
-          <p className="max-w-2xl text-sm leading-6 text-[#687269]">
+          <p className="max-w-2xl text-sm leading-6 text-[#677168]">
             {user?.bio ?? t("profile.header.defaultBio")}
           </p>
           <dl className="grid grid-cols-2 gap-4 rounded-2xl border border-[#184B3412] bg-[#F8F5EE] px-4 py-3 text-center min-[430px]:grid-cols-3 sm:gap-8 sm:px-6">
@@ -91,7 +91,7 @@ export function ProfileHeader({ user, stats }: { user?: AuthUser; stats: Profile
 function Metric({ className = "", label, t, value }: { className?: string; label: string; t: Translator["t"]; value?: number }) {
   return (
     <div className={`flex flex-col ${className}`}>
-      <dt className="text-[10px] font-bold text-[#687269] sm:text-xs">{label}</dt>
+      <dt className="text-[10px] font-bold text-[#677168] sm:text-xs">{label}</dt>
       <dd
         aria-label={value === undefined ? t("profile.header.metricUnavailable", { label }) : undefined}
         className="order-first mb-0.5 text-lg font-extrabold text-[#0E3325] sm:text-xl"

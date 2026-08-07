@@ -316,7 +316,7 @@ export function SocialPostActions({
   return (
     <>
       {hasMetrics ? (
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#184B340d] px-4 py-2.5 text-xs font-semibold text-[#687269] sm:px-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#184B340d] px-4 py-2.5 text-xs font-semibold text-[#677168] sm:px-5">
           <span className="inline-flex items-center gap-1.5">
             <span className="grid size-5 place-items-center rounded-full bg-[#C96D4A] text-white">
               <Heart aria-hidden="true" className="size-3" fill="currentColor" strokeWidth={1.8} />

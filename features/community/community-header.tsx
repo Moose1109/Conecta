@@ -16,7 +16,7 @@ export async function CommunityHeader() {
           <h1 className="mt-1 text-[2rem] font-extrabold leading-none tracking-[-0.045em] text-[#0E3325] sm:text-[2.45rem]">
             {t("navigation.community.meta")}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#687269] sm:text-[15px]">
+          <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#677168] sm:text-[15px]">
             {t("community.header.description")}
           </p>
         </div>

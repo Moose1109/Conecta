@@ -47,7 +47,7 @@ export function AppToast({
       {onDismiss ? (
         <button
           aria-label={t("common.dismissMessage")}
-          className="-m-2 grid size-11 shrink-0 place-items-center rounded-full transition-colors hover:bg-black/5 focus:outline-none focus:ring-4 focus:ring-[#347A4824]"
+          className="-m-2 grid size-11 shrink-0 place-items-center rounded-full transition-colors hover:bg-black/5 focus:outline-none focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
           onClick={onDismiss}
           type="button"
         >

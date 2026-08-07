@@ -40,7 +40,7 @@ export function BackendPendingAlert({
         </span>
         <div className="min-w-0 flex-1">
           <h2 className={cn("font-extrabold tracking-[-0.015em]", compact ? "text-sm" : "text-lg")}>{resolvedTitle}</h2>
-          <p className={cn("mt-1.5 leading-6 text-[#687269]", compact ? "text-xs" : "text-sm")}>{resolvedDescription}</p>
+          <p className={cn("mt-1.5 leading-6 text-[#677168]", compact ? "text-xs" : "text-sm")}>{resolvedDescription}</p>
           {actionHref ? (
             <Link
               className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-[#184B34] px-4 py-2 text-sm font-extrabold text-white transition-colors hover:bg-[#0E3325]"

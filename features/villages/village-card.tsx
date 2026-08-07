@@ -57,7 +57,7 @@ export function VillageCard({
       </Link>
 
       <div className={`flex flex-1 flex-col ${compact ? "p-4" : "p-5"}`}>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-[#687269]">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-[#677168]">
           <span>{village.province}</span>
           {hasPopulation ? (
             <>
@@ -85,7 +85,7 @@ export function VillageCard({
 
         {village.tagline ? (
           <p
-            className={`mt-2 text-sm leading-6 text-[#687269] ${compact ? "line-clamp-1" : "line-clamp-2"}`}
+            className={`mt-2 text-sm leading-6 text-[#677168] ${compact ? "line-clamp-1" : "line-clamp-2"}`}
           >
             {village.tagline}
           </p>

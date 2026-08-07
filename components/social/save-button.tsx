@@ -140,7 +140,7 @@ export function SaveButton({
         <button
           aria-pressed={saved}
           className={cn(
-            "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-extrabold transition-colors focus:outline-none focus:ring-4 focus:ring-[#347A4824]",
+            "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-extrabold transition-colors focus:outline-none focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]",
             saved
               ? "bg-[#184B34] text-white"
               : "bg-[#184B340d] text-[#184B34] hover:bg-[#184B3418]",

@@ -155,7 +155,7 @@ export function PublicAuthShell({
               <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white shadow-sm"><LockKeyhole aria-hidden="true" className="size-5" /></span>
               <div>
                 <p className="text-sm font-extrabold">{t("landing.securityTitle")}</p>
-                <p className="mt-1 text-xs font-medium text-[#687269]">{t("landing.securityDescription")}</p>
+                <p className="mt-1 text-xs font-medium text-[#677168]">{t("landing.securityDescription")}</p>
               </div>
             </div>
             {hasDiscovery ? (

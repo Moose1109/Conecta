@@ -146,7 +146,7 @@ export function UserMenu() {
           <UserAvatar className="size-12 text-sm ring-0" imageUrl={user?.avatarUrl} name={name} />
           <div className="min-w-0">
             <p className="truncate text-sm font-extrabold">{name}</p>
-            <p className="mt-1 truncate text-xs font-medium text-[#687269]">{user?.email ?? t("userMenu.defaultEmail")}</p>
+            <p className="mt-1 truncate text-xs font-medium text-[#677168]">{user?.email ?? t("userMenu.defaultEmail")}</p>
           </div>
         </div>
 
@@ -162,7 +162,7 @@ export function UserMenu() {
               onClick={() => setOpen(false)}
             >
               <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#184B340a] text-[#347A48]"><Icon aria-hidden="true" className="size-4" /></span>
-              <span><span className="block text-sm font-extrabold">{t(labelKey)}</span><span className="mt-0.5 block text-[11px] font-medium text-[#687269]">{t(metaKey)}</span></span>
+              <span><span className="block text-sm font-extrabold">{t(labelKey)}</span><span className="mt-0.5 block text-[11px] font-medium text-[#677168]">{t(metaKey)}</span></span>
             </Link>
           ))}
         </div>

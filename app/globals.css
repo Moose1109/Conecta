@@ -13,7 +13,7 @@
   --mustard: #d7a63c;
   --mineral: #60818a;
   --text: #18231d;
-  --muted: #687269;
+  --muted: #677168;
   --line: rgba(24, 75, 52, 0.1);
   --line-strong: rgba(24, 75, 52, 0.18);
   --surface: rgba(255, 252, 247, 0.94);
@@ -118,8 +118,10 @@ button:disabled,
 }
 
 :focus-visible {
-  outline: 3px solid rgba(52, 122, 72, 0.32);
-  outline-offset: 3px;
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--cream),
+    0 0 0 5px var(--forest);
 }
 
 ::selection {
@@ -167,7 +169,7 @@ button:disabled,
 }
 
 .field::placeholder {
-  color: rgba(104, 114, 105, 0.72);
+  color: var(--muted);
 }
 
 .field:hover {
@@ -176,7 +178,9 @@ button:disabled,
 
 .field:focus {
   border-color: var(--forest-mid);
-  box-shadow: 0 0 0 4px rgba(52, 122, 72, 0.12);
+  box-shadow:
+    0 0 0 2px var(--cream),
+    0 0 0 5px var(--forest);
   background: #fff;
 }
 

@@ -23,7 +23,7 @@ export function EmptyState({
         <Icon aria-hidden="true" className="size-6" strokeWidth={1.8} />
       </span>
       <h2 className="mt-5 text-xl font-extrabold tracking-[-0.02em] text-[#18231D]">{title}</h2>
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#687269]">{description}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#677168]">{description}</p>
       {onAction && actionLabel ? (
         <button
           className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white transition-colors hover:bg-[#0E3325]"

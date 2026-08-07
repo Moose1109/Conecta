@@ -205,7 +205,7 @@ export function PostComposer({
                 <span className="sr-only">{t("community.composer.contentLabel")}</span>
                 <textarea
                   className={cn(
-                    "block min-h-14 w-full resize-none rounded-[22px] border border-[#184B3412] bg-[#F3F0E9] px-5 py-4 text-sm font-medium leading-6 text-[#18231D] outline-none transition-all duration-200 placeholder:text-[#687269]/82 hover:bg-[#F0EDE5] focus:border-[#347A4830] focus:bg-white focus:ring-4 focus:ring-[#347A4816] sm:text-[15px]",
+                    "block min-h-14 w-full resize-none rounded-[22px] border border-[#184B3412] bg-[#F3F0E9] px-5 py-4 text-sm font-medium leading-6 text-[#18231D] outline-none transition-all duration-200 placeholder:text-[#666F67] hover:bg-[#F0EDE5] focus:border-[#347A4830] focus:bg-white focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8] sm:text-[15px]",
                     expanded && "min-h-24 rounded-[18px]",
                   )}
                   name="content"

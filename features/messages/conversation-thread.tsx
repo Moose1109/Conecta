@@ -234,7 +234,7 @@ export function ConversationThread({
           <label className="min-w-0 flex-1">
             <span className="sr-only">{t("messages.thread.draftLabel")}</span>
             <textarea
-              className="min-h-11 max-h-28 w-full resize-none rounded-[22px] border border-border bg-[#FBFAF7] px-4 py-2.5 text-sm leading-6 text-text-primary outline-none transition focus:border-forest-mid focus:bg-white focus:ring-4 focus:ring-[#347A4818]"
+              className="min-h-11 max-h-28 w-full resize-none rounded-[22px] border border-border bg-[#FBFAF7] px-4 py-2.5 text-sm leading-6 text-text-primary outline-none transition focus:border-forest-mid focus:bg-white focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
               placeholder={t("messages.thread.draftPlaceholder")}
               rows={1}
               value={draft}

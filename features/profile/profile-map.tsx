@@ -78,7 +78,7 @@ export function ProfileMap({
             ))}
           </div>
         ) : (
-          <Card className="p-5 text-sm leading-6 text-[#687269]">
+          <Card className="p-5 text-sm leading-6 text-[#677168]">
             {t("profile.map.noFollowedVillages")}
           </Card>
         )}
@@ -103,7 +103,7 @@ export function ProfileMap({
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-extrabold text-[#18231D]">{place.name}</span>
-                    <span className="mt-1 flex items-center gap-1.5 text-xs font-medium text-[#687269]">
+                    <span className="mt-1 flex items-center gap-1.5 text-xs font-medium text-[#677168]">
                       <Newspaper aria-hidden="true" className="size-3.5" />
                       {tPlural("villages.card.postsCount", place.postsCount)}
                     </span>
@@ -128,7 +128,7 @@ export function ProfileMap({
             })}
           </div>
         ) : (
-          <Card className="p-5 text-sm leading-6 text-[#687269]">
+          <Card className="p-5 text-sm leading-6 text-[#677168]">
             {t("profile.map.noRelatedVillages")}
           </Card>
         )}
@@ -139,7 +139,7 @@ export function ProfileMap({
 
 function MapDataUnavailable({ label, t }: { label: string; t: Translator["t"] }) {
   return (
-    <Card className="p-5 text-sm font-medium leading-6 text-[#687269]" role="status">
+    <Card className="p-5 text-sm font-medium leading-6 text-[#677168]" role="status">
       {t("profile.map.mapUnavailableDescription", { label })}
     </Card>
   );

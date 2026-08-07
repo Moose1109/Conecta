@@ -48,7 +48,7 @@ export function NotificationsView() {
                 }}
                 aria-controls="notifications-page-panel"
                 aria-selected={filter === id}
-                className={cn("min-h-11 rounded-xl text-sm font-extrabold transition-colors", filter === id ? "bg-white text-[#184B34] shadow-sm" : "text-[#687269] hover:text-[#184B34]")}
+                className={cn("min-h-11 rounded-xl text-sm font-extrabold transition-colors", filter === id ? "bg-white text-[#184B34] shadow-sm" : "text-[#677168] hover:text-[#184B34]")}
                 id={`notifications-page-tab-${id}`}
                 role="tab"
                 tabIndex={filter === id ? 0 : -1}
@@ -73,7 +73,7 @@ export function NotificationsView() {
               {filter === "unread" ? <CheckCheck aria-hidden="true" className="size-7" /> : <Bell aria-hidden="true" className="size-7" />}
             </span>
             <h2 className="mt-5 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">{filter === "unread" ? t("notifications.page.unreadEmptyTitle") : t("notifications.empty.allTitle")}</h2>
-            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#687269]">{t("notifications.page.emptyDescription")}</p>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#677168]">{t("notifications.page.emptyDescription")}</p>
             <Link className="mt-5 inline-flex min-h-11 items-center rounded-full bg-[#184B34] px-5 text-sm font-extrabold text-white hover:bg-[#0E3325]" href="/community">{t("common.backendPending.actionLabel")}</Link>
           </div>
         </div>

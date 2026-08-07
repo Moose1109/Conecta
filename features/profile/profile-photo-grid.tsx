@@ -42,7 +42,7 @@ export function ProfilePhotoGrid({ posts }: { posts: CommunityPost[] }) {
               <p className="line-clamp-2 text-sm font-extrabold leading-5 text-[#18231D]">
                 {post.title}
               </p>
-              <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-[#687269]">
+              <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-[#677168]">
                 <Camera aria-hidden="true" className="size-3.5 shrink-0" />
                 <span className="truncate">{post.villageName || post.date}</span>
               </p>

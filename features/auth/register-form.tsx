@@ -205,7 +205,7 @@ export function RegisterForm({ nextPath = "/community" }: { nextPath?: string })
           <button
             aria-label={showPassword ? t("auth.login.hidePassword") : t("auth.login.showPassword")}
             aria-pressed={showPassword}
-            className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full text-[#5E6F63] transition-colors hover:bg-[#1F3D2B0d] hover:text-[#173F2A] focus:outline-none focus:ring-4 focus:ring-[#3A7D4420]"
+            className="absolute right-2 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full text-[#5E6F63] transition-colors hover:bg-[#1F3D2B0d] hover:text-[#173F2A] focus:outline-none focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
             type="button"
             onClick={() => setShowPassword((value) => !value)}
           >

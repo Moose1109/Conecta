@@ -58,7 +58,7 @@ export function ResponsiveSidebarDrawer() {
         </span>
         <span>
           <span className="block">{t(item.labelKey)}</span>
-          <span className={cn("mt-0.5 block text-[11px] font-semibold text-[#687269]", selected && "text-white/70")}>{t(item.metaKey)}</span>
+          <span className={cn("mt-0.5 block text-[11px] font-semibold text-[#677168]", selected && "text-white/70")}>{t(item.metaKey)}</span>
         </span>
       </Link>
     );

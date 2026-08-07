@@ -14,7 +14,7 @@ const variants: Record<Variant, string> = {
 };
 
 const base =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-extrabold transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-[#347A4824] disabled:translate-y-0 disabled:opacity-60";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-extrabold transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8] disabled:translate-y-0 disabled:opacity-60";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;

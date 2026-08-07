@@ -121,7 +121,7 @@ export async function VillageDetailSections({
             {village.description ? (
               <VillageDescription description={village.description} />
             ) : (
-              <p className="text-sm leading-6 text-[#687269]">
+              <p className="text-sm leading-6 text-[#677168]">
                 {t("villages.detail.noDescription")}
               </p>
             )}
@@ -342,7 +342,7 @@ export async function VillageDetailSections({
                           <UserAvatar className="size-10 ring-2 ring-white" imageUrl={post.authorAvatar} name={post.author} />
                           <div className="min-w-0">
                             <p className="truncate text-sm font-extrabold text-[#18231D]">{post.author}</p>
-                            <p className="mt-0.5 text-xs font-medium text-[#687269]">{t("villages.detail.linkedPostLabel")} · {readableDate(post.date, t, locale)}</p>
+                            <p className="mt-0.5 text-xs font-medium text-[#677168]">{t("villages.detail.linkedPostLabel")} · {readableDate(post.date, t, locale)}</p>
                           </div>
                         </footer>
                       </Card>
@@ -378,7 +378,7 @@ export async function VillageDetailSections({
                     sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 320px"
                     src={post.image}
                     fallback={
-                      <div className="grid h-full place-items-center text-[#687269]">
+                      <div className="grid h-full place-items-center text-[#677168]">
                         <Camera aria-hidden="true" className="size-8" strokeWidth={1.5} />
                       </div>
                     }
@@ -386,7 +386,7 @@ export async function VillageDetailSections({
                 </div>
                 <figcaption className="p-3 sm:p-4">
                   <p className="line-clamp-2 text-sm font-extrabold leading-5 text-[#18231D]">{post.title}</p>
-                  <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-[#687269]">
+                  <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-[#677168]">
                     <Camera aria-hidden="true" className="size-3.5" />
                     {post.author}
                   </p>
@@ -418,7 +418,7 @@ export async function VillageDetailSections({
             {hasAdministrativeValue(village.region) ? <VillageDetail label={t("villages.detail.regionLabel")} value={village.region} /> : null}
             {village.population > 0 ? <VillageDetail label={t("villages.detail.populationDetailLabel")} value={t("villages.detail.populationValue", { count: formatPopulation(village.population, locale) })} /> : null}
           </dl>
-          <p className="mt-5 flex items-start gap-2 rounded-2xl bg-[#F7F2E8] p-4 text-xs font-medium leading-5 text-[#687269]">
+          <p className="mt-5 flex items-start gap-2 rounded-2xl bg-[#F7F2E8] p-4 text-xs font-medium leading-5 text-[#677168]">
             <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[#60818A]" />
             {t("villages.detail.infoNotice")}
           </p>
@@ -639,7 +639,7 @@ function VillageFact({
         <Icon aria-hidden="true" className="size-5" strokeWidth={1.8} />
       </span>
       <div className="min-w-0">
-        <p className="text-xs font-bold text-[#687269]">{label}</p>
+        <p className="text-xs font-bold text-[#677168]">{label}</p>
         <p className="mt-1 truncate text-xl font-extrabold tracking-[-0.025em] text-[#18231D]">{value}</p>
       </div>
     </Card>
@@ -683,7 +683,7 @@ function CollectionLimitNotice({ label, t }: { label: string; t: Translator["t"]
 
 function CompactSourceState({ message }: { message: string }) {
   return (
-    <Card className="flex items-start gap-3 p-5 text-sm font-medium leading-6 text-[#687269]" role="status">
+    <Card className="flex items-start gap-3 p-5 text-sm font-medium leading-6 text-[#677168]" role="status">
       <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-[#78947D1a] text-[#60818A]">
         <Info aria-hidden="true" className="size-4.5" />
       </span>
@@ -695,7 +695,7 @@ function CompactSourceState({ message }: { message: string }) {
 function VillageDetail({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start justify-between gap-4 py-3 text-sm">
-      <dt className="font-semibold text-[#687269]">{label}</dt>
+      <dt className="font-semibold text-[#677168]">{label}</dt>
       <dd className="text-right font-extrabold text-[#18231D]">{value}</dd>
     </div>
   );

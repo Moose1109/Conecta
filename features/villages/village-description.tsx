@@ -21,7 +21,7 @@ export function VillageDescription({ description }: { description: string }) {
         className={isLong && !expanded ? "relative max-h-52 overflow-hidden" : undefined}
         id="village-description-content"
       >
-        <div className="grid max-w-3xl gap-4 text-base leading-8 text-[#687269]">
+        <div className="grid max-w-3xl gap-4 text-base leading-8 text-[#677168]">
           {paragraphs.map((paragraph, index) => (
             <p key={`${index}-${paragraph.slice(0, 24)}`}>{paragraph}</p>
           ))}
@@ -38,7 +38,7 @@ export function VillageDescription({ description }: { description: string }) {
         <button
           aria-controls="village-description-content"
           aria-expanded={expanded}
-          className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-[#184B3420] bg-white px-4 text-sm font-extrabold text-[#184B34] transition-colors hover:bg-[#F7F2E8] focus:outline-none focus:ring-4 focus:ring-[#347A4824]"
+          className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-[#184B3420] bg-white px-4 text-sm font-extrabold text-[#184B34] transition-colors hover:bg-[#F7F2E8] focus:outline-none focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
           type="button"
           onClick={() => setExpanded((current) => !current)}
         >

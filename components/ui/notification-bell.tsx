@@ -88,7 +88,7 @@ export function NotificationBell() {
                     ref={id === "all" ? allTabRef : unreadTabRef}
                     aria-controls="notifications-filter-panel"
                     aria-selected={filter === id}
-                    className={cn("min-h-11 rounded-xl text-sm font-extrabold", filter === id ? "bg-white text-[#184B34] shadow-sm" : "text-[#687269]")}
+                    className={cn("min-h-11 rounded-xl text-sm font-extrabold", filter === id ? "bg-white text-[#184B34] shadow-sm" : "text-[#677168]")}
                     id={`notifications-filter-${id}`}
                     role="tab"
                     tabIndex={filter === id ? 0 : -1}
@@ -106,7 +106,7 @@ export function NotificationBell() {
                 <div>
                 <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#78947D1f] text-[#184B34]">{filter === "unread" ? <CheckCheck aria-hidden="true" className="size-6" /> : <Bell aria-hidden="true" className="size-6" />}</span>
                 <h3 className="mt-4 text-lg font-extrabold">{filter === "unread" ? t("notifications.empty.unreadTitle") : t("notifications.empty.allTitle")}</h3>
-                <p className="mx-auto mt-2 max-w-xs text-sm leading-6 text-[#687269]">{t("notifications.empty.description")}</p>
+                <p className="mx-auto mt-2 max-w-xs text-sm leading-6 text-[#677168]">{t("notifications.empty.description")}</p>
                 </div>
               </div>
             </div>

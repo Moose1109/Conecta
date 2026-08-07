@@ -42,7 +42,7 @@ export function MobileBottomNav() {
               href={item.href}
               className={cn(
                 "flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-1 text-[10px] font-extrabold transition-colors",
-                active ? "bg-[#184B34] text-white" : "text-[#687269] hover:bg-[#184B340a] hover:text-[#184B34]",
+                active ? "bg-[#184B34] text-white" : "text-[#677168] hover:bg-[#184B340a] hover:text-[#184B34]",
               )}
             >
               <Icon aria-hidden="true" className="size-5" strokeWidth={active ? 2.2 : 1.8} />

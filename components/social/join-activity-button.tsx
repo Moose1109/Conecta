@@ -136,7 +136,7 @@ export function JoinActivityButton({
         <button
           aria-pressed={joined}
           className={cn(
-            "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-5 text-sm font-extrabold transition-colors focus:outline-none focus:ring-4 focus:ring-[#347A4824]",
+            "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-5 text-sm font-extrabold transition-colors focus:outline-none focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]",
             joined
               ? "bg-[#D7A63C] text-[#18231D] hover:bg-[#C8952D]"
               : "bg-[#184B34] text-white hover:bg-[#0E3325]",

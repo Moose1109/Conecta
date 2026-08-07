@@ -43,7 +43,7 @@ export function SidebarNav() {
                 </span>
                 <span className="min-w-0">
                   <span className="block font-extrabold">{t(link.labelKey)}</span>
-                  <span className={cn("mt-0.5 block text-[11px] font-semibold leading-4 text-[#687269]", active && "text-white/72")}>{t(link.metaKey)}</span>
+                  <span className={cn("mt-0.5 block text-[11px] font-semibold leading-4 text-[#677168]", active && "text-white/72")}>{t(link.metaKey)}</span>
                 </span>
               </Link>
             );

@@ -232,7 +232,7 @@ export function VillageExplorer({ villages: initialVillages }: { villages: Villa
 
 function filterChipClass(active: boolean) {
   return cn(
-    "inline-flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-full border px-4 text-xs font-extrabold transition-colors focus:outline-none focus:ring-4 focus:ring-[#347A481c]",
+    "inline-flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-full border px-4 text-xs font-extrabold transition-colors focus:outline-none focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]",
     active
       ? "border-[#347A48] bg-[#347A48] text-white shadow-[0_8px_20px_rgba(52,122,72,0.18)]"
       : "border-[#184B341a] bg-white/82 text-[#184B34] hover:border-[#184B3430] hover:bg-white",

@@ -65,7 +65,7 @@ export default async function CreateActivityPage() {
                 <h1 className="mt-3 max-w-2xl text-3xl font-extrabold leading-[1.08] tracking-[-0.04em] text-[#18231D] sm:text-4xl">
                   {t("activities.create.title")}
                 </h1>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#687269] sm:text-base sm:leading-7">
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#677168] sm:text-base sm:leading-7">
                   {t("activities.create.description")}
                 </p>
               </header>
@@ -116,7 +116,7 @@ export default async function CreateActivityPage() {
                         <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-[#78947D1f] text-[#184B34]">
                           <Icon aria-hidden="true" className="size-4" />
                         </span>
-                        <p className="pt-1 text-sm leading-5 text-[#687269]">{text}</p>
+                        <p className="pt-1 text-sm leading-5 text-[#677168]">{text}</p>
                       </div>
                     ))}
                   </div>

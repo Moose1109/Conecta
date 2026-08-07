@@ -138,7 +138,7 @@ export default async function ActivityDetailPage({
                   {activity.description}
                 </p>
               ) : (
-                <p className="mt-4 text-sm leading-6 text-[#687269]">
+                <p className="mt-4 text-sm leading-6 text-[#677168]">
                   {t("activities.detail.noDescription")}
                 </p>
               )}
@@ -215,7 +215,7 @@ export default async function ActivityDetailPage({
                     {activity.time}
                   </p>
                   {activity.location ? (
-                    <p className="mt-2 line-clamp-2 text-xs leading-5 text-[#687269]">
+                    <p className="mt-2 line-clamp-2 text-xs leading-5 text-[#677168]">
                       {activity.location}
                     </p>
                   ) : null}

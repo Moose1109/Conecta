@@ -114,7 +114,7 @@ export function RightRail() {
                       >
                         {activity.title}
                       </Link>
-                      <p className="mt-0.5 truncate text-[11px] font-semibold text-[#687269]">
+                      <p className="mt-0.5 truncate text-[11px] font-semibold text-[#677168]">
                         {villageName} · {activity.time}
                       </p>
                       {typeof activity.spotsLeft === "number" ? (
@@ -135,7 +135,7 @@ export function RightRail() {
         ) : (
           <div className="px-4 py-6 text-center">
             <CalendarDays aria-hidden="true" className="mx-auto size-5 text-[#78947D]" />
-            <p className="mt-2 text-xs font-semibold leading-5 text-[#687269]">
+            <p className="mt-2 text-xs font-semibold leading-5 text-[#677168]">
               {unavailableSources.activities
                 ? t("community.rightRail.errorLoadingActivities")
                 : t("community.rightRail.noActivitiesPublished")}
@@ -189,7 +189,7 @@ export function RightRail() {
                   >
                     {village.name}
                   </Link>
-                  <p className="mt-0.5 truncate text-[10px] font-semibold text-[#687269]">
+                  <p className="mt-0.5 truncate text-[10px] font-semibold text-[#677168]">
                     {village.population > 0
                       ? `${t("community.rightRail.populationLabel", { population: formatPopulation(village.population, locale) })} · `
                       : ""}
@@ -211,7 +211,7 @@ export function RightRail() {
         ) : (
           <div className="px-4 py-6 text-center">
             <MapPin aria-hidden="true" className="mx-auto size-5 text-[#78947D]" />
-            <p className="mt-2 text-xs font-semibold leading-5 text-[#687269]">
+            <p className="mt-2 text-xs font-semibold leading-5 text-[#677168]">
               {unavailableSources.villages
                 ? t("community.rightRail.errorLoadingVillages")
                 : t("community.rightRail.noVillagesAvailable")}
@@ -266,7 +266,7 @@ export function RightRail() {
         </span>
         <div>
           <p className="text-xs font-extrabold text-[#184B34]">{t("community.rightRail.promoTitle")}</p>
-          <p className="mt-1 text-[11px] font-medium leading-5 text-[#687269]">
+          <p className="mt-1 text-[11px] font-medium leading-5 text-[#677168]">
             {t("community.rightRail.promoDescription")}
           </p>
         </div>

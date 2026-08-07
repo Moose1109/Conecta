@@ -26,14 +26,14 @@ export function Navbar() {
         <div className="page-shell flex min-h-[72px] items-center gap-2 sm:gap-3">
           <Link
             aria-label={t("navigation.public.backAriaLabel")}
-            className="grid size-11 shrink-0 place-items-center rounded-full border border-[#184B3414] bg-white/80 text-[#184B34] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#347A4824]"
+            className="grid size-11 shrink-0 place-items-center rounded-full border border-[#184B3414] bg-white/80 text-[#184B34] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#184B34] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F2E8]"
             href="/"
           >
             <ArrowLeft aria-hidden="true" className="size-5" strokeWidth={1.8} />
           </Link>
           <Link
             href="/"
-            className="flex min-h-11 shrink-0 items-center gap-2.5 font-extrabold tracking-[-0.02em] text-[#0E3325] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#347A4824]"
+            className="flex min-h-11 shrink-0 items-center gap-2.5 font-extrabold tracking-[-0.02em] text-[#0E3325] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#184B34] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F2E8]"
           >
             <span className="grid size-10 place-items-center rounded-2xl bg-gradient-to-br from-[#347A48] to-[#184B34] text-sm font-black text-white shadow-[0_9px_24px_rgba(24,75,52,0.18)]">
               CP
@@ -81,7 +81,7 @@ export function Navbar() {
           <label className="sr-only" htmlFor="global-search">{t("navigation.searchLabel")}</label>
           <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#60818A]" />
           <input
-            className="min-h-11 w-full rounded-full border border-[#184B3418] bg-white/76 py-2 pl-11 pr-4 text-sm text-[#18231D] shadow-sm outline-none transition focus:border-[#347A48] focus:bg-white focus:ring-4 focus:ring-[#347A4818]"
+            className="min-h-11 w-full rounded-full border border-[#184B3418] bg-white/76 py-2 pl-11 pr-4 text-sm text-[#18231D] shadow-sm outline-none transition focus:border-[#347A48] focus:bg-white focus:ring-4 focus:ring-[#184B34] focus:ring-offset-2 focus:ring-offset-[#F7F2E8]"
             id="global-search"
             name="q"
             placeholder={t("navigation.searchPlaceholder")}

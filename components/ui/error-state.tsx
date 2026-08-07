@@ -29,7 +29,7 @@ export function ErrorState({
       <h2 className="mt-5 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]">
         {title ?? t("common.errorState.title")}
       </h2>
-      <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#687269]">
+      <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#677168]">
         {description ?? t("common.errorState.description")}
       </p>
       <div className="mt-6">

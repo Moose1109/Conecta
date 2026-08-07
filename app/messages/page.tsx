@@ -68,7 +68,7 @@ async function MessagesRealState() {
           <span className="mx-auto grid size-16 place-items-center rounded-[22px] bg-[#C96D4A1a] text-[#C96D4A]"><MessageCircle aria-hidden="true" className="size-7" /></span>
           <p className="eyebrow mt-5">{t("messages.realState.noSimulatedDataEyebrow")}</p>
           <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.025em] text-[#18231D]" id="messages-empty-title">{t("messages.realState.emptyTitle")}</h2>
-          <p className="mt-3 text-sm leading-6 text-[#687269]">{t("messages.realState.emptyDescription")}</p>
+          <p className="mt-3 text-sm leading-6 text-[#677168]">{t("messages.realState.emptyDescription")}</p>
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link className="inline-flex min-h-11 items-center rounded-full bg-[#184B34] px-5 text-sm font-extrabold text-white hover:bg-[#0E3325]" href="/community">{t("common.backendPending.actionLabel")}</Link>
             <Link
@@ -79,7 +79,7 @@ async function MessagesRealState() {
               {t("messages.realState.viewProposal")}
             </Link>
           </div>
-          <p className="mt-3 text-xs font-semibold leading-5 text-[#687269]">
+          <p className="mt-3 text-xs font-semibold leading-5 text-[#677168]">
             {t("messages.realState.proposalDisclaimer")}
           </p>
         </div>
