@@ -10,6 +10,7 @@ import { registerUser, type RegisterPayload } from "@/lib/api/auth.service";
 import { ApiError } from "@/lib/api/client";
 import { buildAuthHref } from "@/features/auth/next-path";
 import { getApiErrorMessage } from "@/lib/api/error-message";
+import { markSessionVerified } from "@/features/auth/session-verification";
 import { saveSession } from "@/lib/api/session";
 
 type RegisterField = "confirmPassword" | "email" | "name" | "password" | "username";
@@ -68,6 +69,7 @@ export function RegisterForm({ nextPath = "/community" }: { nextPath?: string })
       const token = response.access_token ?? response.token;
 
       saveSession({ token, user: response.user });
+      if (token) markSessionVerified(token);
 
       if (token) {
         router.refresh();

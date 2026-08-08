@@ -3,22 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LoaderCircle, LockKeyhole, RefreshCw, ShieldAlert, ShieldX } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 import { useTranslations } from "@/components/i18n/i18n-provider";
 import { buildAuthHref } from "@/features/auth/next-path";
 import { isAdminUser } from "@/features/auth/roles";
+import { retrySessionVerification } from "@/features/auth/session-verification";
 import { useAuthSession } from "@/features/auth/use-auth-session";
-import { getCurrentUser } from "@/lib/api/auth.service";
-import { isUnauthorizedError } from "@/lib/api/client";
-import { logApiIssue } from "@/lib/api/error-message";
-import { clearSession, saveSession } from "@/lib/api/session";
-
-type SessionVerification = {
-  status: "checking" | "allowed" | "denied" | "error";
-  adminOnly?: boolean;
-  token?: string;
-};
+import { clearSession } from "@/lib/api/session";
 
 export function AuthGate({
   adminOnly = false,
@@ -31,57 +23,11 @@ export function AuthGate({
 }) {
   const { t } = useTranslations();
   const resolvedMessage = message ?? t("auth.gate.defaultMessage");
-  const { token } = useAuthSession();
+  const { token, user, status } = useAuthSession();
   const pathname = usePathname();
   const returnTo = `${pathname}${
     typeof window !== "undefined" ? `${window.location.search}${window.location.hash}` : ""
   }`;
-  const [verificationAttempt, setVerificationAttempt] = useState(0);
-  const [sessionVerification, setSessionVerification] = useState<SessionVerification>({
-    status: "checking",
-  });
-
-  useEffect(() => {
-    if (!token) {
-      return;
-    }
-
-    let active = true;
-
-    getCurrentUser(token)
-      .then((currentUser) => {
-        if (!active) {
-          return;
-        }
-
-        if (!currentUser) {
-          setSessionVerification({ status: "error", token, adminOnly });
-          return;
-        }
-
-        saveSession({ token, user: currentUser });
-        setSessionVerification({
-          status: adminOnly && !isAdminUser(currentUser) ? "denied" : "allowed",
-          token,
-          adminOnly,
-        });
-      })
-      .catch((error) => {
-        logApiIssue("Unable to verify the current session", error);
-        if (!active) {
-          return;
-        }
-        if (isUnauthorizedError(error)) {
-          clearSession();
-          return;
-        }
-        setSessionVerification({ status: "error", token, adminOnly });
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [adminOnly, token, verificationAttempt]);
 
   if (!token) {
     return (
@@ -112,13 +58,7 @@ export function AuthGate({
     );
   }
 
-  const verificationStatus =
-    sessionVerification.token === token &&
-    sessionVerification.adminOnly === adminOnly
-      ? sessionVerification.status
-      : "checking";
-
-  if (verificationStatus === "checking") {
+  if (status === "pending") {
     return (
       <Card
         aria-live="polite"
@@ -140,7 +80,7 @@ export function AuthGate({
     );
   }
 
-  if (verificationStatus === "error") {
+  if (status === "error") {
     return (
       <Card
         aria-live="polite"
@@ -162,10 +102,7 @@ export function AuthGate({
           <button
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#184B34] px-5 py-2.5 text-sm font-extrabold text-white hover:bg-[#0E3325]"
             type="button"
-            onClick={() => {
-              setSessionVerification({ status: "checking", token, adminOnly });
-              setVerificationAttempt((attempt) => attempt + 1);
-            }}
+            onClick={() => retrySessionVerification(token)}
           >
             <RefreshCw aria-hidden="true" className="size-4" />
             {t("common.retry")}
@@ -182,7 +119,7 @@ export function AuthGate({
     );
   }
 
-  if (adminOnly && verificationStatus === "denied") {
+  if (adminOnly && !isAdminUser(user)) {
     return (
       <Card className="mx-auto max-w-xl p-7 text-center">
         <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#C96D4A1f] text-[#A95539]"><ShieldX aria-hidden="true" className="size-6" /></span>

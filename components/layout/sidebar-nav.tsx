@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 export function SidebarNav() {
   const pathname = usePathname();
-  const { token } = useAuthSession();
+  const { status } = useAuthSession();
   const { t } = useTranslations();
 
   return (
@@ -50,7 +50,7 @@ export function SidebarNav() {
           })}
         </nav>
 
-        {token ? (
+        {status === "verified" ? (
           <>
             <div className="mx-2 my-3 h-px bg-[#184B3414]" />
             <p className="eyebrow px-2 pb-2">{t("navigation.mySpaceSection")}</p>

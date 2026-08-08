@@ -9,6 +9,7 @@ import { useTranslations } from "@/components/i18n/i18n-provider";
 import { loginUser, type LoginPayload } from "@/lib/api/auth.service";
 import { isUnauthorizedError } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/error-message";
+import { markSessionVerified } from "@/features/auth/session-verification";
 import { saveSession } from "@/lib/api/session";
 
 export function LoginForm({ nextPath = "/community" }: { nextPath?: string }) {
@@ -49,6 +50,7 @@ export function LoginForm({ nextPath = "/community" }: { nextPath?: string }) {
       }
 
       saveSession({ token, user: response.user });
+      markSessionVerified(token);
 
       router.refresh();
       router.push(nextPath);

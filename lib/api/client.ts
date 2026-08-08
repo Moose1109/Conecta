@@ -1,3 +1,5 @@
+import { clearSession } from "@/lib/api/session";
+
 const configuredApiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim() ?? "";
 
 export const API_BASE_URL = configuredApiBaseUrl.replace(/\/+$/, "");
@@ -292,6 +294,10 @@ export async function apiFetch<T>(
     }
 
     const parsedError = parseErrorPayload(payload);
+
+    if (response.status === 401) {
+      clearSession();
+    }
 
     throw new ApiError({
       status: response.status,

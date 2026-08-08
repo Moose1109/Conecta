@@ -307,7 +307,11 @@ export function SocialPostActions({
       () => {
         setMessage({
           kind: "pending",
-          text: t("community.postActions.pendingBackendFeature"),
+          text: t(
+            action === "comentar"
+              ? "community.postActions.commentPendingFeature"
+              : "community.postActions.sharePendingFeature",
+          ),
         });
       },
     );

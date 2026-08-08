@@ -14,12 +14,13 @@ import { cn } from "@/lib/utils";
 export function MobileBottomNav() {
   const pathname = usePathname();
   const { t } = useTranslations();
-  const { token } = useAuthSession();
+  const { status } = useAuthSession();
 
-  // Private navigation: only for authenticated users, and only within the
+  // Private navigation: only for a confirmed session, and only within the
   // app's social sections — never shown to a spectator, even on routes
-  // (like /villages or /activities) that also offer public content.
-  if (!token || !isSocialRoute(pathname)) {
+  // (like /villages or /activities) that also offer public content. A
+  // cached-but-unverified token must not surface this either.
+  if (status !== "verified" || !isSocialRoute(pathname)) {
     return null;
   }
 

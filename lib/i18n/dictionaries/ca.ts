@@ -512,8 +512,8 @@ export const ca: Dictionary = {
       participationInfoTitle: "Informació per participar",
       publishedDataEyebrow: "Dades publicades",
       recommendationsPendingDescription:
-        "Aquesta secció està preparada, però necessita que el backend exposi recomanacions relacionades amb aquesta activitat.",
-      recommendationsPendingTitle: "Recomanacions pendents de backend",
+        "Aquí apareixeran altres activitats del mateix poble o categoria quan el backend pugui calcular-les. Mentrestant, pots explorar la resta de l'agenda manualment.",
+      recommendationsPendingTitle: "Activitats relacionades en preparació",
       sessionLinkNotice:
         "El desament i la inscripció es vinculen al teu compte quan has iniciat sessió.",
       spectatorCtaDescription: "Crea un compte per desar activitats i apuntar-t'hi.",
@@ -560,7 +560,7 @@ export const ca: Dictionary = {
       submit: "Publica l'activitat",
       submitting: "Publicant…",
       successDemo:
-        "L'activitat s'ha creat correctament, però el llistat actual utilitza dades de demostració. Per veure-la a l'agenda real, l'API s'ha d'executar sense mode mock.",
+        "L'activitat s'ha creat correctament, però com que està associada a un poble de demostració, encara no apareixerà a l'agenda real de la comunitat.",
       successReal: "Activitat creada correctament.",
       timeLabel: "Hora",
       titleLabel: "Títol de l'activitat",
@@ -610,7 +610,7 @@ export const ca: Dictionary = {
       submit: "Publica",
       submitting: "Publicant…",
       successDemo:
-        "La publicació s'ha creat correctament, però el llistat actual utilitza dades de demostració. Per veure-la al feed real, l'API s'ha d'executar sense mode mock.",
+        "La publicació s'ha creat correctament, però com que està associada a un poble de demostració, encara no apareixerà al feed real de la comunitat.",
       successReal: "Publicació creada i enviada a la comunitat.",
       titleLabel: "Títol opcional",
       titlePlaceholder: "Afegeix un títol (opcional)",
@@ -686,7 +686,10 @@ export const ca: Dictionary = {
       likeAction: "M'agrada",
       likeGenericError: "No s'ha pogut actualitzar la reacció.",
       missingPost: "No s'ha pogut identificar la publicació.",
-      pendingBackendFeature: "Aquesta funció encara necessita suport del servidor.",
+      commentPendingFeature:
+        "No s'ha publicat cap comentari. Comentar encara necessita suport del servidor.",
+      sharePendingFeature:
+        "No s'ha compartit aquesta publicació. Compartir encara necessita suport del servidor.",
       postNotFound: "No hem trobat aquesta publicació. Actualitza el contingut i torna-ho a provar.",
       reactionsCount: { one: "{{count}} reacció", other: "{{count}} reaccions" },
       saveAction: "Desa la publicació",
@@ -749,10 +752,10 @@ export const ca: Dictionary = {
       emptyVillagesDescription: "Segueix pobles per trobar-los aquí quan formin part del catàleg disponible.",
       emptyVillagesTitle: "No s'han detectat pobles seguits",
       enrollmentsDetectedDescription:
-        "Les targetes següents tenen isJoined=true dins del catàleg actual de fins a 100 activitats. Són inscripcions detectades: no representen activitats organitzades, desades, assistides ni un historial complet.",
+        "Aquestes targetes apareixen perquè el catàleg actual (fins a 100 activitats) les marca com a inscripcions teves. No representen activitats que hagis organitzat, desat o finalment assistit, ni un historial complet.",
       enrollmentsDetectedTitle: "Inscripcions detectades al catàleg",
       followedVillagesDetectedDescription:
-        "Les targetes següents tenen isFollowing=true dins del catàleg actual de fins a 100 pobles. El backend encara no ofereix la col·lecció personal completa i paginada.",
+        "Aquestes targetes apareixen perquè el catàleg actual (fins a 100 pobles) les marca com a seguides per tu. El backend encara no ofereix la teva col·lecció personal completa i paginada.",
       followedVillagesDetectedTitle: "Pobles seguits detectats al catàleg",
       limitPhotos: "fotografies derivades de publicacions",
       limitTerritorial: "relacions territorials",

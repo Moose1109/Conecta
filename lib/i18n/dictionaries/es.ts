@@ -512,8 +512,8 @@ export const es = {
       participationInfoTitle: "Información para participar",
       publishedDataEyebrow: "Datos publicados",
       recommendationsPendingDescription:
-        "Esta sección está preparada, pero necesita que el backend exponga recomendaciones relacionadas con esta actividad.",
-      recommendationsPendingTitle: "Recomendaciones pendientes de backend",
+        "Aquí aparecerán otras actividades del mismo pueblo o categoría cuando el backend pueda calcularlas. Mientras tanto, puedes explorar el resto de la agenda manualmente.",
+      recommendationsPendingTitle: "Actividades relacionadas en preparación",
       sessionLinkNotice:
         "El guardado y la inscripción se vinculan a tu cuenta cuando has iniciado sesión.",
       spectatorCtaDescription: "Crea una cuenta para guardar actividades y apuntarte.",
@@ -561,7 +561,7 @@ export const es = {
       submit: "Publicar actividad",
       submitting: "Publicando...",
       successDemo:
-        "La actividad fue creada correctamente, pero el listado actual utiliza datos de demostración. Para verla en la agenda real, la API debe ejecutarse sin modo mock.",
+        "La actividad fue creada correctamente, pero como está asociada a un pueblo de demostración, todavía no aparecerá en la agenda real de la comunidad.",
       successReal: "Actividad creada correctamente.",
       timeLabel: "Hora",
       titleLabel: "Título de la actividad",
@@ -611,7 +611,7 @@ export const es = {
       submit: "Publicar",
       submitting: "Publicando...",
       successDemo:
-        "La publicación fue creada correctamente, pero el listado actual utiliza datos de demostración. Para verla en el feed real, la API debe ejecutarse sin modo mock.",
+        "La publicación fue creada correctamente, pero como está asociada a un pueblo de demostración, todavía no aparecerá en el feed real de la comunidad.",
       successReal: "Publicación creada y enviada a la comunidad.",
       titleLabel: "Título opcional",
       titlePlaceholder: "Añade un título (opcional)",
@@ -687,7 +687,10 @@ export const es = {
       likeAction: "Me gusta",
       likeGenericError: "No se pudo actualizar la reacción.",
       missingPost: "No se pudo identificar la publicación.",
-      pendingBackendFeature: "Esta función todavía necesita soporte del servidor.",
+      commentPendingFeature:
+        "No se ha publicado ningún comentario. Comentar todavía necesita soporte del servidor.",
+      sharePendingFeature:
+        "No se ha compartido esta publicación. Compartir todavía necesita soporte del servidor.",
       postNotFound: "No encontramos esta publicación. Actualiza el contenido e inténtalo nuevamente.",
       reactionsCount: { one: "{{count}} reacción", other: "{{count}} reacciones" },
       saveAction: "Guardar publicación",
@@ -750,10 +753,10 @@ export const es = {
       emptyVillagesDescription: "Sigue pueblos para encontrarlos aquí cuando formen parte del catálogo disponible.",
       emptyVillagesTitle: "No se han detectado pueblos seguidos",
       enrollmentsDetectedDescription:
-        "Las tarjetas siguientes tienen isJoined=true dentro del catálogo actual de hasta 100 actividades. Son inscripciones detectadas: no representan actividades organizadas, guardadas, asistidas ni un historial completo.",
+        "Estas tarjetas aparecen porque el catálogo actual (hasta 100 actividades) las marca como inscripciones tuyas. No representan actividades que hayas organizado, guardado o al final asistido, ni un historial completo.",
       enrollmentsDetectedTitle: "Inscripciones detectadas en el catálogo",
       followedVillagesDetectedDescription:
-        "Las tarjetas siguientes tienen isFollowing=true dentro del catálogo actual de hasta 100 pueblos. El backend aún no ofrece la colección personal completa y paginada.",
+        "Estas tarjetas aparecen porque el catálogo actual (hasta 100 pueblos) las marca como seguidas por ti. El backend todavía no ofrece tu colección personal completa y paginada.",
       followedVillagesDetectedTitle: "Pueblos seguidos detectados en el catálogo",
       limitPhotos: "fotografías derivadas de publicaciones",
       limitTerritorial: "relaciones territoriales",
